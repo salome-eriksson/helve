@@ -1,6 +1,6 @@
 
-Installing and running CERVERUPT with CUDD
-==========================================
+Installing and running helve with CUDD
+======================================
 (In what follows <path-to-cudd> is the path where you want CUDD to be
 installed to)
 1. Download CUDD 3.0.0 from here: https://github.com/ivmai/cudd (unofficial
