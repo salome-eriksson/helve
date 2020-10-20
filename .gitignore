@@ -1,0 +1,4 @@
+helve
+*.o
+doc/*.aux
+doc/*.log

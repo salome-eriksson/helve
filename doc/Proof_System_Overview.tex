@@ -1,0 +1,453 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{a4wide}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{bussproofs}
+
+
+\newcommand{\api}{\ensuremath{A^\Pi}}
+\newcommand{\ipi}{\ensuremath{I^\Pi}}
+\newcommand{\gpi}{\ensuremath{G^\Pi}}
+\newcommand{\snot}[1]{\ensuremath{\overline{#1}}}
+\newcommand{\goalset}{\ensuremath{S_G^\Pi}}
+\newcommand{\initset}{\ensuremath{\{\ipi\}}}
+\newcommand{\vars}{\ensuremath{\textit{vars}}}
+\newcommand{\eg}{e.g.\ }
+\newcommand{\ie}{i.e.\ }
+\newtheorem{theorem}{Theorem}
+
+%% logical operations
+\newcommand{\mo}{\textbf{MO}}
+\newcommand{\ce}{\textbf{CE}}
+\newcommand{\im}{\textbf{IM}}
+\newcommand{\se}{\textbf{SE}}
+\newcommand{\notc}{\textbf{$\lnot$C}}
+\newcommand{\landbc}{\textbf{$\land$BC}}
+\newcommand{\landc}{\textbf{$\land$C}}
+\newcommand{\co}{\textbf{CO}}
+\newcommand{\va}{\textbf{VA}}
+\newcommand{\rn}{\textbf{RN}}
+\newcommand{\cl}{\textbf{CL}}
+\newcommand{\lorbc}{\textbf{$\lor$BC}}
+\newcommand{\lorc}{\textbf{$\lor$C}}
+\newcommand{\tocnf}{\textbf{toCNF}}
+\newcommand{\todnf}{\textbf{toDNF}}
+\newcommand{\me}{\textbf{ME}}
+\newcommand{\ct}{\textbf{CT}}
+
+
+
+\begin{document}
+\section*{Proof System Overview}
+In what follows we give a full overview of the components of the proof
+system. We first define the type of objects used, then list the inference
+rules used within the proof system and afterwards the basic statements which
+have to be verified based on semantics. To emphasize that the proof system
+interprets judgments on a purely syntactical level, we write $S \sqsubseteq S$
+instead of $S \subseteq S$ when denoting a judgment in the proof system.
+
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\paragraph{Types} We define the object types through a simple grammar:\vspace{1mm}
+
+\begin{tabular}{L{4cm} l}
+  state set variables & $X := \initset | \goalset | \emptyset |
+  X_{\mathbf R}$ \\
+  state set literals & $L := X | \snot{X}$ \\
+  state set expressions & $S := L | (S \cup S) | (S \cap S) | S[A] | [A]S$ \\
+  action set expressions & $A := \api | a | (A \cup A)$ \\
+  set expressions & $E := S | A$ \\
+\end{tabular}\vspace{1mm}
+
+Set expressions are defined separately to enable us to define basic set
+theory rules that can be applied to both state set expressions and action
+set expressions. In what follows we denote an object of \eg\ type $E$ by
+simply $E$,$E'$ or $E''$ instead of $Z : E$ and also do not mention the type
+of constant expressions since they are defined above.
+
+\paragraph{Rules} 
+
+The following rules show that state sets are dead:\vspace{1mm}
+
+\begin{tabular}{L{4.5cm} l}
+\textbf{E}mpty set \textbf{D}ead &
+  \AxiomC{}
+  \RightLabel{\textbf{ED}}
+  \UnaryInfC{$\emptyset$ dead}
+  \DisplayProof\\[1em]
+
+\textbf{U}nion \textbf{D}ead &
+  \AxiomC{$S$ dead}
+  \AxiomC{$S'$ dead}
+  \RightLabel{\textbf{UD}}
+  \BinaryInfC{$S \cup S'$ dead}
+  \DisplayProof\\[1em]
+
+\textbf{S}ubset \textbf{D}ead &
+  \AxiomC{$S'$ dead}
+  \AxiomC{$S \sqsubseteq S'$}
+  \RightLabel{\textbf{SD}}
+  \BinaryInfC{$S$ dead}
+  \DisplayProof\\[1em]
+
+\textbf{P}rogression \textbf{G}oal &
+  \AxiomC{$S[\api] \sqsubseteq S \cup S'$}
+  \AxiomC{$S'$ dead}
+  \AxiomC{$S \cap \goalset$ dead}
+  \RightLabel{\textbf{PG}}
+  \TrinaryInfC{$S$ dead}
+  \DisplayProof\\[1em]
+
+\textbf{P}rogression \textbf{I}nitial &
+  \AxiomC{$S[\api] \sqsubseteq S \cup S'$}
+  \AxiomC{$S'$ dead}
+  \AxiomC{$\initset \sqsubseteq S$}
+  \RightLabel{\textbf{PI}}
+  \TrinaryInfC{$\snot{S}$ dead}
+  \DisplayProof\\[1em]
+
+\textbf{R}egression \textbf{G}oal &
+  \AxiomC{$[\api]S \sqsubseteq S \cup S'$}
+  \AxiomC{$S'$ dead}
+  \AxiomC{$\snot{S} \cap \goalset$ dead}
+  \RightLabel{\textbf{RG}}
+  \TrinaryInfC{$\snot{S}$ dead}
+  \DisplayProof\\[1em]
+
+\textbf{R}egression \textbf{I}nitial &
+  \AxiomC{$[\api]S \sqsubseteq S \cup S'$}
+  \AxiomC{$S'$ dead}
+  \AxiomC{$\initset \sqsubseteq \snot{S}$}
+  \RightLabel{\textbf{RI}}
+  \TrinaryInfC{$S$ dead}
+  \DisplayProof\\[1em]
+\end{tabular}\vspace{1em}
+
+These rules show that the task is unsolvable:\vspace{1mm}
+
+\begin{tabular}{L{4.5cm} l}
+\textbf{C}onclusion \textbf{I}nitial &
+  \AxiomC{\initset\ dead}
+  \RightLabel{\textbf{CI}}
+  \UnaryInfC{unsolvable}
+  \DisplayProof\\[1em]
+
+\textbf{C}onclusion \textbf{G}oal &
+  \AxiomC{\goalset\ dead}
+  \RightLabel{\textbf{CG}}
+  \UnaryInfC{unsolvable}
+  \DisplayProof\\[1em]
+\end{tabular}\vspace{1em}
+
+\clearpage
+
+These rules from basic set theory can be used for both state and action
+set expressions:\vspace{1mm}
+
+\begin{tabular}{L{4.5cm} l}
+\textbf{U}nion \textbf{R}ight &
+  \AxiomC{}
+  \RightLabel{\textbf{UR}}
+  \UnaryInfC{$E \sqsubseteq (E \cup E')$}
+  \DisplayProof\\[1em]
+
+\textbf{U}nion \textbf{L}eft &
+  \AxiomC{}
+  \RightLabel{\textbf{UL}}
+  \UnaryInfC{$E \sqsubseteq (E' \cup E)$}
+  \DisplayProof\\[1em]
+
+\textbf{I}ntersection \textbf{R}ight &
+  \AxiomC{}
+  \RightLabel{\textbf{IR}}
+  \UnaryInfC{$(E \cap E') \sqsubseteq E$}
+  \DisplayProof\\[1em]
+
+\textbf{I}ntersection \textbf{L}eft &
+  \AxiomC{}
+  \RightLabel{\textbf{IL}}
+  \UnaryInfC{$(E' \cap E) \sqsubseteq E$}
+  \DisplayProof\\[1em]
+
+\textbf{DI}stributivity &
+  \AxiomC{}
+  \RightLabel{\textbf{DI}}
+  \UnaryInfC{$((E \cup E') \cap E'') \sqsubseteq ((E \cap E'') \cup (E' \cap E''))$}
+  \DisplayProof\\[1em]
+
+\textbf{S}ubset \textbf{U}nion &
+  \AxiomC{$E \sqsubseteq E''$}
+  \AxiomC{$E' \sqsubseteq E''$}
+  \RightLabel{\textbf{SU}}
+  \BinaryInfC{$(E \cup E') \sqsubseteq E''$}
+  \DisplayProof\\[1em]
+
+\textbf{S}ubset \textbf{I}ntersection &
+  \AxiomC{$E \sqsubseteq E'$}
+  \AxiomC{$E \sqsubseteq E''$}
+  \RightLabel{\textbf{SI}}
+  \BinaryInfC{$E \sqsubseteq (E' \cap E'')$}
+  \DisplayProof\\[1em]
+
+\textbf{S}ubset \textbf{T}ransitivity &
+  \AxiomC{$E \sqsubseteq E'$}
+  \AxiomC{$E' \sqsubseteq E''$}
+  \RightLabel{\textbf{ST}}
+  \BinaryInfC{$E \sqsubseteq E''$}
+  \DisplayProof\\
+\end{tabular}\vspace{1em}
+
+The final rules focus on progression and its relation to regression:\vspace{1mm}
+
+\begin{tabular}{L{4.5cm} l}
+\textbf{A}ction \textbf{T}ransitivity &
+  \AxiomC{$S[A] \sqsubseteq S'$}
+  \AxiomC{$A' \sqsubseteq A$}
+  \RightLabel{\textbf{AT}}
+  \BinaryInfC{$S[A'] \sqsubseteq S'$}
+  \DisplayProof\\[1em]
+
+\textbf{A}ction \textbf{U}nion &
+  \AxiomC{$S[A] \sqsubseteq S'$}
+  \AxiomC{$S[A'] \sqsubseteq S'$}
+  \RightLabel{\textbf{AU}}
+  \BinaryInfC{$S[A \cup A'] \sqsubseteq S'$}
+  \DisplayProof\\[1em]
+
+\textbf{P}rogression \textbf{T}ransitivity &
+  \AxiomC{$S[A] \sqsubseteq S''$}
+  \AxiomC{$S' \sqsubseteq S$}
+  \RightLabel{\textbf{PT}}
+  \BinaryInfC{$S'[A] \sqsubseteq S''$}
+  \DisplayProof\\[1em]
+
+\textbf{P}rogression \textbf{U}nion &
+  \AxiomC{$S[A] \sqsubseteq S''$}
+  \AxiomC{$S'[A] \sqsubseteq S''$}
+  \RightLabel{\textbf{PU}}
+  \BinaryInfC{$(S \cup S')[A] \sqsubseteq S''$}
+  \DisplayProof\\[1em]
+
+\textbf{P}rogression to \textbf{R}egression &
+  \AxiomC{$S[A] \sqsubseteq S'$}
+  \RightLabel{\textbf{PR}}
+  \UnaryInfC{$[A]\snot{S'} \sqsubseteq \snot{S}$}
+  \DisplayProof\\[1em]
+
+\textbf{R}egression to \textbf{P}rogression &
+  \AxiomC{$[A]\snot{S'} \sqsubseteq \snot{S}$}
+  \RightLabel{\textbf{RP}}
+  \UnaryInfC{$S[A] \sqsubseteq S'$}
+  \DisplayProof\\
+\end{tabular}
+
+\subsubsection*{Basic Statements}
+\begin{enumerate}[label=\upshape\bfseries B\arabic*]
+  \item\label{ps-basic:subset}
+  $\bigcap_{L_{\mathbf R} \in \mathcal L} L_{\mathbf R} \subseteq
+  \bigcup_{L_{\mathbf R}' \in \mathcal L'} L_{\mathbf R}'$ with $|\mathcal L| + |\mathcal L'| \leq r$
+   
+  \item\label{ps-basic:prog}
+  $(\bigcap_{X_{\mathbf R} \in \mathcal X} X_{\mathbf R})[A]
+  \cap \bigcap_{L_{\mathbf R} \in \mathcal L} L_{\mathbf R} \subseteq
+  \bigcup_{L_{\mathbf R}' \in \mathcal L'} L_{\mathbf R}'$ with $|\mathcal X| + |\mathcal L| + |\mathcal L'| \leq r$
+  
+  \item\label{ps-basic:reg}
+  $[A](\bigcap_{X_{\mathbf R} \in \mathcal X} X_{\mathbf R})
+  \cap \bigcap_{L_{\mathbf R} \in \mathcal L} L_{\mathbf R} \subseteq
+  \bigcup_{L_{\mathbf R}' \in \mathcal L'} L_{\mathbf R}'$ with $|\mathcal X| + |\mathcal L| + |\mathcal L'| \leq r$
+
+  \item\label{ps-basic:mixed}
+  $L_{\mathbf R} \subseteq L_{\mathbf R'}'$
+  
+  \item\label{ps-basic:action}
+  $A \subseteq A'$
+\end{enumerate}
+
+\clearpage
+  
+\section*{Efficient Verification}
+In what follows we describe the set of operations we consider.
+An $\mathbf R$-formula $\varphi$ is a particular instance of formalism
+$\mathbf R$. It is associated with a set of variables $\vars(\varphi)$, which
+is a superset of (but not necessarily identical to) the set of variables
+occurring in $\varphi$. Furthermore, $\vars(\varphi)$ follows a strict total
+order $\prec$. We denote the size of the representation as $\|\varphi\|$
+and the amount of models as $|\varphi|$.
+
+
+\begin{description}
+\begin{small}
+\item[\mo\ (model testing)]\hfill\\ Given $\mathbf{R}$-formula $\varphi$ and
+  truth assignment $\mathcal I$, test whether $\mathcal I \models
+  \varphi$. Note that $\mathcal I$ must assign a value to all $v \in
+  \vars(\varphi)$ (if it assigns values to other variables not occurring in
+  $\varphi$, they may be ignored).
+\item[\co\ (consistency)] \hfill\\ Given $\mathbf R$-formula $\varphi$, test whether
+  $\varphi$ is satisfiable.
+\item[\va\ (validity)] \hfill\\ Given $\mathbf R$-formula $\varphi$, test whether
+  $\varphi$ is valid.
+\item[\ce\ (clausal entailment)] \hfill\\ Given $\mathbf R$-formula $\varphi$
+  and clause (\ie\ disjunction of literals) $\gamma$, test whether $\varphi\models\gamma$.
+\item[\im\ (implicant)] \hfill\\ Given $\mathbf R$-formula $\varphi$
+and cube (\ie\ conjunction of literals) $\delta$, test whether $\delta\models\varphi$.
+\item[\se\ (sentential entailment)] \hfill\\ Given $\mathbf R$-formulas
+  $\varphi$ and $\psi$, test whether $\varphi\models\psi$.
+\item[\me\ (model enumeration)] \hfill\\ Given $\mathbf R$-formula $\varphi$,
+  enumerate all models of $\varphi$ (over $\vars(\varphi)$)
+\item[\landbc\ (bounded conjunction)] \hfill\\ Given $\mathbf R$-formulas
+  $\varphi$ and $\psi$, construct an $\mathbf R$-formula representing
+  $\varphi \land \psi$.
+\item[\landc\ (general conjunction)] \hfill\\ Given $\mathbf R$-formulas
+  $\varphi_1, \dots, \varphi_n$, construct an $\mathbf R$-formula
+  representing $\varphi_1 \land \dots \land \varphi_n$.
+\item[\lorbc\ (bounded disjunction)] \hfill\\ Given $\mathbf R$-formulas
+  $\varphi$ and $\psi$, construct an $\mathbf R$-formula representing
+  $\varphi \lor \psi$.
+\item[\lorc\ (general disjunction)] \hfill\\ Given $\mathbf R$-formulas
+  $\varphi_1, \dots, \varphi_n$, construct an $\mathbf R$-formula
+  representing $\varphi_1 \lor \dots \lor \varphi_n$.
+\item[\notc\ (negation)] \hfill\\ Given $\mathbf R$-formula $\varphi$,
+  construct an $\mathbf R$-formula representing $\neg \varphi$.
+\item[\cl\ (conjunction of literals)] \hfill\\ Given a conjunction $\varphi$ of
+  literals, construct an $\mathbf R$-formula representing $\varphi$.
+\item[\rn\ (renaming)] \hfill\\ Given $\mathbf R$-formula $\varphi$ and an
+  injective variable renaming $r: \vars(\varphi) \to V'$,
+  construct an $\mathbf R$-formula representing $\varphi[r]$, i.e.,
+  $\varphi$ with each variable $v$ replaced by $r(v)$.
+\item[$\rn_\prec$ (renaming consistent with order)] \hfill\\ Same as \rn, but
+  $r$ must be consistent with the variable order in the sense that if
+  $v_1, v_2 \in \vars(\varphi)$ with $v_1 \prec v_2$, then $r(v_1) \prec
+  r(v_2)$.
+\item[\tocnf\ (transform to CNF)] \hfill\\ Given $\mathbf R$-formula $\varphi$,
+  construct a CNF formula that is equivalent to $\varphi$.
+\item[\todnf\ (transform to DNF)] \hfill\\ Given $\mathbf R$-formula $\varphi$,
+  construct a DNF formula that is equivalent to $\varphi$.
+\item[\ct\ (model count)] \hfill\\ Given $\mathbf R$-formula $\varphi$, count
+how many models $\varphi$ has.
+\end{small}
+\end{description}
+
+\begin{theorem}
+The statement $\bigcap_{L_i \in \mathcal L} L_i \subseteq \bigcup_{L'_i \in
+\mathcal{L'}} L'_i$ where $|\mathcal L| + |\mathcal L'| \leq r$ and the involved
+state set variables are represented with a set of $\mathbf R$-formulas $\Phi$
+can be verified in polynomial time in $\|\Phi\|$ if $\mathbf R$ efficiently
+supports one of the options in the corresponding cell:
+
+\begin{center}
+\begin{tabularx}{0.92\textwidth}{X|X|X|X}
+ & $\mathcal L^+ +\mathcal L'^-=0$ 
+ & $\mathcal L^+ +\mathcal L'^-=1$ 
+ & $\mathcal L^+ +\mathcal L'^->1$\\
+ \hline
+ \multirow{2}{*}{$\mathcal L^- +\mathcal L'^+=0$}
+  &            &\co                            &\co, \landbc                  \\
+  &            &                               &\todnf                        \\
+ \hline
+ \multirow{2}{*}{$\mathcal L^- +\mathcal L'^+=1$}
+  &\va         &\se                            &\se, \landbc                  \\
+  &            &                               &\todnf, \im                   \\
+ \hline
+ \multirow{3}{*}{$\mathcal L^- +\mathcal L'^+>1$}
+  &\va, \lorbc &\se, \lorbc                    &\se, \landbc, \lorbc          \\
+  &\tocnf      &\tocnf, \ce                    &\todnf, \im, \lorbc           \\
+  &            &                               &\tocnf, \ce, \landbc          \\
+\end{tabularx}
+\end{center}
+where $\mathcal X^+$ is the number of non-negated literals in $\mathcal X$ and
+$\mathcal X^-$ the number of negated literals in $\mathcal X$ for $\mathcal
+X \in \{\mathcal L, \mathcal L'\}$.
+\label{thm:ps-subsetverification}
+\end{theorem}
+
+
+\begin{theorem}
+The statements $(\bigcap_{X_i \in \mathcal X} X_i)[A] \cap \bigcap_{L_i
+\in \mathcal L} \subseteq \bigcup_{L'_i \in \mathcal L'} L'_i$ and
+$[A](\bigcap_{X_i \in \mathcal X} X_i) \cap \bigcap_{L_i \in \mathcal L}
+\subseteq \bigcup_{L'_i \in \mathcal L'} L'_i$ where $|\mathcal X|+|\mathcal
+L|+|\mathcal L'| \leq r$ and the involved state set variables are represented
+with a set of $\mathbf R$-formulas $\Phi$ can be verified in time polynomial
+in $\|\Phi\|$ and $|A|$ if $\mathbf R$ efficiently supports one of the
+options in the corresponding cell:
+
+\begin{center}
+\begin{tabular}{l|l}
+$\mathcal L^- +\mathcal L'^+=0$
+ & \co, \landbc, \cl, $\rn_\prec$ \\
+\hline
+$\mathcal L^- +\mathcal L'^+=1$
+ & \se, \landbc, \cl, $\rn_\prec$ \\
+\hline
+$\mathcal L^- +\mathcal L'^+>1$
+ & \se, \lorbc, \landbc, \cl, $\rn_\prec$ \\
+ & \tocnf, \ce, \landbc, \cl, $\rn_\prec$ \\
+\end{tabular}
+\end{center}
+where $\mathcal X^+$ is the number of non-negated literals in $\mathcal X$ and
+$\mathcal X^-$ the number of negated literals in $\mathcal X$ for $\mathcal
+X \in \{\mathcal L, \mathcal L'\}$.
+\label{thm:ps-progregverification}
+\end{theorem}
+
+
+
+\begin{theorem}
+The statement $L \subseteq L'$ where the two involved state set variables are
+represented by $\varphi_{\mathbf R}$ and $\psi_{\mathbf R'}$ with $\mathbf
+R \neq \mathbf R'$ can be verified in polynomial time in $\|\varphi_{\mathbf
+R}\|$ and $\|\psi_{\mathbf R'}\|$ in the following cases:
+
+\begin{center}
+\begin{tabularx}{0.5\textwidth}{r|XXl}
+& $\mathbf R$ & $\mathbf R'$ \\
+\hline
+\multirow{4}{*}{$\begin{array} {r@{}l@{}}
+                  \varphi_{\mathbf R} &\models \psi_{\mathbf R'} \\
+                  \lnot \psi_{\mathbf R'} &\models \lnot \varphi_{\mathbf R}
+                \end{array}$}
+ & \me, ns  & \mo      \\
+ & \todnf   & \im      \\
+ & \ce      & \tocnf   \\
+ & \me      & \mo, ns  \\
+\hline
+
+\multirow{4}{*}{$\begin{array} {r@{}l@{}}
+                  \lnot \varphi_{\mathbf R} &\models \psi_{\mathbf R'} \\
+                  \lnot \psi_{\mathbf R'} &\models \varphi_{\mathbf R}
+                \end{array}$}
+ & \me, ns  & \mo, \ct \\
+ & \tocnf   & \im      \\
+ & \im      & \tocnf   \\
+ & \mo, \ct & \me, ns  \\
+\hline
+
+\multirow{4}{*}{$\begin{array} {r@{}l@{}}
+                  \varphi_{\mathbf R} &\models \lnot \psi_{\mathbf R'} \\
+                  \psi_{\mathbf R'} &\models \lnot \varphi_{\mathbf R}
+                \end{array}$}
+ & \me, ns  & \mo      \\
+ & \todnf   & \ce      \\
+ & \ce      & \todnf   \\
+ & \mo      & \me, ns  \\
+\end{tabularx}
+\end{center}
+
+where ``ns'' means that the formalism is non-succinct (\ie the representation
+size of the formula is in best case linear in the amount of models). If the
+other involved formula is succinct, it cannot contain variables not mentioned
+in the non-succinct formula.
+
+If $\mathbf R$ ($\mathbf R'$) supports \notc\ and $\lnot \varphi_{\mathbf R}$
+($\lnot \psi_{\mathbf R'}$) occurs, we can also reduce the case to $\varphi_{\mathbf
+R} \models \psi_{\mathbf R'}$.
+\label{thm:ps-mixedverification}
+\end{theorem}
+
+\end{document}

@@ -1,0 +1,128 @@
+e 0 c e
+e 1 c g
+e 2 c i
+k 0 d 0 ed
+a 0 a
+a 1 b 3 2 5 1
+
+
+e 3 h p cnf 6 1 -1 0 ;
+e 4 h p cnf 6 2 -4 -2 0 -5 0 ;
+e 5 h p cnf 6 2 1 0 6 0 ;
+e 6 h p cnf 6 2 4 0 2 0 ;
+e 7 h p cnf 6 1 6 0 ;
+e 8 h p cnf 6 1 -4 -2 0 ;
+
+e 9 n 3
+e 10 n 4
+e 11 n 5
+e 12 n 6
+e 13 n 7
+e 14 n 8
+e 15 p 3 0
+e 16 p 4 0
+e 17 r 6 0
+e 18 r 7 0
+e 19 n 0
+k 1 s 5 7 b1
+k 2 s 3 11 b1
+k 3 s 14 6 b1
+k 4 s 13 11 b1
+e 20 u 5 3
+k 5 s 7 20 b1
+e 21 i 9 1
+k 6 s 21 5 b1
+e 22 i 8 1
+k 7 s 22 9 b1
+e 23 i 12 1
+k 8 s 23 19 b1
+e 24 u 3 0
+k 9 s 15 24 b2
+e 25 i 3 1
+k 10 s 25 0 b1
+k 11 d 25 sd 10 0
+k 12 d 3 pg 9 0 11
+e 26 u 4 3
+k 13 s 16 26 b2
+k 14 s 2 4 b1
+k 15 d 10 pi 13 12 14
+k 16 s 1 10 b1
+k 17 d 1 sd 16 15
+e 27 u 4 11
+k 19 s 16 27 b2
+e 28 u 6 0
+k 20 s 17 28 b3
+k 21 s 2 12 b1
+k 22 d 6 ri 20 0 21
+e 29 u 7 6
+k 23 s 18 29 b3
+e 30 i 13 1
+k 24 s 30 0 b1
+k 25 d 30 sd 24 0
+k 26 d 13 rg 23 22 25
+k 27 s 2 13 b1
+k 28 d 2 sd 27 26
+e 31 u 7 14
+k 30 s 18 31 b3
+
+
+# BDDs
+
+e 32 b testbdds.bdd 0 ;
+e 33 b testbdds.bdd 1 ;
+e 34 b testbdds.bdd 2 ;
+e 35 b testbdds.bdd 3 ;
+e 36 b testbdds.bdd 4 ;
+e 37 b testbdds.bdd 5 ;
+
+e 38 n 32
+e 39 n 33
+e 40 n 34
+e 41 n 35
+e 42 n 36
+e 43 n 37
+e 44 p 32 0
+e 45 p 33 0
+e 46 r 35 0
+e 47 r 36 0
+e 48 n 0
+k 31 s 34 36 b1
+k 32 s 32 40 b1
+k 33 s 43 35 b1
+k 34 s 42 40 b1
+e 49 u 34 32
+k 35 s 36 49 b1
+e 50 i 38 1
+k 36 s 50 34 b1
+e 51 i 37 1
+k 37 s 51 38 b1
+e 52 i 41 1
+k 38 s 52 48 b1
+e 53 u 32 0
+k 39 s 44 53 b2
+e 54 i 32 1
+k 40 s 54 0 b1
+k 41 d 54 sd 40 0
+k 42 d 32 pg 39 0 41
+e 55 u 33 32
+k 43 s 45 55 b2
+k 44 s 2 33 b1
+k 45 d 39 pi 43 42 44
+k 46 s 1 39 b1
+k 47 d 1 sd 46 45
+e 56 u 33 40
+k 49 s 45 56 b2
+e 57 u 35 0
+k 50 s 46 57 b3
+k 51 s 2 41 b1
+k 52 d 35 ri 50 0 51
+e 58 u 36 35
+k 53 s 47 58 b3
+e 59 i 42 1
+k 54 s 59 0 b1
+k 55 d 59 sd 54 0
+k 56 d 42 rg 53 52 55
+k 57 s 2 42 b1
+k 58 d 2 sd 57 56
+e 60 u 36 43
+k 60 s 47 60 b3

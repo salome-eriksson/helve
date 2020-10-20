@@ -1,0 +1,62 @@
+begin_atoms:6
+a
+b
+c
+d
+e
+g
+end_atoms
+begin_init
+0
+end_init
+begin_goal
+0
+4
+5
+end_goal
+begin_actions:6
+begin_action
+o1
+cost: 1
+PRE:0
+ADD:4
+DEL:0
+end_action
+begin_action
+o2
+cost: 1
+PRE:0
+ADD:2
+end_action
+begin_action
+o3
+cost: 1
+PRE:2
+ADD:3
+DEL:1
+DEL:2
+end_action
+begin_action
+o4
+cost: 1
+PRE:3
+ADD:1
+DEL:3
+end_action
+begin_action
+o5
+cost: 1
+PRE:1
+ADD:3
+DEL:0
+DEL:1
+end_action
+begin_action
+o6
+cost: 1
+PRE:1
+PRE:3
+ADD:4
+ADD:5
+end_action
+end_actions
