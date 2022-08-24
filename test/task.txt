@@ -4,7 +4,7 @@ b
 c
 d
 e
-g
+f
 end_atoms
 begin_init
 0
@@ -14,7 +14,7 @@ begin_goal
 4
 5
 end_goal
-begin_actions:6
+begin_actions:7
 begin_action
 o1
 cost: 1
@@ -58,5 +58,11 @@ PRE:1
 PRE:3
 ADD:4
 ADD:5
+end_action
+begin_action
+o7
+cost: 1
+PRE:6
+ADD:6
 end_action
 end_actions

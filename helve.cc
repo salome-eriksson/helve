@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
         } else if(input_type.compare("a") == 0) {
             proofchecker.add_action_set(input);
         } else if(input_type.at(0) == '#') {
-            std::getline(certstream, input);
+            continue;
         } else {
             std::cerr << "unknown start of line: " << input_type << std::endl;
             exit_with(ExitCode::CRITICAL_ERROR);

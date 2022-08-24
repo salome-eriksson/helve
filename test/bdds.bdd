@@ -1,0 +1,887 @@
+0 1 2 3 4 5 
+0
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 2
+.nvars 6
+.nsuppvars 1
+.ids 0
+.permids 0
+.nroots 1
+.rootids -2
+.nodes
+1 T 1 0 0
+2 0 0 1 -1
+.end
+1
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 4
+.nvars 6
+.nsuppvars 3
+.ids 1 3 4
+.permids 1 3 4
+.nroots 1
+.rootids -4
+.nodes
+1 T 1 0 0
+2 4 2 1 -1
+3 3 1 1 2
+4 1 0 3 2
+.end
+2
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 3
+.nvars 6
+.nsuppvars 2
+.ids 0 5
+.permids 0 5
+.nroots 1
+.rootids 3
+.nodes
+1 T 1 0 0
+2 5 1 1 -1
+3 0 0 2 -1
+.end
+3
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 3
+.nvars 6
+.nsuppvars 2
+.ids 1 3
+.permids 1 3
+.nroots 1
+.rootids 3
+.nodes
+1 T 1 0 0
+2 3 1 1 -1
+3 1 0 2 -1
+.end
+4
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 2
+.nvars 6
+.nsuppvars 1
+.ids 5
+.permids 5
+.nroots 1
+.rootids 2
+.nodes
+1 T 1 0 0
+2 5 0 1 -1
+.end
+5
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 3
+.nvars 6
+.nsuppvars 2
+.ids 1 3
+.permids 1 3
+.nroots 1
+.rootids -3
+.nodes
+1 T 1 0 0
+2 3 1 1 -1
+3 1 0 2 -1
+.end
+6
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 6
+.nvars 6
+.nsuppvars 4
+.ids 0 2 3 4
+.permids 0 2 3 4
+.nroots 1
+.rootids -6
+.nodes
+1 T 1 0 0
+2 4 3 1 -1
+3 2 1 1 2
+4 3 2 1 -2
+5 2 1 4 -1
+6 0 0 3 5
+.end
+7
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 6
+.nvars 6
+.nsuppvars 5
+.ids 0 1 2 3 4
+.permids 0 1 2 3 4
+.nroots 1
+.rootids -6
+.nodes
+1 T 1 0 0
+2 4 4 1 -1
+3 3 3 2 -1
+4 2 2 3 -1
+5 1 1 2 4
+6 0 0 5 4
+.end
+8
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 6
+.nvars 6
+.nsuppvars 4
+.ids 0 2 3 4
+.permids 0 2 3 4
+.nroots 1
+.rootids -6
+.nodes
+1 T 1 0 0
+2 4 3 1 -1
+3 2 1 1 2
+4 3 2 1 -2
+5 2 1 4 -1
+6 0 0 3 5
+.end
+9
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 6
+.nvars 6
+.nsuppvars 5
+.ids 0 1 2 3 4
+.permids 0 1 2 3 4
+.nroots 1
+.rootids -6
+.nodes
+1 T 1 0 0
+2 4 4 1 -1
+3 3 3 2 -1
+4 2 2 3 -1
+5 1 1 2 4
+6 0 0 5 2
+.end
+10
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 7
+.nvars 6
+.nsuppvars 4
+.ids 0 1 2 3
+.permids 0 1 2 3
+.nroots 1
+.rootids 7
+.nodes
+1 T 1 0 0
+2 3 3 1 -1
+3 2 2 2 1
+4 2 2 1 2
+5 1 1 3 -4
+6 1 1 1 -2
+7 0 0 5 6
+.end
+11
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 6
+.nvars 6
+.nsuppvars 4
+.ids 0 1 2 3
+.permids 0 1 2 3
+.nroots 1
+.rootids -6
+.nodes
+1 T 1 0 0
+2 3 3 1 -1
+3 2 2 2 1
+4 1 1 3 -1
+5 1 1 1 -1
+6 0 0 4 5
+.end
+12
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 7
+.nvars 6
+.nsuppvars 4
+.ids 0 1 2 3
+.permids 0 1 2 3
+.nroots 1
+.rootids 7
+.nodes
+1 T 1 0 0
+2 3 3 1 -1
+3 2 2 2 1
+4 2 2 1 2
+5 1 1 3 -4
+6 1 1 1 -2
+7 0 0 5 6
+.end
+13
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 11
+.nvars 6
+.nsuppvars 6
+.ids 0 1 2 3 4 5
+.permids 0 1 2 3 4 5
+.nroots 1
+.rootids -11
+.nodes
+1 T 1 0 0
+2 3 3 1 -1
+3 2 2 2 1
+4 5 5 1 -1
+5 3 3 4 1
+6 1 1 3 -5
+7 4 4 1 -1
+8 3 3 1 7
+9 2 2 8 1
+10 1 1 9 -5
+11 0 0 6 10
+.end
+14
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 9
+.nvars 6
+.nsuppvars 5
+.ids 0 1 2 3 4
+.permids 0 1 2 3 4
+.nroots 1
+.rootids 9
+.nodes
+1 T 1 0 0
+2 4 4 1 -1
+3 2 2 2 -1
+4 3 3 1 -1
+5 2 2 4 1
+6 1 1 3 -5
+7 2 2 2 1
+8 1 1 7 -4
+9 0 0 6 8
+.end
+15
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 6
+.nvars 6
+.nsuppvars 4
+.ids 0 1 2 4
+.permids 0 1 2 4
+.nroots 1
+.rootids -6
+.nodes
+1 T 1 0 0
+2 4 3 1 -1
+3 2 2 2 -1
+4 2 2 1 -1
+5 1 1 3 4
+6 0 0 5 1
+.end
+16
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 6
+.nvars 6
+.nsuppvars 4
+.ids 0 1 2 3
+.permids 0 1 2 3
+.nroots 1
+.rootids 6
+.nodes
+1 T 1 0 0
+2 3 3 1 -1
+3 2 2 2 1
+4 2 2 1 -1
+5 1 1 3 -4
+6 0 0 5 -1
+.end
+17
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 8
+.nvars 6
+.nsuppvars 4
+.ids 0 1 2 4
+.permids 0 1 2 4
+.nroots 1
+.rootids 8
+.nodes
+1 T 1 0 0
+2 4 3 1 -1
+3 2 2 1 -2
+4 2 2 1 2
+5 1 1 3 -4
+6 2 2 1 -1
+7 1 1 1 -6
+8 0 0 5 7
+.end
+18
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 7
+.nvars 6
+.nsuppvars 5
+.ids 0 1 2 4 5
+.permids 0 1 2 4 5
+.nroots 1
+.rootids -7
+.nodes
+1 T 1 0 0
+2 5 4 1 -1
+3 4 3 1 2
+4 1 1 3 1
+5 4 3 2 1
+6 2 2 1 -5
+7 0 0 4 6
+.end
+19
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 7
+.nvars 6
+.nsuppvars 4
+.ids 0 1 2 5
+.permids 0 1 2 5
+.nroots 1
+.rootids -7
+.nodes
+1 T 1 0 0
+2 5 3 1 -1
+3 1 1 2 1
+4 2 2 1 2
+5 2 2 1 -1
+6 1 1 4 5
+7 0 0 3 6
+.end
+20
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 5
+.nvars 6
+.nsuppvars 4
+.ids 0 1 3 5
+.permids 0 1 3 5
+.nroots 1
+.rootids 5
+.nodes
+1 T 1 0 0
+2 5 3 1 -1
+3 3 2 2 -1
+4 1 1 1 -1
+5 0 0 3 -4
+.end
+21
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 6
+.nvars 6
+.nsuppvars 4
+.ids 2 3 4 5
+.permids 2 3 4 5
+.nroots 1
+.rootids -6
+.nodes
+1 T 1 0 0
+2 5 3 1 -1
+3 4 2 1 2
+4 4 2 1 -2
+5 3 1 3 -4
+6 2 0 5 -4
+.end
+22
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 5
+.nvars 6
+.nsuppvars 4
+.ids 0 1 3 4
+.permids 0 1 3 4
+.nroots 1
+.rootids -5
+.nodes
+1 T 1 0 0
+2 4 3 1 -1
+3 3 2 2 1
+4 1 1 3 2
+5 0 0 1 4
+.end
+23
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 7
+.nvars 6
+.nsuppvars 4
+.ids 1 2 3 4
+.permids 1 2 3 4
+.nroots 1
+.rootids -7
+.nodes
+1 T 1 0 0
+2 4 3 1 -1
+3 3 2 1 -2
+4 2 1 3 -2
+5 3 2 1 -1
+6 2 1 5 -1
+7 1 0 4 6
+.end
+24
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 4
+.nvars 6
+.nsuppvars 3
+.ids 0 3 5
+.permids 0 3 5
+.nroots 1
+.rootids 4
+.nodes
+1 T 1 0 0
+2 5 2 1 -1
+3 3 1 2 -1
+4 0 0 3 1
+.end
+25
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 4
+.nvars 6
+.nsuppvars 3
+.ids 1 3 4
+.permids 1 3 4
+.nroots 1
+.rootids -4
+.nodes
+1 T 1 0 0
+2 4 2 1 -1
+3 3 1 1 2
+4 1 0 3 2
+.end
+26
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 7
+.nvars 6
+.nsuppvars 4
+.ids 0 1 3 4
+.permids 0 1 3 4
+.nroots 1
+.rootids -7
+.nodes
+1 T 1 0 0
+2 4 3 1 -1
+3 3 2 1 2
+4 1 1 3 2
+5 3 2 1 -1
+6 1 1 5 -1
+7 0 0 4 6
+.end
+27
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 4
+.nvars 6
+.nsuppvars 3
+.ids 1 3 4
+.permids 1 3 4
+.nroots 1
+.rootids -4
+.nodes
+1 T 1 0 0
+2 4 2 1 -1
+3 3 1 1 2
+4 1 0 3 2
+.end
+28
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 8
+.nvars 6
+.nsuppvars 6
+.ids 0 1 2 3 4 5
+.permids 0 1 2 3 4 5
+.nroots 1
+.rootids -8
+.nodes
+1 T 1 0 0
+2 5 5 1 -1
+3 4 4 2 -1
+4 3 3 1 3
+5 2 2 1 4
+6 2 2 1 3
+7 1 1 5 6
+8 0 0 7 6
+.end
+29
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 3
+.nvars 6
+.nsuppvars 2
+.ids 4 5
+.permids 4 5
+.nroots 1
+.rootids 3
+.nodes
+1 T 1 0 0
+2 5 1 1 -1
+3 4 0 2 -1
+.end
+30
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 2
+.nvars 6
+.nsuppvars 1
+.ids 2
+.permids 2
+.nroots 1
+.rootids 2
+.nodes
+1 T 1 0 0
+2 2 0 1 -1
+.end
+31
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 3
+.nvars 6
+.nsuppvars 2
+.ids 1 2
+.permids 1 2
+.nroots 1
+.rootids 3
+.nodes
+1 T 1 0 0
+2 2 1 1 -1
+3 1 0 2 1
+.end
+32
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 8
+.nvars 6
+.nsuppvars 4
+.ids 0 1 3 5
+.permids 0 1 3 5
+.nroots 1
+.rootids -8
+.nodes
+1 T 1 0 0
+2 5 3 1 -1
+3 3 2 1 2
+4 1 1 3 2
+5 3 2 1 -1
+6 3 2 2 -1
+7 1 1 5 6
+8 0 0 4 7
+.end
+33
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 7
+.nvars 6
+.nsuppvars 4
+.ids 0 2 4 5
+.permids 0 2 4 5
+.nroots 1
+.rootids -7
+.nodes
+1 T 1 0 0
+2 5 3 1 -1
+3 4 2 1 2
+4 4 2 1 -1
+5 2 1 3 4
+6 2 1 2 -1
+7 0 0 5 6
+.end
+34
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 4
+.nvars 6
+.nsuppvars 3
+.ids 1 4 5
+.permids 1 4 5
+.nroots 1
+.rootids -4
+.nodes
+1 T 1 0 0
+2 5 2 1 -1
+3 4 1 2 -1
+4 1 0 2 3
+.end
+35
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 10
+.nvars 6
+.nsuppvars 6
+.ids 0 1 2 3 4 5
+.permids 0 1 2 3 4 5
+.nroots 1
+.rootids -10
+.nodes
+1 T 1 0 0
+2 5 5 1 -1
+3 4 4 1 2
+4 3 3 1 3
+5 2 2 1 4
+6 1 1 1 5
+7 3 3 3 2
+8 2 2 4 7
+9 1 1 5 8
+10 0 0 6 9
+.end
+36
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 8
+.nvars 6
+.nsuppvars 5
+.ids 0 1 3 4 5
+.permids 0 1 3 4 5
+.nroots 1
+.rootids -8
+.nodes
+1 T 1 0 0
+2 5 4 1 -1
+3 4 3 1 2
+4 3 2 1 3
+5 1 1 4 1
+6 3 2 1 2
+7 1 1 6 1
+8 0 0 5 7
+.end
+37
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 9
+.nvars 6
+.nsuppvars 5
+.ids 0 1 2 3 4
+.permids 0 1 2 3 4
+.nroots 1
+.rootids 9
+.nodes
+1 T 1 0 0
+2 4 4 1 -1
+3 3 3 1 2
+4 3 3 1 -1
+5 2 2 3 4
+6 1 1 1 -5
+7 2 2 2 -1
+8 1 1 1 -7
+9 0 0 6 8
+.end
+38
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 10
+.nvars 6
+.nsuppvars 5
+.ids 0 1 2 3 4
+.permids 0 1 2 3 4
+.nroots 1
+.rootids 10
+.nodes
+1 T 1 0 0
+2 3 3 1 -1
+3 2 2 2 1
+4 2 2 1 -1
+5 1 1 3 -4
+6 4 4 1 -1
+7 3 3 6 -1
+8 2 2 2 7
+9 1 1 7 8
+10 0 0 5 -9
+.end
+39
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 6
+.nvars 6
+.nsuppvars 5
+.ids 0 1 2 3 5
+.permids 0 1 2 3 5
+.nroots 1
+.rootids -6
+.nodes
+1 T 1 0 0
+2 5 4 1 -1
+3 3 3 1 -2
+4 2 2 1 3
+5 1 1 1 4
+6 0 0 1 5
+.end
+40
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 5
+.nvars 6
+.nsuppvars 3
+.ids 0 1 2
+.permids 0 1 2
+.nroots 1
+.rootids -5
+.nodes
+1 T 1 0 0
+2 1 1 1 -1
+3 2 2 1 -1
+4 1 1 1 3
+5 0 0 2 4
+.end
+41
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 3
+.nvars 6
+.nsuppvars 2
+.ids 0 4
+.permids 0 4
+.nroots 1
+.rootids -3
+.nodes
+1 T 1 0 0
+2 4 1 1 -1
+3 0 0 2 -1
+.end
+42
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 3
+.nvars 6
+.nsuppvars 2
+.ids 2 4
+.permids 2 4
+.nroots 1
+.rootids -3
+.nodes
+1 T 1 0 0
+2 4 1 1 -1
+3 2 0 2 -1
+.end
+43
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 2
+.nvars 6
+.nsuppvars 1
+.ids 2
+.permids 2
+.nroots 1
+.rootids 2
+.nodes
+1 T 1 0 0
+2 2 0 1 -1
+.end
+44
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 3
+.nvars 6
+.nsuppvars 2
+.ids 0 2
+.permids 0 2
+.nroots 1
+.rootids -3
+.nodes
+1 T 1 0 0
+2 2 1 1 -1
+3 0 0 1 -2
+.end
+45
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 4
+.nvars 6
+.nsuppvars 3
+.ids 0 1 4
+.permids 0 1 4
+.nroots 1
+.rootids -4
+.nodes
+1 T 1 0 0
+2 4 2 1 -1
+3 1 1 1 2
+4 0 0 3 1
+.end
+46
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 4
+.nvars 6
+.nsuppvars 3
+.ids 0 2 4
+.permids 0 2 4
+.nroots 1
+.rootids 4
+.nodes
+1 T 1 0 0
+2 4 2 1 -1
+3 2 1 2 1
+4 0 0 3 1
+.end
+47
+.ver DDDMP-2.0
+.mode A
+.varinfo 0
+.nnodes 3
+.nvars 6
+.nsuppvars 2
+.ids 0 2
+.permids 0 2
+.nroots 1
+.rootids 3
+.nodes
+1 T 1 0 0
+2 2 1 1 -1
+3 0 0 2 1
+.end
