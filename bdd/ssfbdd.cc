@@ -1,14 +1,12 @@
 #include "ssfbdd.h"
 
+#include "../global_funcs.h"
+#include "../ssvconstant.h"
+
 #include <algorithm>
 #include <cassert>
-#include <fstream>
 #include <iostream>
 #include "dddmp.h"
-
-#include "global_funcs.h"
-#include "ssfhorn.h"
-#include "ssfexplicit.h"
 
 std::unordered_map<std::vector<int>, BDDUtil, VectorHasher> BDDFile::utils;
 std::vector<int> BDDFile::compose;

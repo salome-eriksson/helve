@@ -1,14 +1,12 @@
-#include <stdlib.h>
-#include <unistd.h>
+#include "global_funcs.h"
+
 #include <csignal>
+#include <cstring>
+#include <fcntl.h>
 #include <fstream>
 #include <iostream>
 #include <limits>
-#include <string.h>
-#include <fcntl.h>
-#include <cassert>
-
-#include "global_funcs.h"
+#include <unistd.h>
 
 Timer timer;
 int g_timeout;

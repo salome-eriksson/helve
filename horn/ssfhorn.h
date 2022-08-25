@@ -1,12 +1,13 @@
 #ifndef SSFHORN_H
-#define SSFAHORN_H
+#define SSFHORN_H
+
+#include "../stateset.h"
+#include "../task.h"
 
 #include <forward_list>
 #include <unordered_set>
-
-#include "stateset.h"
-#include "ssvconstant.h"
-#include "task.h"
+#include <sstream>
+#include <vector>
 
 class SSFHorn;
 

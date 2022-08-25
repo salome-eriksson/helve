@@ -1,15 +1,16 @@
 #ifndef STATESET_H
 #define STATESET_H
 
+#include "task.h"
+
 #include <deque>
 #include <functional>
 #include <map>
 #include <memory>
 #include <sstream>
+#include <string>
 #include <unordered_set>
-
-#include "task.h"
-
+#include <vector>
 
 enum class ConstantType {
     EMPTY,

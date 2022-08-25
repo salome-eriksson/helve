@@ -1,6 +1,6 @@
 #include "actionset.h"
 
-#include <assert.h>
+#include <cassert>
 
 ActionSet::ActionSet()
 {

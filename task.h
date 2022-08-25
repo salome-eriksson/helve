@@ -1,8 +1,8 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /* A Cube represents a state and has 3 valid values:
  *  - 0: false

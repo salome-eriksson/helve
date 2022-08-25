@@ -1,15 +1,12 @@
 #include "proofchecker.h"
 
-#include <cassert>
-#include <stack>
-#include <fstream>
-#include <math.h>
-#include <limits>
-
 #include "global_funcs.h"
-#include "stateset.h"
 #include "statesetcompositions.h"
 #include "ssvconstant.h"
+
+#include <cassert>
+#include <cmath>
+#include <iostream>
 
 // TODO: should all error messages here be printed in cerr?
 

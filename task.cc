@@ -1,11 +1,12 @@
 #include "task.h"
+
 #include "global_funcs.h"
-#include <algorithm>
+
 #include <cassert>
-#include <iostream>
 #include <fstream>
-#include <unordered_map>
+#include <iostream>
 #include <sstream>
+#include <unordered_map>
 
 
 Task::Task(std::string taskfile) {

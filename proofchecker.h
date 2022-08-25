@@ -8,9 +8,10 @@
 
 #include <deque>
 #include <functional>
-#include <iostream>
 #include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 class ProofChecker
 {

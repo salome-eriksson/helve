@@ -4,12 +4,15 @@
 #include "setcompositions.h"
 #include "stateset.h"
 
+#include <deque>
+#include <memory>
+#include <sstream>
+#include <vector>
 
 /*
  * COLLECTION OF ALL STATESET CLASSES THAT DERIVE FROM
  * SOME INTERFACE FROM SETCOMPOSITONS
  */
-
 
 class StateSetUnion : public StateSet, public SetUnion
 {

@@ -1,6 +1,7 @@
 #include "knowledge.h"
-#include "stateset.h"
+
 #include "actionset.h"
+#include "stateset.h"
 
 Knowledge::~Knowledge() {}
 

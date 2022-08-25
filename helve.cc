@@ -1,16 +1,14 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <cassert>
-#include <limits>
-#include <memory>
-#include <regex>
-
 #include "global_funcs.h"
+#include "proofchecker.h"
 #include "task.h"
 #include "timer.h"
-#include "proofchecker.h"
+
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <limits>
+#include <string>
+#include <sstream>
 
 // TODO: check for virtual destructors!
 

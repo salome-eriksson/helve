@@ -1,10 +1,8 @@
 #include "ssvconstant.h"
 
-#include <fstream>
-#include <iostream>
-
-#include "ssfhorn.h"
 #include "global_funcs.h"
+
+#include <iostream>
 
 SSVConstant::SSVConstant(std::stringstream &input, Task &task)
     : task(task) {

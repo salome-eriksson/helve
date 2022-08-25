@@ -1,35 +1,34 @@
-#ifndef SSFEXPLICIT_H
-#define SSFEXPLICIT_H
+#ifndef SSFMODS_H
+#define SSFMODS_H
 
-#include "stateset.h"
-#include "ssvconstant.h"
-#include "task.h"
+#include "../stateset.h"
+#include "../task.h"
 
-#include "cuddObj.hh"
-#include <memory>
+#include <sstream>
 #include <unordered_set>
+#include <vector>
 
-class ExplicitUtil;
+class ModsUtil;
 typedef std::vector<bool> Model;
 typedef std::vector<Model> ModelExtensions;
 typedef std::vector<const Model *>GlobalModel;
 typedef std::pair<int,int> GlobalModelVarOcc;
 
-class SSFExplicit : public StateSetFormalism
+class SSFMods : public StateSetFormalism
 {
-    friend class ExplicitUtil;
+    friend class ModsUtil;
 private:
-    static std::unique_ptr<ExplicitUtil> util;
+    static std::unique_ptr<ModsUtil> util;
     std::vector<int> vars;
     std::unordered_set<Model> models;
     std::unordered_set<Model>::iterator model_it;
-    SSFExplicit(std::vector<int> &&vars, std::unordered_set<Model> &&models);
+    SSFMods(std::vector<int> &&vars, std::unordered_set<Model> &&models);
     // all formulas need to have same varorder
-    SSFExplicit(std::vector<int> &varorder, std::vector<SSFExplicit *>&disjuncts);
+    SSFMods(std::vector<int> &varorder, std::vector<SSFMods *>&disjuncts);
 public:
-    SSFExplicit();
-    SSFExplicit(std::stringstream &input, Task &task);
-    virtual ~SSFExplicit() {}
+    SSFMods();
+    SSFMods(std::stringstream &input, Task &task);
+    virtual ~SSFMods() {}
 
     virtual bool check_statement_b1(std::vector<const StateSetVariable *> &left,
                                     std::vector<const StateSetVariable *> &right) const;
@@ -62,8 +61,8 @@ public:
 
     virtual const std::vector<int> &get_varorder() const;
 
-    virtual const SSFExplicit *get_compatible(const StateSetVariable *stateset) const override;
-    virtual const SSFExplicit *get_constant(ConstantType ctype) const override;
+    virtual const SSFMods *get_compatible(const StateSetVariable *stateset) const override;
+    virtual const SSFMods *get_constant(ConstantType ctype) const override;
 
     /*
      * model is expected to have the same varorder (ie we need no transformation).
@@ -75,26 +74,26 @@ public:
             Model &model, const std::vector<int> &missing_vars_pos) const;
 };
 
-class ExplicitUtil {
-    friend class SSFExplicit;
+class ModsUtil {
+    friend class SSFMods;
 private:
     Task &task;
-    SSFExplicit emptyformula;
-    SSFExplicit trueformula;
-    SSFExplicit initformula;
-    SSFExplicit goalformula;
+    SSFMods emptyformula;
+    SSFMods trueformula;
+    SSFMods initformula;
+    SSFMods goalformula;
     std::vector<std::vector<bool>> hex;
 
-    ExplicitUtil(Task &task);
+    ModsUtil(Task &task);
 
     struct OtherVarorderFormula {
-        SSFExplicit *formula;
+        SSFMods *formula;
         // tells for each var in formula->vars, where in the extended model this var is
         std::vector<GlobalModelVarOcc> var_occurences;
         // positions of vars that first occured in this formula
         std::vector<int> newvars_pos;
 
-        OtherVarorderFormula(SSFExplicit *f) {
+        OtherVarorderFormula(SSFMods *f) {
             formula = f;
             var_occurences.reserve(formula->vars.size());
         }
@@ -110,18 +109,18 @@ private:
      */
     struct SubsetCheckHelper {
         std::vector<int> varorder;
-        std::vector<SSFExplicit *> same_varorder_left;
-        std::vector<SSFExplicit *> same_varorder_right;
+        std::vector<SSFMods *> same_varorder_left;
+        std::vector<SSFMods *> same_varorder_right;
         std::vector<OtherVarorderFormula> other_varorder_left;
         std::vector<OtherVarorderFormula> other_varorder_right;
         GlobalModel global_model;
         std::vector<ModelExtensions> model_extensions;
     };
-    bool check_same_vars(std::vector<SSFExplicit *> &formulas);
+    bool check_same_vars(std::vector<SSFMods *> &formulas);
     SubsetCheckHelper get_subset_checker_helper(std::vector<int> &varorder,
-                                                std::vector<SSFExplicit *> &left_formulas,
-                                                std::vector<SSFExplicit *> &right_formulas);
+                                                std::vector<SSFMods *> &left_formulas,
+                                                std::vector<SSFMods *> &right_formulas);
     bool is_model_contained(const Model &model, SubsetCheckHelper &helper);
 };
 
-#endif // SSFEXPLICIT_H
+#endif // SSFMODS_H

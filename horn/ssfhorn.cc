@@ -1,12 +1,13 @@
 ﻿#include "ssfhorn.h"
 
-#include <fstream>
-#include <deque>
+#include "../global_funcs.h"
+#include "../ssvconstant.h"
+
 #include <algorithm>
 #include <cassert>
+#include <deque>
 #include <iostream>
-
-#include "global_funcs.h"
+#include <string>
 
 HornConjunctionElement::HornConjunctionElement (const SSFHorn *formula)
     : formula(formula), removed_implications(formula->get_size(), false) {
@@ -1104,6 +1105,7 @@ bool SSFHorn::get_clause(int i, std::vector<int> &vars, std::vector<bool> &claus
 int SSFHorn::get_model_count() const {
     std::cerr << "Horn Formula does not support model count";
     exit_with(ExitCode::CRITICAL_ERROR);
+    return -1;
 }
 
 StateSetBuilder<SSFHorn> horn_builder("h");

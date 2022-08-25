@@ -1,10 +1,11 @@
 #ifndef GLOBAL_FUNCS_H
 #define GLOBAL_FUNCS_H
 
-#include "cuddObj.hh"
-
 #include "timer.h"
-#include "task.h"
+
+#include <string>
+#include <vector>
+#include "cuddObj.hh"
 
 extern Timer timer;
 extern int g_timeout;

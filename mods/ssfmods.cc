@@ -1,26 +1,26 @@
-#include "ssfexplicit.h"
-#include "ssfhorn.h"
-#include "ssfbdd.h"
+#include "ssfmods.h"
 
-#include <cassert>
-#include <fstream>
-#include <iostream>
+#include "../global_funcs.h"
+#include "../ssvconstant.h"
+
 #include <algorithm>
+#include <cassert>
+#include <iostream>
+#include <cmath>
+#include <memory>
+#include <string>
 #include <unordered_map>
-#include <math.h>
-
-#include "global_funcs.h"
 
 
-ExplicitUtil::ExplicitUtil(Task &task)
+ModsUtil::ModsUtil(Task &task)
     : task(task) {
 
     std::vector<int> varorder(1,0);
     std::unordered_set<std::vector<bool>> entries;
-    emptyformula = SSFExplicit(std::move(varorder), std::move(entries));
+    emptyformula = SSFMods(std::move(varorder), std::move(entries));
     varorder = std::vector<int> {0};
     entries = std::unordered_set<std::vector<bool>> {{true},{false}};
-    trueformula = SSFExplicit(std::move(varorder), std::move(entries));
+    trueformula = SSFMods(std::move(varorder), std::move(entries));
     varorder = std::vector<int>();
     int var = 0;
     for ( int val : task.get_goal()) {
@@ -30,7 +30,7 @@ ExplicitUtil::ExplicitUtil(Task &task)
         var++;
     }
     entries = std::unordered_set<std::vector<bool>> {std::vector<bool>(varorder.size(), true)};
-    goalformula = SSFExplicit(std::move(varorder),std::move(entries));
+    goalformula = SSFMods(std::move(varorder),std::move(entries));
     varorder = std::vector<int>(task.get_number_of_facts(),-1);
     for (size_t i = 0; i < varorder.size(); ++i) {
         varorder[i] = i;
@@ -44,7 +44,7 @@ ExplicitUtil::ExplicitUtil(Task &task)
         }
     }
     entries.insert(std::move(entry));
-    initformula = SSFExplicit(std::move(varorder),std::move(entries));
+    initformula = SSFMods(std::move(varorder),std::move(entries));
 
 
     hex.reserve(16);
@@ -56,7 +56,7 @@ ExplicitUtil::ExplicitUtil(Task &task)
 
 }
 
-bool ExplicitUtil::check_same_vars(std::vector<SSFExplicit *> &formulas) {
+bool ModsUtil::check_same_vars(std::vector<SSFMods *> &formulas) {
     for(size_t i = 1; i < formulas.size(); ++i) {
         if(!std::is_permutation(formulas[i-1]->vars.begin(), formulas[i-1]->vars.end(),
                                 formulas[i]->vars.begin())) {
@@ -76,22 +76,22 @@ inline std::vector<bool> get_transformed_model(GlobalModel &global_model,
     return f_model;
 }
 
-ExplicitUtil::SubsetCheckHelper ExplicitUtil::get_subset_checker_helper(
+ModsUtil::SubsetCheckHelper ModsUtil::get_subset_checker_helper(
         std::vector<int> &varorder,
-        std::vector<SSFExplicit *> &left_formulas,
-        std::vector<SSFExplicit *> &right_formulas) {
+        std::vector<SSFMods *> &left_formulas,
+        std::vector<SSFMods *> &right_formulas) {
 
     SubsetCheckHelper helper;
     helper.varorder = varorder;
 
-    for (SSFExplicit *formula : left_formulas) {
+    for (SSFMods *formula : left_formulas) {
         if (formula->vars == helper.varorder) {
             helper.same_varorder_left.push_back(formula);
         } else {
             helper.other_varorder_left.push_back(OtherVarorderFormula(formula));
         }
     }
-    for (SSFExplicit *formula : right_formulas) {
+    for (SSFMods *formula : right_formulas) {
         if (formula->vars == helper.varorder) {
             helper.same_varorder_right.push_back(formula);
         } else {
@@ -152,15 +152,15 @@ ExplicitUtil::SubsetCheckHelper ExplicitUtil::get_subset_checker_helper(
     return helper;
 }
 
-bool ExplicitUtil::is_model_contained(const Model &model,
+bool ModsUtil::is_model_contained(const Model &model,
                                       SubsetCheckHelper &helper) {
     // For same varorder formulas no transformation is needed.
-    for (SSFExplicit *formula : helper.same_varorder_left) {
+    for (SSFMods *formula : helper.same_varorder_left) {
         if (!formula->is_contained(model)) {
             return true;
         }
     }
-    for (SSFExplicit *formula : helper.same_varorder_right) {
+    for (SSFMods *formula : helper.same_varorder_right) {
         if(formula->is_contained(model)) {
             return true;
         }
@@ -230,13 +230,13 @@ bool ExplicitUtil::is_model_contained(const Model &model,
     return true;
 }
 
-std::unique_ptr<ExplicitUtil> SSFExplicit::util;
+std::unique_ptr<ModsUtil> SSFMods::util;
 
-SSFExplicit::SSFExplicit() {
+SSFMods::SSFMods() {
 
 }
 
-SSFExplicit::SSFExplicit(std::vector<int> &&vars,
+SSFMods::SSFMods(std::vector<int> &&vars,
                                        std::unordered_set<std::vector<bool>> &&entries)
     : vars(vars), models(entries) {
     for (std::vector<bool> entry : this->models) {
@@ -245,9 +245,9 @@ SSFExplicit::SSFExplicit(std::vector<int> &&vars,
 
 }
 
-SSFExplicit::SSFExplicit(std::vector<int> &varorder, std::vector<SSFExplicit *> &disjuncts)
+SSFMods::SSFMods(std::vector<int> &varorder, std::vector<SSFMods *> &disjuncts)
     : vars(varorder) {
-    for (SSFExplicit *formula : disjuncts) {
+    for (SSFMods *formula : disjuncts) {
         if(formula->vars != vars) {
             std::cerr << "Tried to build Explicit union with different varorder." << std::endl;
             return;
@@ -258,9 +258,9 @@ SSFExplicit::SSFExplicit(std::vector<int> &varorder, std::vector<SSFExplicit *> 
     }
 }
 
-SSFExplicit::SSFExplicit(std::stringstream &input, Task &task) {
+SSFMods::SSFMods(std::stringstream &input, Task &task) {
     if(!util) {
-        util = std::unique_ptr<ExplicitUtil>(new ExplicitUtil(task));
+        util = std::unique_ptr<ModsUtil>(new ModsUtil(task));
     }
 
     int varamount;
@@ -276,7 +276,7 @@ SSFExplicit::SSFExplicit(std::stringstream &input, Task &task) {
     input >> s;
 
     if(s.compare(":") != 0) {
-        std::cerr << "Error when parsing Explicit Formula: varamount not correct." << std::endl;
+        std::cerr << "Error when parsing MODS Formula: varamount not correct." << std::endl;
         exit_with(ExitCode::PARSING_ERROR);
     }
 
@@ -312,41 +312,41 @@ SSFExplicit::SSFExplicit(std::stringstream &input, Task &task) {
     }
 }
 
-bool SSFExplicit::check_statement_b1(std::vector<const StateSetVariable *> &left,
+bool SSFMods::check_statement_b1(std::vector<const StateSetVariable *> &left,
                                      std::vector<const StateSetVariable *> &right) const {
 
-    std::vector<SSFExplicit *> left_explicit = convert_to_formalism<SSFExplicit>(left, this);
-    std::vector<SSFExplicit *> right_explicit = convert_to_formalism<SSFExplicit>(right, this);
+    std::vector<SSFMods *> left_mods = convert_to_formalism<SSFMods>(left, this);
+    std::vector<SSFMods *> right_mods = convert_to_formalism<SSFMods>(right, this);
 
-    right_explicit.erase(std::remove(right_explicit.begin(), right_explicit.end(),
-                                     &(util->emptyformula)), right_explicit.end());
+    right_mods.erase(std::remove(right_mods.begin(), right_mods.end(),
+                                     &(util->emptyformula)), right_mods.end());
 
-    SSFExplicit right_union;
+    SSFMods right_union;
     // build 1 formula for the disjunction
-    if(right_explicit.size() > 1) {
-        for (SSFExplicit *formula: right_explicit) {
-            if (formula->vars != right_explicit[0]->vars) {
+    if(right_mods.size() > 1) {
+        for (SSFMods *formula: right_mods) {
+            if (formula->vars != right_mods[0]->vars) {
                 // TODO: in theory, we could allow different varorder as long as the same vars are used
                 std::cerr << "Union of explicit sets with different varorder not allowed." << std::endl;
                 return false;
             }
         }
-        right_union = SSFExplicit(right_explicit[0]->vars, right_explicit);
-        right_explicit.clear();
-        right_explicit.push_back(&right_union);
+        right_union = SSFMods(right_mods[0]->vars, right_mods);
+        right_mods.clear();
+        right_mods.push_back(&right_union);
     }
 
     // left empty -> right side must be valid
-    if(left_explicit.empty()) {
-        left_explicit.push_back(&(util->trueformula));
+    if(left_mods.empty()) {
+        left_mods.push_back(&(util->trueformula));
     }
 
     // use first formula on left as reference
-    SSFExplicit *reference = left_explicit.front();
-    left_explicit.erase(left_explicit.begin());
+    SSFMods *reference = left_mods.front();
+    left_mods.erase(left_mods.begin());
 
-    ExplicitUtil::SubsetCheckHelper helper =
-            util->get_subset_checker_helper(reference->vars, left_explicit, right_explicit);
+    ModsUtil::SubsetCheckHelper helper =
+            util->get_subset_checker_helper(reference->vars, left_mods, right_mods);
 
     // loop over each model of the reference formula
     for (const std::vector<bool> &model : reference->models) {
@@ -357,32 +357,32 @@ bool SSFExplicit::check_statement_b1(std::vector<const StateSetVariable *> &left
     return true;
 }
 
-bool SSFExplicit::check_statement_b2(std::vector<const StateSetVariable *> &progress,
+bool SSFMods::check_statement_b2(std::vector<const StateSetVariable *> &progress,
                                      std::vector<const StateSetVariable *> &left,
                                      std::vector<const StateSetVariable *> &right,
                                      std::unordered_set<int> &action_indices) const {
     assert(!progress.empty());
-    std::vector<SSFExplicit *> left_explicit = convert_to_formalism<SSFExplicit>(left, this);
-    std::vector<SSFExplicit *> right_explicit = convert_to_formalism<SSFExplicit>(right, this);
-    std::vector<SSFExplicit *> prog_explicit = convert_to_formalism<SSFExplicit>(progress, this);
+    std::vector<SSFMods *> left_mods = convert_to_formalism<SSFMods>(left, this);
+    std::vector<SSFMods *> right_mods = convert_to_formalism<SSFMods>(right, this);
+    std::vector<SSFMods *> prog_mods = convert_to_formalism<SSFMods>(progress, this);
 
-    right_explicit.erase(std::remove(right_explicit.begin(), right_explicit.end(),
-                                     &(util->emptyformula)), right_explicit.end());
+    right_mods.erase(std::remove(right_mods.begin(), right_mods.end(),
+                                     &(util->emptyformula)), right_mods.end());
 
     // the union formulas must all talk about the same variables
-    if(!util->check_same_vars(right_explicit)) {
+    if(!util->check_same_vars(right_mods)) {
         std::cerr << "Union of explicit sets contains different variables." << std::endl;
         return false;
     }
 
-    SSFExplicit *prog_singular = prog_explicit[0];
-    SSFExplicit dummy;
-    if(prog_explicit.size() > 1) {
-        dummy = SSFExplicit(prog_explicit[0]->vars, prog_explicit);
+    SSFMods *prog_singular = prog_mods[0];
+    SSFMods dummy;
+    if(prog_mods.size() > 1) {
+        dummy = SSFMods(prog_mods[0]->vars, prog_mods);
         prog_singular = &dummy;
     }
     std::vector<int> varorder;
-    ExplicitUtil::SubsetCheckHelper helper;
+    ModsUtil::SubsetCheckHelper helper;
     for (int action_index : action_indices) {
 
         // check if varorder stays the same; if not get a new helper
@@ -430,7 +430,7 @@ bool SSFExplicit::check_statement_b2(std::vector<const StateSetVariable *> &prog
 
         if (new_varorder != varorder) {
             std::swap(varorder,new_varorder);
-            helper = util->get_subset_checker_helper(varorder,left_explicit, right_explicit);
+            helper = util->get_subset_checker_helper(varorder,left_mods, right_mods);
         }
 
         Model model;
@@ -474,32 +474,32 @@ bool SSFExplicit::check_statement_b2(std::vector<const StateSetVariable *> &prog
     return true;
 }
 
-bool SSFExplicit::check_statement_b3(std::vector<const StateSetVariable *> &regress,
+bool SSFMods::check_statement_b3(std::vector<const StateSetVariable *> &regress,
                                      std::vector<const StateSetVariable *> &left,
                                      std::vector<const StateSetVariable *> &right,
                                      std::unordered_set<int> &action_indices) const {
     assert(!regress.empty());
-    std::vector<SSFExplicit *> left_explicit = convert_to_formalism<SSFExplicit>(left, this);
-    std::vector<SSFExplicit *> right_explicit = convert_to_formalism<SSFExplicit>(right, this);
-    std::vector<SSFExplicit *> reg_explicit = convert_to_formalism<SSFExplicit>(regress, this);
+    std::vector<SSFMods *> left_mods = convert_to_formalism<SSFMods>(left, this);
+    std::vector<SSFMods *> right_mods = convert_to_formalism<SSFMods>(right, this);
+    std::vector<SSFMods *> reg_mods = convert_to_formalism<SSFMods>(regress, this);
 
-    right_explicit.erase(std::remove(right_explicit.begin(), right_explicit.end(),
-                                     &(util->emptyformula)), right_explicit.end());
+    right_mods.erase(std::remove(right_mods.begin(), right_mods.end(),
+                                     &(util->emptyformula)), right_mods.end());
 
     // the union formulas must all talk about the same variables
-    if(!util->check_same_vars(right_explicit)) {
+    if(!util->check_same_vars(right_mods)) {
         std::cerr << "Union of explicit sets contains different variables." << std::endl;
         return false;
     }
 
-    SSFExplicit *reg_singular = reg_explicit[0];
-    SSFExplicit dummy;
-    if(reg_explicit.size() > 1) {
-        dummy = SSFExplicit(reg_explicit[0]->vars, reg_explicit);
+    SSFMods *reg_singular = reg_mods[0];
+    SSFMods dummy;
+    if(reg_mods.size() > 1) {
+        dummy = SSFMods(reg_mods[0]->vars, reg_mods);
         reg_singular = &dummy;
     }
     std::vector<int> varorder;
-    ExplicitUtil::SubsetCheckHelper helper;
+    ModsUtil::SubsetCheckHelper helper;
     for (int action_index : action_indices) {
 
         // check if varorder stays the same; if not get a new helper
@@ -539,7 +539,7 @@ bool SSFExplicit::check_statement_b3(std::vector<const StateSetVariable *> &regr
 
         if (new_varorder != varorder) {
             std::swap(varorder,new_varorder);
-            helper = util->get_subset_checker_helper(varorder,left_explicit, right_explicit);
+            helper = util->get_subset_checker_helper(varorder,left_mods, right_mods);
         }
 
         Model model;
@@ -593,10 +593,12 @@ bool SSFExplicit::check_statement_b3(std::vector<const StateSetVariable *> &regr
     return true;
 }
 
-bool SSFExplicit::check_statement_b4(const StateSetFormalism *right, bool left_positive, bool right_positive) const {
+bool SSFMods::check_statement_b4(const StateSetFormalism *right, bool left_positive, bool right_positive) const {
     const std::vector<int> &superset_varorder = right->get_varorder();
     bool superset_varorder_is_subset = true;
+    std::cout << "SDFS" << std::endl;
     std::vector<int> var_pos;
+    std::cout << "SDFDSFSDFSF" << std::endl;
     for (int var : superset_varorder) {
         auto pos = std::find(vars.begin(), vars.end(), var);
         if (pos == vars.end()) {
@@ -704,8 +706,8 @@ bool SSFExplicit::check_statement_b4(const StateSetFormalism *right, bool left_p
     }
 }
 
-const SSFExplicit *SSFExplicit::get_compatible(const StateSetVariable *stateset) const {
-    const SSFExplicit *ret = dynamic_cast<const SSFExplicit *>(stateset);
+const SSFMods *SSFMods::get_compatible(const StateSetVariable *stateset) const {
+    const SSFMods *ret = dynamic_cast<const SSFMods *>(stateset);
     if (ret) {
         return ret;
     }
@@ -716,7 +718,7 @@ const SSFExplicit *SSFExplicit::get_compatible(const StateSetVariable *stateset)
     return nullptr;
 }
 
-const SSFExplicit *SSFExplicit::get_constant(ConstantType ctype) const {
+const SSFMods *SSFMods::get_constant(ConstantType ctype) const {
     switch (ctype) {
     case ConstantType::EMPTY:
         return &(util->emptyformula);
@@ -735,11 +737,11 @@ const SSFExplicit *SSFExplicit::get_constant(ConstantType ctype) const {
 }
 
 
-const std::vector<int> &SSFExplicit::get_varorder() const {
+const std::vector<int> &SSFMods::get_varorder() const {
     return vars;
 }
 
-std::vector<Model> SSFExplicit::get_missing_var_values(Model &model, const std::vector<int> &missing_vars_pos) const {
+std::vector<Model> SSFMods::get_missing_var_values(Model &model, const std::vector<int> &missing_vars_pos) const {
     std::vector<std::vector<bool>> ret;
     for (int count = 0; count < (1 << missing_vars_pos.size()); ++count) {
         std::vector<bool> entry(missing_vars_pos.size());
@@ -754,11 +756,11 @@ std::vector<Model> SSFExplicit::get_missing_var_values(Model &model, const std::
     return ret;
 }
 
-bool SSFExplicit::is_contained(const std::vector<bool> &model) const {
+bool SSFMods::is_contained(const std::vector<bool> &model) const {
     return (models.find(model) != models.end());
 }
 
-bool SSFExplicit::is_implicant(const std::vector<int> &varorder, const std::vector<bool> &implicant) const {
+bool SSFMods::is_implicant(const std::vector<int> &varorder, const std::vector<bool> &implicant) const {
     std::vector<bool> model(vars.size());
     std::vector<int> vars_to_fill;
     for (int var : vars) {
@@ -781,7 +783,7 @@ bool SSFExplicit::is_implicant(const std::vector<int> &varorder, const std::vect
     return true;
 }
 
-bool SSFExplicit::is_entailed(const std::vector<int> &varorder, const std::vector<bool> &clause) const {
+bool SSFMods::is_entailed(const std::vector<int> &varorder, const std::vector<bool> &clause) const {
     for (Model model : models) {
         bool found = false;
         for (size_t i = 0; i < clause.size(); ++i) {
@@ -797,12 +799,12 @@ bool SSFExplicit::is_entailed(const std::vector<int> &varorder, const std::vecto
     return true;
 }
 
-bool SSFExplicit::get_clause(int i, std::vector<int> &vars, std::vector<bool> &clause) const {
+bool SSFMods::get_clause(int i, std::vector<int> &vars, std::vector<bool> &clause) const {
     return false;
 }
 
-int SSFExplicit::get_model_count() const {
+int SSFMods::get_model_count() const {
     return models.size();
 }
 
-StateSetBuilder<SSFExplicit> explicit_builder("e");
+StateSetBuilder<SSFMods> mods_builder("e");

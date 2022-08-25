@@ -1,13 +1,15 @@
 #ifndef SSFBDD_H
 #define SSFBDD_H
 
-#include "stateset.h"
-#include "ssvconstant.h"
+#include "../stateset.h"
+#include "../task.h"
 
+#include <cstdio>
 #include <unordered_map>
+#include <unordered_set>
 #include <sstream>
-#include <memory>
-#include <stdio.h>
+#include <string>
+#include <vector>
 #include "cuddObj.hh"
 
 class BDDUtil;
