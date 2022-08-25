@@ -18,6 +18,7 @@ HEADERS = \
 	  timer.h \
 	  bdd/ssfbdd.h \
 	  horn/ssfhorn.h \
+	  mods/modsutil.h \
 	  mods/ssfmods.h \
 
 SOURCES = helve.cc $(HEADERS:%.h=%.cc)
