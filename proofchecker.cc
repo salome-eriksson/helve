@@ -64,21 +64,21 @@ ProofChecker::ProofChecker(std::string &task_file)
 }
 
 template<>
-const ActionSet *ProofChecker::get_set_expression<ActionSet>(int set_id) const {
+const ActionSet *ProofChecker::get_set_expression<ActionSet>(SetID set_id) const {
     return actionsets[set_id].get();
 }
 
 template<>
-const StateSet *ProofChecker::get_set_expression<StateSet>(int set_id) const {
-    return formulas[set_id].get();
+const StateSet *ProofChecker::get_set_expression<StateSet>(SetID set_id) const {
+    return statesets[set_id].get();
 }
 
-void ProofChecker::add_knowledge(std::unique_ptr<Knowledge> entry, int id) {
-    assert(id >= kbentries.size());
-    if(id > kbentries.size()) {
-        kbentries.resize(id);
+void ProofChecker::add_knowledge(std::unique_ptr<Knowledge> entry, KnowledgeID id) {
+    assert(id >= knowledgebase.size());
+    if(id > knowledgebase.size()) {
+        knowledgebase.resize(id);
     }
-    kbentries.push_back(std::move(entry));
+    knowledgebase.push_back(std::move(entry));
 }
 
 void ProofChecker::add_state_set(std::string &line) {
@@ -93,11 +93,11 @@ void ProofChecker::add_state_set(std::string &line) {
         exit_with(ExitCode::CRITICAL_ERROR);
     }
     std::unique_ptr<StateSet> expression = StateSet::get_stateset_constructors()->at(word)(ssline, task);
-    if (expression_index >= formulas.size()) {
-        formulas.resize(expression_index+1);
+    if (expression_index >= statesets.size()) {
+        statesets.resize(expression_index+1);
     }
-    assert(!formulas[expression_index]);
-    formulas[expression_index] = std::move(expression);
+    assert(!statesets[expression_index]);
+    statesets[expression_index] = std::move(expression);
 }
 
 
@@ -228,10 +228,10 @@ void ProofChecker::verify_knowledge(std::string &line) {
  */
 
 // Emptyset Dead: set=emptyset is dead
-bool ProofChecker::check_rule_ed(int conclusion_id, int stateset_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_ed(KnowledgeID conclusion_id, SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
-    SSVConstant *f = dynamic_cast<SSVConstant *>(formulas[stateset_id].get());
+    SSVConstant *f = dynamic_cast<SSVConstant *>(statesets[stateset_id].get());
     if ((!f) || (f->get_constant_type() != ConstantType::EMPTY)) {
         std::cerr << "Error when applying rule ED: set expression #" << stateset_id
                   << " is not the constant empty set." << std::endl;
@@ -243,13 +243,13 @@ bool ProofChecker::check_rule_ed(int conclusion_id, int stateset_id, std::vector
 
 
 // Union Dead: given (1) S is dead and (2) S' is dead, set=S \cup S' is dead
-bool ProofChecker::check_rule_ud(int conclusion_id, int stateset_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_ud(KnowledgeID conclusion_id, SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]]);
 
     // set represents S \cup S'
-    StateSetUnion *f = dynamic_cast<StateSetUnion *>(formulas[stateset_id].get());
+    StateSetUnion *f = dynamic_cast<StateSetUnion *>(statesets[stateset_id].get());
     if (!f) {
         std::cerr << "Error when applying rule UD to conclude knowledge #" << conclusion_id
                   << ": set expression #" << stateset_id << "is not a union." << std::endl;
@@ -259,7 +259,7 @@ bool ProofChecker::check_rule_ud(int conclusion_id, int stateset_id, std::vector
     int right_id = f->get_right_id();
 
     // check if premise_ids[0] says that S is dead
-    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(kbentries[premise_ids[0]].get());
+    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(knowledgebase[premise_ids[0]].get());
     if (!dead_knowledge || (dead_knowledge->get_set_id() != left_id)) {
         std::cerr << "Error when applying rule UD: Knowledge #" << premise_ids[0]
                   << "does not state that set expression #" << left_id
@@ -268,7 +268,7 @@ bool ProofChecker::check_rule_ud(int conclusion_id, int stateset_id, std::vector
     }
 
     // check if premise_ids[1] says that S' is dead
-    dead_knowledge = dynamic_cast<DeadKnowledge *>(kbentries[premise_ids[1]].get());
+    dead_knowledge = dynamic_cast<DeadKnowledge *>(knowledgebase[premise_ids[1]].get());
     if (!dead_knowledge || (dead_knowledge->get_set_id() != right_id)) {
         std::cerr << "Error when applying rule UD: Knowledge #" << premise_ids[1]
                   << "does not state that set expression #" << right_id
@@ -282,13 +282,13 @@ bool ProofChecker::check_rule_ud(int conclusion_id, int stateset_id, std::vector
 
 
 // Subset Dead: given (1) S \subseteq S' and (2) S' is dead, set=S is dead
-bool ProofChecker::check_rule_sd(int conclusion_id, int stateset_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_sd(KnowledgeID conclusion_id, SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]]);
 
     // check if premise_ids[0] says that S is a subset of S' (S' can be anything)
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledge || (subset_knowledge->get_left_id() != stateset_id)) {
         std::cerr << "Error when applying rule SD: knowledge #" << premise_ids[0]
                   << " does not state that set expression #" << stateset_id
@@ -297,7 +297,7 @@ bool ProofChecker::check_rule_sd(int conclusion_id, int stateset_id, std::vector
     }
 
     // check if premise_ids[1] says that S' is dead
-    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(kbentries[premise_ids[1]].get());
+    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(knowledgebase[premise_ids[1]].get());
     if (!dead_knowledge || (dead_knowledge->get_set_id() != subset_knowledge->get_right_id())) {
         std::cerr << "Error when applying rule SD: knowledge #" << premise_ids[0]
                   << " states that set expression #" << stateset_id
@@ -313,14 +313,14 @@ bool ProofChecker::check_rule_sd(int conclusion_id, int stateset_id, std::vector
 
 // Progression Goal: given (1) S[A] \subseteq S \cup S', (2) S' is dead and (3) S \cap S_G^\Pi is dead,
 // then set=S is dead
-bool ProofChecker::check_rule_pg(int conclusion_id, int stateset_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_pg(KnowledgeID conclusion_id, SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 3 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]] &&
-           kbentries[premise_ids[2]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]] &&
+           knowledgebase[premise_ids[2]]);
 
     // check if premise_ids[0] says that S[A] \subseteq S \cup S'
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule PG: knowledge #" << premise_ids[0]
                   << " is not of type SUBSET." << std::endl;
@@ -328,7 +328,7 @@ bool ProofChecker::check_rule_pg(int conclusion_id, int stateset_id, std::vector
     }
     // check if the left side of premise_ids[0] is S[A]
     StateSetProgression *s_prog =
-            dynamic_cast<StateSetProgression *>(formulas[subset_knowledge->get_left_id()].get());
+            dynamic_cast<StateSetProgression *>(statesets[subset_knowledge->get_left_id()].get());
     if ((!s_prog) || (s_prog->get_stateset_id() != stateset_id)) {
         std::cerr << "Error when applying rule PG: the left side of subset knowledge #" << premise_ids[0]
                   << " is not the progression of set expression #" << stateset_id << "." << std::endl;
@@ -341,7 +341,7 @@ bool ProofChecker::check_rule_pg(int conclusion_id, int stateset_id, std::vector
     }
     // check if the right side of premise_ids[0] is S \cup S'
     StateSetUnion *s_cup_sp =
-            dynamic_cast<StateSetUnion *>(formulas[subset_knowledge->get_right_id()].get());
+            dynamic_cast<StateSetUnion *>(statesets[subset_knowledge->get_right_id()].get());
     if((!s_cup_sp) || (s_cup_sp->get_left_id() != stateset_id)) {
         std::cerr << "Error when applying rule PG: the right side of subset knowledge #" << premise_ids[0]
                   << " is not a union of set expression #" << stateset_id
@@ -352,7 +352,7 @@ bool ProofChecker::check_rule_pg(int conclusion_id, int stateset_id, std::vector
     int sp_id = s_cup_sp->get_right_id();
 
     // check if premise_ids[1] says that S' is dead
-    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(kbentries[premise_ids[1]].get());
+    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(knowledgebase[premise_ids[1]].get());
     if (!dead_knowledge || (dead_knowledge->get_set_id() != sp_id)) {
         std::cerr << "Error when applying rule PG: knowledge #" << premise_ids[1]
                   << " does not state that set expression #" << sp_id << " is dead." << std::endl;
@@ -360,14 +360,14 @@ bool ProofChecker::check_rule_pg(int conclusion_id, int stateset_id, std::vector
     }
 
     // check if premise_ids[2] says that S \cap S_G^\Pi is dead
-    dead_knowledge = dynamic_cast<DeadKnowledge *>(kbentries[premise_ids[2]].get());
+    dead_knowledge = dynamic_cast<DeadKnowledge *>(knowledgebase[premise_ids[2]].get());
     if (!dead_knowledge) {
         std::cerr << "Error when applying rule PG: knowledge #" << premise_ids[2]
                  << " is not of type DEAD." << std::endl;
         return false;
     }
     StateSetIntersection *s_and_goal =
-            dynamic_cast<StateSetIntersection *>(formulas[dead_knowledge->get_set_id()].get());
+            dynamic_cast<StateSetIntersection *>(statesets[dead_knowledge->get_set_id()].get());
     // check if left side of s_and_goal is S
     if ((!s_and_goal) || (s_and_goal->get_left_id() != stateset_id)) {
         std::cerr << "Error when applying rule PG: the set expression declared dead in knowledge #"
@@ -376,7 +376,7 @@ bool ProofChecker::check_rule_pg(int conclusion_id, int stateset_id, std::vector
         return false;
     }
     SSVConstant *goal =
-            dynamic_cast<SSVConstant *>(formulas[s_and_goal->get_right_id()].get());
+            dynamic_cast<SSVConstant *>(statesets[s_and_goal->get_right_id()].get());
     if((!goal) || (goal->get_constant_type() != ConstantType::GOAL)) {
         std::cerr << "Error when applying rule PG: the set expression declared dead in knowledge #"
                   << premise_ids[2] << " is not an intersection with the constant goal set on the right side."
@@ -391,14 +391,14 @@ bool ProofChecker::check_rule_pg(int conclusion_id, int stateset_id, std::vector
 
 // Progression Initial: given (1) S[A] \subseteq S \cup S', (2) S' is dead and (3) {I} \subseteq S_not,
 // then set=S_not is dead
-bool ProofChecker::check_rule_pi(int conclusion_id, int stateset_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_pi(KnowledgeID conclusion_id, SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 3 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]] &&
-           kbentries[premise_ids[2]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]] &&
+           knowledgebase[premise_ids[2]]);
 
     // check if set corresponds to s_not
-    StateSetNegation *s_not = dynamic_cast<StateSetNegation *>(formulas[stateset_id].get());
+    StateSetNegation *s_not = dynamic_cast<StateSetNegation *>(statesets[stateset_id].get());
     if(!s_not) {
         std::cerr << "Error when applying rule PI: set expression #" << stateset_id
                   << " is not a negation." << std::endl;
@@ -407,7 +407,7 @@ bool ProofChecker::check_rule_pi(int conclusion_id, int stateset_id, std::vector
     int s_id = s_not->get_child_id();
 
     // check if premise_ids[0] says that S[A] \subseteq S \cup S'
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule PI: knowledge #" << premise_ids[0]
                   << " is not of type SUBSET." << std::endl;
@@ -415,7 +415,7 @@ bool ProofChecker::check_rule_pi(int conclusion_id, int stateset_id, std::vector
     }
     // check if the left side of premise_ids[0] is S[A]
     StateSetProgression *s_prog =
-            dynamic_cast<StateSetProgression *>(formulas[subset_knowledge->get_left_id()].get());
+            dynamic_cast<StateSetProgression *>(statesets[subset_knowledge->get_left_id()].get());
     if ((!s_prog) || (s_prog->get_stateset_id() != s_id)) {
         std::cerr << "Error when applying rule PI: the left side of subset knowledge #" << premise_ids[0]
                   << " is not the progression of set expression #" << s_id << "." << std::endl;
@@ -428,7 +428,7 @@ bool ProofChecker::check_rule_pi(int conclusion_id, int stateset_id, std::vector
     }
     // check f the right side of premise_ids[0] is S \cup S'
     StateSetUnion *s_cup_sp =
-            dynamic_cast<StateSetUnion *>(formulas[subset_knowledge->get_right_id()].get());
+            dynamic_cast<StateSetUnion *>(statesets[subset_knowledge->get_right_id()].get());
     if((!s_cup_sp) || (s_cup_sp->get_left_id() != s_id)) {
         std::cerr << "Error when applying rule PI: the right side of subset knowledge #" << premise_ids[0]
                   << " is not a union of set expression #" << s_id
@@ -439,7 +439,7 @@ bool ProofChecker::check_rule_pi(int conclusion_id, int stateset_id, std::vector
     int sp_id = s_cup_sp->get_right_id();
 
     // check if premise_ids[1] says that S' is dead
-    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(kbentries[premise_ids[1]].get());
+    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(knowledgebase[premise_ids[1]].get());
     if (!dead_knowledge || (dead_knowledge->get_set_id() != sp_id)) {
         std::cerr << "Error when applying rule PI: knowledge #" << premise_ids[1]
                   << " does not state that set expression #" << sp_id << " is dead." << std::endl;
@@ -447,7 +447,7 @@ bool ProofChecker::check_rule_pi(int conclusion_id, int stateset_id, std::vector
     }
 
     // check if premise_ids[2] says that {I} \subseteq S
-    subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[2]].get());
+    subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[2]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule PI: knowledge #" << premise_ids[2]
                  << " is not of type SUBSET." << std::endl;
@@ -455,7 +455,7 @@ bool ProofChecker::check_rule_pi(int conclusion_id, int stateset_id, std::vector
     }
     // check that left side of premise_ids[2] is {I}
     SSVConstant *init =
-            dynamic_cast<SSVConstant *>(formulas[subset_knowledge->get_left_id()].get());
+            dynamic_cast<SSVConstant *>(statesets[subset_knowledge->get_left_id()].get());
     if((!init) || (init->get_constant_type() != ConstantType::INIT)) {
         std::cerr << "Error when applying rule PI: the left side of subset knowledge #" << premise_ids[2]
                   << " is not the constant initial set." << std::endl;
@@ -475,14 +475,14 @@ bool ProofChecker::check_rule_pi(int conclusion_id, int stateset_id, std::vector
 
 // Regression Goal: given (1)[A]S \subseteq S \cup S', (2) S' is dead and (3) S_not \cap S_G^\Pi is dead,
 // then set=S_not is dead
-bool ProofChecker::check_rule_rg(int conclusion_id, int stateset_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_rg(KnowledgeID conclusion_id, SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 3 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]] &&
-           kbentries[premise_ids[2]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]] &&
+           knowledgebase[premise_ids[2]]);
 
     // check if set corresponds to s_not
-    StateSetNegation *s_not = dynamic_cast<StateSetNegation *>(formulas[stateset_id].get());
+    StateSetNegation *s_not = dynamic_cast<StateSetNegation *>(statesets[stateset_id].get());
     if(!s_not) {
         std::cerr << "Error when applying rule RG: set expression #" << stateset_id
                   << " is not a negation." << std::endl;
@@ -491,7 +491,7 @@ bool ProofChecker::check_rule_rg(int conclusion_id, int stateset_id, std::vector
     int s_id = s_not->get_child_id();
 
     // check if premise_ids[0] says that [A]S \subseteq S \cup S'
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if(!subset_knowledge) {
         std::cerr << "Error when applying rule RG: knowledge #" << premise_ids[0]
                  << " is not of type SUBSET." << std::endl;
@@ -499,7 +499,7 @@ bool ProofChecker::check_rule_rg(int conclusion_id, int stateset_id, std::vector
     }
     // check if the left side of premise_ids[0] is [A]S
     StateSetRegression *s_reg =
-            dynamic_cast<StateSetRegression *>(formulas[subset_knowledge->get_left_id()].get());
+            dynamic_cast<StateSetRegression *>(statesets[subset_knowledge->get_left_id()].get());
     if ((!s_reg) || (s_reg->get_stateset_id() != s_id)) {
         std::cerr << "Error when applying rule RG: the left side of subset knowledge #" << premise_ids[0]
                   << " is not the regression of set expression #" << s_id << "." << std::endl;
@@ -512,7 +512,7 @@ bool ProofChecker::check_rule_rg(int conclusion_id, int stateset_id, std::vector
     }
     // check f the right side of premise_ids[0] is S \cup S'
     StateSetUnion *s_cup_sp =
-            dynamic_cast<StateSetUnion *>(formulas[subset_knowledge->get_right_id()].get());
+            dynamic_cast<StateSetUnion *>(statesets[subset_knowledge->get_right_id()].get());
     if((!s_cup_sp) || (s_cup_sp->get_left_id() != s_id)) {
         std::cerr << "Error when applying rule RG: the right side of subset knowledge #" << premise_ids[0]
                   << " is not a union of set expression #" << s_id
@@ -523,7 +523,7 @@ bool ProofChecker::check_rule_rg(int conclusion_id, int stateset_id, std::vector
     int sp_id = s_cup_sp->get_right_id();
 
     // check if premise_ids[1] says that S' is dead
-    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(kbentries[premise_ids[1]].get());
+    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(knowledgebase[premise_ids[1]].get());
     if (!dead_knowledge || (dead_knowledge->get_set_id() != sp_id)) {
         std::cerr << "Error when applying rule RG: knowledge #" << premise_ids[1]
                   << " does not state that set expression #" << sp_id << " is dead." << std::endl;
@@ -531,14 +531,14 @@ bool ProofChecker::check_rule_rg(int conclusion_id, int stateset_id, std::vector
     }
 
     // check if premise_ids[2] says that S_not \cap S_G(\Pi) is dead
-    dead_knowledge = dynamic_cast<DeadKnowledge *>(kbentries[premise_ids[2]].get());
+    dead_knowledge = dynamic_cast<DeadKnowledge *>(knowledgebase[premise_ids[2]].get());
     if (!dead_knowledge) {
         std::cerr << "Error when applying rule RG: knowledge #" << premise_ids[2]
                  << " is not of type DEAD." << std::endl;
         return false;
     }
     StateSetIntersection *s_not_and_goal =
-            dynamic_cast<StateSetIntersection *>(formulas[dead_knowledge->get_set_id()].get());
+            dynamic_cast<StateSetIntersection *>(statesets[dead_knowledge->get_set_id()].get());
     // check if left side of s_not_and goal is S_not
     if ((!s_not_and_goal) || (s_not_and_goal->get_left_id() != stateset_id)) {
         std::cerr << "Error when applying rule RG: the set expression declared dead in knowledge #"
@@ -547,7 +547,7 @@ bool ProofChecker::check_rule_rg(int conclusion_id, int stateset_id, std::vector
         return false;
     }
     SSVConstant *goal =
-            dynamic_cast<SSVConstant *>(formulas[s_not_and_goal->get_right_id()].get());
+            dynamic_cast<SSVConstant *>(statesets[s_not_and_goal->get_right_id()].get());
     if((!goal) || (goal->get_constant_type() != ConstantType::GOAL)) {
         std::cerr << "Error when applying rule RG: the set expression declared dead in knowledge #"
                   << premise_ids[2] << " is not an intersection with the constant goal set on the right side."
@@ -562,14 +562,14 @@ bool ProofChecker::check_rule_rg(int conclusion_id, int stateset_id, std::vector
 
 // Regression Initial: given (1) [A]S \subseteq S \cup S', (2) S' is dead and (3) {I} \subseteq S_not,
 // then set=S is dead
-bool ProofChecker::check_rule_ri(int conclusion_id, int stateset_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_ri(KnowledgeID conclusion_id, SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 3 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]] &&
-           kbentries[premise_ids[2]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]] &&
+           knowledgebase[premise_ids[2]]);
 
     // check if premise_ids[0] says that [A]S \subseteq S \cup S'
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if(!subset_knowledge) {
         std::cerr << "Error when applying rule RI: knowledge #" << premise_ids[0]
                  << " is not of type SUBSET." << std::endl;
@@ -577,7 +577,7 @@ bool ProofChecker::check_rule_ri(int conclusion_id, int stateset_id, std::vector
     }
     // check if the left side of premise_ids[0] is [A]S
     StateSetRegression *s_reg =
-            dynamic_cast<StateSetRegression *>(formulas[subset_knowledge->get_left_id()].get());
+            dynamic_cast<StateSetRegression *>(statesets[subset_knowledge->get_left_id()].get());
     if ((!s_reg) || (s_reg->get_stateset_id() != stateset_id)) {
         std::cerr << "Error when applying rule RI: the left side of subset knowledge #" << premise_ids[0]
                   << " is not the regression of set expression #" << stateset_id << "." << std::endl;
@@ -590,7 +590,7 @@ bool ProofChecker::check_rule_ri(int conclusion_id, int stateset_id, std::vector
     }
     // check f the right side of premise_ids[0] is S \cup S'
     StateSetUnion *s_cup_sp =
-            dynamic_cast<StateSetUnion *>(formulas[subset_knowledge->get_right_id()].get());
+            dynamic_cast<StateSetUnion *>(statesets[subset_knowledge->get_right_id()].get());
     if((!s_cup_sp) || (s_cup_sp->get_left_id() != stateset_id)) {
         std::cerr << "Error when applying rule RI: the right side of subset knowledge #" << premise_ids[0]
                   << " is not a union of set expression #" << stateset_id
@@ -601,7 +601,7 @@ bool ProofChecker::check_rule_ri(int conclusion_id, int stateset_id, std::vector
     int sp_id = s_cup_sp->get_right_id();
 
     // check if k2 says that S' is dead
-    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(kbentries[premise_ids[1]].get());
+    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(knowledgebase[premise_ids[1]].get());
     if (!dead_knowledge || (dead_knowledge->get_set_id() != sp_id)) {
         std::cerr << "Error when applying rule RI: knowledge #" << premise_ids[1]
                   << " does not state that set expression #" << sp_id << " is dead." << std::endl;
@@ -609,7 +609,7 @@ bool ProofChecker::check_rule_ri(int conclusion_id, int stateset_id, std::vector
     }
 
     // check if premise_ids[2] says that {I} \subseteq S_not
-    subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[2]].get());
+    subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[2]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule RI: knowledge #" << premise_ids[2]
                  << " is not of type SUBSET." << std::endl;
@@ -617,7 +617,7 @@ bool ProofChecker::check_rule_ri(int conclusion_id, int stateset_id, std::vector
     }
     // check that left side of premise_ids[2] is {I}
     SSVConstant *init =
-            dynamic_cast<SSVConstant *>(formulas[subset_knowledge->get_left_id()].get());
+            dynamic_cast<SSVConstant *>(statesets[subset_knowledge->get_left_id()].get());
     if((!init) || (init->get_constant_type() != ConstantType::INIT)) {
         std::cerr << "Error when applying rule RI: the left side of subset knowledge #" << premise_ids[2]
                   << " is not the constant initial set." << std::endl;
@@ -625,7 +625,7 @@ bool ProofChecker::check_rule_ri(int conclusion_id, int stateset_id, std::vector
     }
     // check that right side of premise_ids[2] is S_not
     StateSetNegation *s_not =
-            dynamic_cast<StateSetNegation *>(formulas[subset_knowledge->get_right_id()].get());
+            dynamic_cast<StateSetNegation *>(statesets[subset_knowledge->get_right_id()].get());
     if((!s_not) || s_not->get_child_id() != stateset_id) {
         std::cerr << "Error when applying rule RI: the right side of subset knowledge #" << premise_ids[2]
                   << " is not the negation of set expression #" << stateset_id << "." << std::endl;
@@ -641,18 +641,18 @@ bool ProofChecker::check_rule_ri(int conclusion_id, int stateset_id, std::vector
  */
 
 // Conclusion Initial: given (1) {I} is dead, the task is unsolvable
-bool ProofChecker::check_rule_ci(int conclusion_id, int premise_id) {
-    assert(kbentries[premise_id] != nullptr);
+bool ProofChecker::check_rule_ci(KnowledgeID conclusion_id, KnowledgeID premise_id) {
+    assert(knowledgebase[premise_id] != nullptr);
 
     // check that premise says that {I} is dead
-    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(kbentries[premise_id].get());
+    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(knowledgebase[premise_id].get());
     if (!dead_knowledge) {
         std::cerr << "Error when applying rule CI: knowledge #" << premise_id
                   << " is not of type DEAD." << std::endl;
         return false;
     }
     SSVConstant *init =
-            dynamic_cast<SSVConstant *>(formulas[dead_knowledge->get_set_id()].get());
+            dynamic_cast<SSVConstant *>(statesets[dead_knowledge->get_set_id()].get());
     if ((!init) || (init->get_constant_type() != ConstantType::INIT)) {
         std::cerr << "Error when applying rule CI: knowledge #" << premise_id
                   << " does not state that the constant initial set is dead." << std::endl;
@@ -665,18 +665,18 @@ bool ProofChecker::check_rule_ci(int conclusion_id, int premise_id) {
 }
 
 // Conclusion Goal: given (1) S_G^\Pi is dead, the task is unsolvable
-bool ProofChecker::check_rule_cg(int conclusion_id, int premise_id) {
-    assert(kbentries[premise_id] != nullptr);
+bool ProofChecker::check_rule_cg(KnowledgeID conclusion_id, KnowledgeID premise_id) {
+    assert(knowledgebase[premise_id] != nullptr);
 
     // check that premise says that S_G^\Pi is dead
-    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(kbentries[premise_id].get());
+    DeadKnowledge *dead_knowledge = dynamic_cast<DeadKnowledge *>(knowledgebase[premise_id].get());
     if (!dead_knowledge) {
         std::cerr << "Error when applying rule CG: knowledge #" << premise_id
                   << " is not of type DEAD." << std::endl;
         return false;
     }
     SSVConstant *goal =
-            dynamic_cast<SSVConstant *>(formulas[dead_knowledge->get_set_id()].get());
+            dynamic_cast<SSVConstant *>(statesets[dead_knowledge->get_set_id()].get());
     if ( (!goal) || (goal->get_constant_type() != ConstantType::GOAL)) {
         std::cerr << "Error when applying rule CG: knowledge #" << premise_id
                   << " does not state that the constant goal set is dead." << std::endl;
@@ -694,7 +694,7 @@ bool ProofChecker::check_rule_cg(int conclusion_id, int premise_id) {
 
 // Union Right: without premises, E \subseteq E \cup E'
 template<class T>
-bool ProofChecker::check_rule_ur(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_ur(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
     const SetUnion *runion = dynamic_cast<const SetUnion *>(get_set_expression<T>(right_id));
@@ -713,7 +713,7 @@ bool ProofChecker::check_rule_ur(int conclusion_id, int left_id, int right_id, s
 
 // Union Left: without premises, E \subseteq E' \cup E
 template<class T>
-bool ProofChecker::check_rule_ul(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_ul(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
     const SetUnion *runion = dynamic_cast<const SetUnion *>(get_set_expression<T>(right_id));
@@ -732,7 +732,7 @@ bool ProofChecker::check_rule_ul(int conclusion_id, int left_id, int right_id, s
 
 // Intersection Right: without premises, E \cap E' \subseteq E
 template<class T>
-bool ProofChecker::check_rule_ir(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_ir(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
     const SetIntersection *lintersection = dynamic_cast<const SetIntersection *>(get_set_expression<T>(left_id));
@@ -751,7 +751,7 @@ bool ProofChecker::check_rule_ir(int conclusion_id, int left_id, int right_id, s
 
 // Intersection Left: without premises, E' \cap E \subseteq E
 template <class T>
-bool ProofChecker::check_rule_il(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_il(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
     const SetIntersection *lintersection = dynamic_cast<const SetIntersection *>(get_set_expression<T>(left_id));
@@ -770,7 +770,7 @@ bool ProofChecker::check_rule_il(int conclusion_id, int left_id, int right_id, s
 
 // DIstributivity: without premises, ((E \cup E') \cap E'') \subseteq ((E \cap E'') \cup (E' \cap E''))
 template<class T>
-bool ProofChecker::check_rule_di(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_di(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
     int e0,e1,e2;
@@ -823,10 +823,10 @@ bool ProofChecker::check_rule_di(int conclusion_id, int left_id, int right_id, s
 // Subset Union: given (1) E \subseteq E'' and (2) E' \subseteq E'',
 // then (E \cup E') \subseteq E''
 template<class T>
-bool ProofChecker::check_rule_su(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_su(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]]);
 
     int e0,e1,e2;
     const StateSetUnion *su = dynamic_cast<const StateSetUnion *>(get_set_expression<T>(left_id));
@@ -838,7 +838,7 @@ bool ProofChecker::check_rule_su(int conclusion_id, int left_id, int right_id, s
     e1 = su->get_right_id();
     e2 = right_id;
 
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule SU: knowledge #" << premise_ids[0] << " is not subset knowledge" << std::endl;
         return false;
@@ -847,7 +847,7 @@ bool ProofChecker::check_rule_su(int conclusion_id, int left_id, int right_id, s
         std::cerr << "Error when applying rule SU: knowledge #" << premise_ids[0] << " does not state (E subset E'')" << std::endl;
         return false;
     }
-    subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(kbentries[premise_ids[1]].get());
+    subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(knowledgebase[premise_ids[1]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule SU: knowledge #" << premise_ids[1] << " is not subset knowledge" << std::endl;
         return false;
@@ -864,10 +864,10 @@ bool ProofChecker::check_rule_su(int conclusion_id, int left_id, int right_id, s
 // Subset Intersection: given (1) E \subseteq E' and (2) E \subseteq E'',
 // then E \subseteq (E' \cap E'')
 template<class T>
-bool ProofChecker::check_rule_si(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_si(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]]);
 
     int e0,e1,e2;
     const StateSetIntersection *si = dynamic_cast<const StateSetIntersection*>(get_set_expression<T>(right_id));
@@ -879,7 +879,7 @@ bool ProofChecker::check_rule_si(int conclusion_id, int left_id, int right_id, s
     e1 = si->get_left_id();
     e2 = si->get_right_id();
 
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(knowledgebase[premise_ids[0]].get());
 
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule SI: knowledge #" << premise_ids[0] << " is not subset knowledge" << std::endl;
@@ -889,7 +889,7 @@ bool ProofChecker::check_rule_si(int conclusion_id, int left_id, int right_id, s
         std::cerr << "Error when applying rule SI: knowledge #" << premise_ids[0] << " does not state (E subset E')" << std::endl;
         return false;
     }
-    subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(kbentries[premise_ids[1]].get());
+    subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(knowledgebase[premise_ids[1]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule SI: knowledge #" << premise_ids[1] << " is not subset knowledge" << std::endl;
         return false;
@@ -906,16 +906,16 @@ bool ProofChecker::check_rule_si(int conclusion_id, int left_id, int right_id, s
 // Subset Transitivity: given (1) E \subseteq E' and (2) E' \subseteq E'',
 // then E \subseteq E''
 template<class T>
-bool ProofChecker::check_rule_st(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_st(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]]);
 
     int e0,e1,e2;
     e0 = left_id;
     e2 = right_id;
 
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule ST: knowledge #" << premise_ids[0] << " is not subset knowledge" << std::endl;
         return false;
@@ -925,7 +925,7 @@ bool ProofChecker::check_rule_st(int conclusion_id, int left_id, int right_id, s
         return false;
     }
     e1 = subset_knowledge->get_right_id();
-    subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(kbentries[premise_ids[1]].get());
+    subset_knowledge = dynamic_cast<SubsetKnowledge<T> *>(knowledgebase[premise_ids[1]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule ST: knowledge #" << premise_ids[1] << " is not subset knowledge" << std::endl;
         return false;
@@ -946,10 +946,10 @@ bool ProofChecker::check_rule_st(int conclusion_id, int left_id, int right_id, s
 
 // Action Transitivity: given (1) S[A] \subseteq S' and (2) A' \subseteq A,
 // then S[A'] \subseteq S'
-bool ProofChecker::check_rule_at(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_at(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]]);
 
     int s0, s1, a0, a1;
     s1 = right_id;
@@ -961,7 +961,7 @@ bool ProofChecker::check_rule_at(int conclusion_id, int left_id, int right_id, s
     s0 = progression->get_stateset_id();
     a1 = progression->get_actionset_id();
 
-    auto subset_knowledege0 = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledege0 = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledege0) {
         std::cerr << "Error when applying rule AT: knowledge #" << premise_ids[0] << " is not state subset knowledge" << std::endl;
         return false;
@@ -973,7 +973,7 @@ bool ProofChecker::check_rule_at(int conclusion_id, int left_id, int right_id, s
     }
     a0 = progression->get_actionset_id();
 
-    auto subset_knowledege1 = dynamic_cast<SubsetKnowledge<ActionSet> *>(kbentries[premise_ids[1]].get());
+    auto subset_knowledege1 = dynamic_cast<SubsetKnowledge<ActionSet> *>(knowledgebase[premise_ids[1]].get());
     if (!subset_knowledege1) {
         std::cerr << "Error when applying rule AT: knowledge #" << premise_ids[1] << " is not state subset knowledge" << std::endl;
         return false;
@@ -989,10 +989,10 @@ bool ProofChecker::check_rule_at(int conclusion_id, int left_id, int right_id, s
 
 // Action Union: given (1) S[A] \subseteq S' and (2) S[A'] \subseteq S',
 // then S[A \cup A'] \subseteq S'
-bool ProofChecker::check_rule_au(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_au(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]]);
 
     int s0,s1,a0,a1;
     s1 = right_id;
@@ -1010,7 +1010,7 @@ bool ProofChecker::check_rule_au(int conclusion_id, int left_id, int right_id, s
     a0 = action_union->get_left_id();
     a1 = action_union->get_right_id();
 
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule AU: knowledge #" << premise_ids[0] << " is not state subset knowledge" << std::endl;
         return false;
@@ -1022,7 +1022,7 @@ bool ProofChecker::check_rule_au(int conclusion_id, int left_id, int right_id, s
         return false;
     }
 
-    subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[1]].get());
+    subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[1]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule AU: knowledge #" << premise_ids[1] << " is not state subset knowledge" << std::endl;
         return false;
@@ -1040,10 +1040,10 @@ bool ProofChecker::check_rule_au(int conclusion_id, int left_id, int right_id, s
 
 // Progression Transitivity: given (1) S[A] \subseteq S'' and (2) S' \subseteq S,
 // then S'[A] \subseteq S''
-bool ProofChecker::check_rule_pt(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_pt(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]]);
 
     int s0,s1,s2,a0;
     s2 = right_id;
@@ -1055,7 +1055,7 @@ bool ProofChecker::check_rule_pt(int conclusion_id, int left_id, int right_id, s
     s1 = progression->get_stateset_id();
     s0 = progression->get_actionset_id();
 
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule PT: knowledge #" << premise_ids[0] << " is not state subset knowledge" << std::endl;
         return false;
@@ -1067,7 +1067,7 @@ bool ProofChecker::check_rule_pt(int conclusion_id, int left_id, int right_id, s
         return false;
     }
 
-    subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[1]].get());
+    subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[1]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule PT: knowledge #" << premise_ids[1] << " is not state subset knowledge" << std::endl;
         return false;
@@ -1083,10 +1083,10 @@ bool ProofChecker::check_rule_pt(int conclusion_id, int left_id, int right_id, s
 
 // Progression Union: given (1) S[A] \subseteq S'' and (2) S'[A] \subseteq S'',
 // then (S \cup S')[A] \subseteq S''
-bool ProofChecker::check_rule_pu(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_pu(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
-           kbentries[premise_ids[0]] &&
-           kbentries[premise_ids[1]]);
+           knowledgebase[premise_ids[0]] &&
+           knowledgebase[premise_ids[1]]);
 
     int s0,s1,s2,a0;
     const StateSetProgression *progression = dynamic_cast<const StateSetProgression *>(get_set_expression<StateSet>(left_id));
@@ -1104,7 +1104,7 @@ bool ProofChecker::check_rule_pu(int conclusion_id, int left_id, int right_id, s
     s2 = right_id;
     a0 = progression->get_actionset_id();
 
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule PU: knowledge #" << premise_ids[0] << " is not state subset knowledge" << std::endl;
         return false;
@@ -1116,7 +1116,7 @@ bool ProofChecker::check_rule_pu(int conclusion_id, int left_id, int right_id, s
         return false;
     }
 
-    subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[1]].get());
+    subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[1]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule PU: knowledge #" << premise_ids[1] << " is not state subset knowledge" << std::endl;
         return false;
@@ -1134,9 +1134,9 @@ bool ProofChecker::check_rule_pu(int conclusion_id, int left_id, int right_id, s
 
 
 // Progression to Regression: given (1) S[A] \subseteq S', then [A]S'_not \subseteq S_not
-bool ProofChecker::check_rule_pr(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_pr(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 1 &&
-           kbentries[premise_ids[0]]);
+           knowledgebase[premise_ids[0]]);
 
     int s0,s1,a0;
     const StateSetRegression *regression = dynamic_cast<const StateSetRegression *>(get_set_expression<StateSet>(left_id));
@@ -1158,7 +1158,7 @@ bool ProofChecker::check_rule_pr(int conclusion_id, int left_id, int right_id, s
     }
     s0 = negation->get_child_id();
 
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule PR: knowledge #" << premise_ids[0] << " is not state subset knowledge" << std::endl;
         return false;
@@ -1176,9 +1176,9 @@ bool ProofChecker::check_rule_pr(int conclusion_id, int left_id, int right_id, s
 
 
 // Regression to Progression: given (1) [A]S \subseteq S', then S'_not[A] \subseteq S_not
-bool ProofChecker::check_rule_rp(int conclusion_id, int left_id, int right_id, std::vector<int> &premise_ids) {
+bool ProofChecker::check_rule_rp(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 1 &&
-           kbentries[premise_ids[0]]);
+           knowledgebase[premise_ids[0]]);
 
     int s0,s1,a0;
     const StateSetProgression *progression = dynamic_cast<const StateSetProgression *>(get_set_expression<StateSet>(left_id));
@@ -1200,7 +1200,7 @@ bool ProofChecker::check_rule_rp(int conclusion_id, int left_id, int right_id, s
     }
     s0 = negation->get_child_id();
 
-    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(kbentries[premise_ids[0]].get());
+    auto subset_knowledge = dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledge) {
         std::cerr << "Error when applying rule RP: knowledge #" << premise_ids[0] << " is not state subset knowledge" << std::endl;
         return false;
@@ -1223,7 +1223,7 @@ bool ProofChecker::check_rule_rp(int conclusion_id, int left_id, int right_id, s
  */
 
 // check if \bigcap_{L \in \mathcal L} L \subseteq \bigcup_{L' \in \mathcal L'} L'
-bool ProofChecker::check_statement_B1(int conclusion_id, int left_id, int right_id, std::vector<int> &) {
+bool ProofChecker::check_statement_B1(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &) {
     bool ret = false;
 
     try {
@@ -1231,14 +1231,30 @@ bool ProofChecker::check_statement_B1(int conclusion_id, int left_id, int right_
         std::vector<const StateSetVariable *> right;
         bool gather_variables_successfull = false;
 
-        gather_variables_successfull = get_set_expression<StateSet>(left_id)->gather_intersection_variables(formulas, left, right);
+        /*
+         * Break up the statement into an intersection of variables on the left side
+         * and a union of variables on the right side according to the following equivalency:
+         * (1) \bigcap L_p \land \bigcap \lnot L_n \subseteq \bigcup L_p' \cup \bigcup \lnot L_n'
+         * iff (2) \bigcap L_p \land \bigcap L_n' \subseteq \bigcup L_n \cup \bigcup L_p'
+         */
+
+        /*
+         * variables in the left side of (1) belong to:
+         *  - the left side of (2) if they occur positively
+         *  - the right side of (2) if they occur negatively
+         */
+        gather_variables_successfull = get_set_expression<StateSet>(left_id)->gather_intersection_variables(statesets, left, right);
         if (!gather_variables_successfull) {
             std::string msg = "Error when checking statement B1: set expression #"
                     + std::to_string(left_id)
                     + " is not a intersection of literals of the same type.";
             throw std::runtime_error(msg);
         }
-        gather_variables_successfull =  get_set_expression<StateSet>(right_id)->gather_union_variables(formulas, right, left);
+        /*
+         * variables in the right side of (1) belong to:
+         *  - the right side of (2) if they occur positively
+         *  - the left side of (2) if they occur negatively
+         */        gather_variables_successfull =  get_set_expression<StateSet>(right_id)->gather_union_variables(statesets, right, left);
         if (!gather_variables_successfull) {
             std::string msg = "Error when checking statement B1: set expression #"
                     + std::to_string(right_id)
@@ -1247,6 +1263,11 @@ bool ProofChecker::check_statement_B1(int conclusion_id, int left_id, int right_
         }
         assert(left.size() + right.size() > 0);
 
+        /*
+         * Figure out in which formalism the statement is given.
+         * Since the statement might contian any number of constants,
+         * we need to find the first non-constant variable.
+         */
         std::vector<const StateSetVariable *> allformulas;
         allformulas.reserve(left.size() + right.size());
         allformulas.insert(allformulas.end(), left.begin(), left.end());
@@ -1274,7 +1295,7 @@ bool ProofChecker::check_statement_B1(int conclusion_id, int left_id, int right_
 
 
 // check if (\bigcap_{X \in \mathcal X} X)[A] \land \bigcap_{L \in \mathcal L} L \subseteq \bigcup_{L' \in \mathcal L'} L'
-bool ProofChecker::check_statement_B2(int conclusion_id, int left_id, int right_id, std::vector<int> &) {
+bool ProofChecker::check_statement_B2(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &) {
     bool ret = false;
 
     try {
@@ -1317,7 +1338,7 @@ bool ProofChecker::check_statement_B2(int conclusion_id, int left_id, int right_
          * In the progression, we only allow set variables, not set literals.
          * If right is not empty, then prog contianed set literals.
          */
-        bool gather_variables_successfull = prog_formula->gather_intersection_variables(formulas, prog, right);
+        bool gather_variables_successfull = prog_formula->gather_intersection_variables(statesets, prog, right);
         if (!right.empty() || !gather_variables_successfull) {
             std::string msg = "Error when checking statement B2: "
                               "the progression in set expression #"
@@ -1326,9 +1347,9 @@ bool ProofChecker::check_statement_B2(int conclusion_id, int left_id, int right_
             throw std::runtime_error(msg);
         }
 
-        // left_formula is empty if the left side contains only a progression
+        // The left_formula is empty if the left side contains only a progression.
         if(left_formula) {
-            gather_variables_successfull = left_formula->gather_intersection_variables(formulas, left, right);
+            gather_variables_successfull = left_formula->gather_intersection_variables(statesets, left, right);
             if(!gather_variables_successfull) {
                 std::string msg = "Error when checking statement B2: "
                                   "the non-progression part in set expression #"
@@ -1337,7 +1358,7 @@ bool ProofChecker::check_statement_B2(int conclusion_id, int left_id, int right_
                 throw std::runtime_error(msg);
             }
         }
-        gather_variables_successfull = right_formula->gather_union_variables(formulas, right, left);
+        gather_variables_successfull = right_formula->gather_union_variables(statesets, right, left);
         if(!gather_variables_successfull) {
             std::string msg = "Error when checking statement B2: set expression #"
                     + std::to_string(right_id)
@@ -1373,7 +1394,7 @@ bool ProofChecker::check_statement_B2(int conclusion_id, int left_id, int right_
 }
 
 // check if [A](\bigcap_{X \in \mathcal X} X) \land \bigcap_{L \in \mathcal L} L \subseteq \bigcup_{L' \in \mathcal L'} L'
-bool ProofChecker::check_statement_B3(int conclusion_id, int left_id, int right_id, std::vector<int> &) {
+bool ProofChecker::check_statement_B3(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &) {
     bool ret = false;
 
     try {
@@ -1416,7 +1437,7 @@ bool ProofChecker::check_statement_B3(int conclusion_id, int left_id, int right_
          * In the regression, we only allow set variables, not set literals.
          * If right is not empty, then reg contianed set literals.
          */
-        bool gather_variables_successfull = reg_formula->gather_intersection_variables(formulas, reg, right);
+        bool gather_variables_successfull = reg_formula->gather_intersection_variables(statesets, reg, right);
         if (!right.empty() || !gather_variables_successfull) {
             std::string msg = "Error when checking statement B3: "
                               "the regression in set expression #"
@@ -1427,7 +1448,7 @@ bool ProofChecker::check_statement_B3(int conclusion_id, int left_id, int right_
 
         // left_formula is empty if the left side contains only a regression
         if(left_formula) {
-            gather_variables_successfull = left_formula->gather_intersection_variables(formulas, left, right);
+            gather_variables_successfull = left_formula->gather_intersection_variables(statesets, left, right);
             if(!gather_variables_successfull) {
                 std::string msg = "Error when checking statement B3: "
                                   "the non-regression part in set expression #"
@@ -1436,7 +1457,7 @@ bool ProofChecker::check_statement_B3(int conclusion_id, int left_id, int right_
                 throw std::runtime_error(msg);
             }
         }
-        gather_variables_successfull = right_formula->gather_union_variables(formulas, right, left);
+        gather_variables_successfull = right_formula->gather_union_variables(statesets, right, left);
         if(!gather_variables_successfull) {
             std::string msg = "Error when checking statement B3: set expression #"
                     + std::to_string(right_id)
@@ -1473,7 +1494,7 @@ bool ProofChecker::check_statement_B3(int conclusion_id, int left_id, int right_
 
 
 // check if L \subseteq L', where L and L' might be represented by different formalisms
-bool ProofChecker::check_statement_B4(int conclusion_id, int left_id, int right_id, std::vector<int> &) {
+bool ProofChecker::check_statement_B4(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &) {
     bool ret = true;
 
     try {
@@ -1533,7 +1554,7 @@ bool ProofChecker::check_statement_B4(int conclusion_id, int left_id, int right_
 
 
 // check if A \subseteq A'
-bool ProofChecker::check_statement_B5(int conclusion_id, int left_id, int right_id, std::vector<int> &) {
+bool ProofChecker::check_statement_B5(KnowledgeID conclusion_id, SetID left_id, SetID right_id, std::vector<KnowledgeID> &) {
     std::unordered_set<int> left_indices, right_indices;
     const ActionSet *left_set = get_set_expression<ActionSet>(right_id);
     const ActionSet *right_set = get_set_expression<ActionSet>(right_id);
