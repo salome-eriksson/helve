@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <deque>
+#include <forward_list>
 
 HornConjunctionElement::HornConjunctionElement (const SSFHorn *formula)
     : formula(formula), removed_implications(formula->get_size(), false) {

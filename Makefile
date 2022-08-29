@@ -16,6 +16,8 @@ HEADERS = \
 	  statesetcompositions.h \
           task.h \
 	  timer.h \
+	  bdd/bddfile.h \
+	  bdd/bddutil.h \
 	  bdd/ssfbdd.h \
 	  horn/hornutil.h \
 	  horn/ssfhorn.h \

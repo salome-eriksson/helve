@@ -3,7 +3,6 @@
 
 #include "../task.h"
 
-#include <forward_list>
 #include <vector>
 
 class SSFHorn;

@@ -17,7 +17,7 @@ library with dddmp and c++-wrapper:
    - config.h
    - util/util.h
   (I don't know why this is necessary, but else the dddmp library complains...)
-5. Set the environment variable CUDD_ROOT to \<path-to-cudd\> (or change the
+5. Set the environment variable CUDD_DIR to \<path-to-cudd\> (or change the
 Makefile, adding the path in place of the variable).
 7. Compile the verifier with make.
 8. For verifying a certificate, you need
