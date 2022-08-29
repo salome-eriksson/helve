@@ -17,6 +17,7 @@ HEADERS = \
           task.h \
 	  timer.h \
 	  bdd/ssfbdd.h \
+	  horn/hornutil.h \
 	  horn/ssfhorn.h \
 	  mods/modsutil.h \
 	  mods/ssfmods.h \
