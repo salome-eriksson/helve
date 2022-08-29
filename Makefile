@@ -1,7 +1,7 @@
 #This Makefile expects the path to the cudd package to be set in the environment variable CUDD_DIR
 
 CXX = g++
-CXXFLAGS = -g -O3 -std=c++11 -D_FILE_OFFSET_BITS=64
+CXXFLAGS = -g -O3 -std=c++14 -D_FILE_OFFSET_BITS=64
 CUDD_CXXFLAGS = -I$(CUDD_DIR)/include
 CUDD_LDFLAGS = -static -L$(CUDD_DIR)/lib -lcudd
 CXXFLAGS += $(CUDD_CXXFLAGS)

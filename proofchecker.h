@@ -19,7 +19,10 @@ private:
     using ActionID = int;
     using SetID = int;
     using KnowledgeID = int;
-
+    using DeadKnowledgeFunction =
+        std::function<bool(KnowledgeID, SetID, std::vector<KnowledgeID> &)>;
+    using SubsetKnowledgeFunction =
+        std::function<bool(KnowledgeID, SetID, SetID, std::vector<KnowledgeID> &)>;
     Task task;
 
     std::deque<std::unique_ptr<StateSet>> statesets;
@@ -27,10 +30,8 @@ private:
     std::deque<std::unique_ptr<Knowledge>> knowledgebase;
     bool unsolvability_proven;
 
-    // using for dead_knowledge/subset knowledge types
-    std::unordered_map<std::string, std::function<bool(KnowledgeID, SetID, std::vector<KnowledgeID> &)>> dead_knowledge_functions;
-    std::unordered_map<std::string, std::function<bool(KnowledgeID, SetID, SetID, std::vector<KnowledgeID> &)>> subset_knowledge_functions;
-
+    std::unordered_map<std::string, DeadKnowledgeFunction> check_dead_knowlege;
+    std::unordered_map<std::string, SubsetKnowledgeFunction> check_subset_knowledge;
 
     template<class T>
     const T *get_set_expression(SetID set_id) const;

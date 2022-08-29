@@ -13,47 +13,80 @@
 ProofChecker::ProofChecker(std::string &task_file)
     : task(task_file), unsolvability_proven(false) {
 
-    using namespace std::placeholders;
-    dead_knowledge_functions = {
-        { "ed", std::bind(&ProofChecker::check_rule_ed, this, _1, _2, _3) },
-        { "ud", std::bind(&ProofChecker::check_rule_ud, this, _1, _2, _3) },
-        { "sd", std::bind(&ProofChecker::check_rule_sd, this, _1, _2, _3) },
-        { "pg", std::bind(&ProofChecker::check_rule_pg, this, _1, _2, _3) },
-        { "pi", std::bind(&ProofChecker::check_rule_pi, this, _1, _2, _3) },
-        { "rg", std::bind(&ProofChecker::check_rule_rg, this, _1, _2, _3) },
-        { "ri", std::bind(&ProofChecker::check_rule_ri, this, _1, _2, _3) }
+    check_dead_knowlege = {
+        { "ed", [&](auto cid, auto sid, auto pids)
+          {return check_rule_ed(cid, sid, pids);} },
+        { "ud", [&](auto cid, auto sid, auto pids)
+          {return check_rule_ud(cid, sid, pids);} },
+        { "sd", [&](auto cid, auto sid, auto pids)
+          {return check_rule_sd(cid, sid, pids);} },
+        { "pg", [&](auto cid, auto sid, auto pids)
+          {return check_rule_pg(cid, sid, pids);} },
+        { "pi", [&](auto cid, auto sid, auto pids)
+          {return check_rule_pi(cid, sid, pids);} },
+        { "rg", [&](auto cid, auto sid, auto pids)
+          {return check_rule_rg(cid, sid, pids);} },
+        { "ri", [&](auto cid, auto sid, auto pids)
+          {return check_rule_ri(cid, sid, pids);} },
     };
 
-    subset_knowledge_functions = {
-        { "ura", std::bind(&ProofChecker::check_rule_ur<ActionSet>, this, _1, _2, _3, _4) },
-        { "urs", std::bind(&ProofChecker::check_rule_ur<StateSet>, this, _1, _2, _3, _4) },
-        { "ula", std::bind(&ProofChecker::check_rule_ul<ActionSet>, this, _1, _2, _3, _4) },
-        { "uls", std::bind(&ProofChecker::check_rule_ul<StateSet>, this, _1, _2, _3, _4) },
-        { "ira", std::bind(&ProofChecker::check_rule_ir<ActionSet>, this, _1, _2, _3, _4) },
-        { "irs", std::bind(&ProofChecker::check_rule_ir<StateSet>, this, _1, _2, _3, _4) },
-        { "ila", std::bind(&ProofChecker::check_rule_il<ActionSet>, this, _1, _2, _3, _4) },
-        { "ils", std::bind(&ProofChecker::check_rule_il<StateSet>, this, _1, _2, _3, _4) },
-        { "dia", std::bind(&ProofChecker::check_rule_di<ActionSet>, this, _1, _2, _3, _4) },
-        { "dis", std::bind(&ProofChecker::check_rule_di<StateSet>, this, _1, _2, _3, _4) },
-        { "sua", std::bind(&ProofChecker::check_rule_su<ActionSet>, this, _1, _2, _3, _4) },
-        { "sus", std::bind(&ProofChecker::check_rule_su<StateSet>, this, _1, _2, _3, _4) },
-        { "sia", std::bind(&ProofChecker::check_rule_si<ActionSet>, this, _1, _2, _3, _4) },
-        { "sis", std::bind(&ProofChecker::check_rule_si<StateSet>, this, _1, _2, _3, _4) },
-        { "sta", std::bind(&ProofChecker::check_rule_st<ActionSet>, this, _1, _2, _3, _4) },
-        { "sts", std::bind(&ProofChecker::check_rule_st<StateSet>, this, _1, _2, _3, _4) },
+    check_subset_knowledge = {
+        { "ura", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_ur<ActionSet>(cid, lid, rid, pids);} },
+        { "urs", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_ur<StateSet>(cid, lid, rid, pids);} },
+        { "ula", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_ul<ActionSet>(cid, lid, rid, pids);} },
+        { "uls", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_ul<StateSet>(cid, lid, rid, pids);} },
+        { "ira", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_ir<ActionSet>(cid, lid, rid, pids);} },
+        { "irs", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_ir<StateSet>(cid, lid, rid, pids);} },
+        { "ila", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_il<ActionSet>(cid, lid, rid, pids);} },
+        { "ils", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_il<StateSet>(cid, lid, rid, pids);} },
+        { "dia", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_di<ActionSet>(cid, lid, rid, pids);} },
+        { "dis", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_di<StateSet>(cid, lid, rid, pids);} },
+        { "sua", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_su<ActionSet>(cid, lid, rid, pids);} },
+        { "sus", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_su<StateSet>(cid, lid, rid, pids);} },
+        { "sia", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_si<ActionSet>(cid, lid, rid, pids);} },
+        { "sis", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_si<StateSet>(cid, lid, rid, pids);} },
+        { "sta", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_st<ActionSet>(cid, lid, rid, pids);} },
+        { "sts", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_st<StateSet>(cid, lid, rid, pids);} },
 
-        { "at", std::bind(&ProofChecker::check_rule_at, this, _1, _2, _3, _4) },
-        { "au", std::bind(&ProofChecker::check_rule_au, this, _1, _2, _3, _4) },
-        { "pt", std::bind(&ProofChecker::check_rule_pt, this, _1, _2, _3, _4) },
-        { "pu", std::bind(&ProofChecker::check_rule_pu, this, _1, _2, _3, _4) },
-        { "pr", std::bind(&ProofChecker::check_rule_pr, this, _1, _2, _3, _4) },
-        { "rp", std::bind(&ProofChecker::check_rule_rp, this, _1, _2, _3, _4) },
+        { "at", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_at(cid, lid, rid, pids);} },
+        { "au", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_au(cid, lid, rid, pids);} },
+        { "pt", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_pt(cid, lid, rid, pids);} },
+        { "pu", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_pu(cid, lid, rid, pids);} },
+        { "pr", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_pr(cid, lid, rid, pids);} },
+        { "rp", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_rule_rp(cid, lid, rid, pids);} },
 
-        { "b1", std::bind(&ProofChecker::check_statement_B1, this, _1, _2, _3, _4) },
-        { "b2", std::bind(&ProofChecker::check_statement_B2, this, _1, _2, _3, _4) },
-        { "b3", std::bind(&ProofChecker::check_statement_B3, this, _1, _2, _3, _4) },
-        { "b4", std::bind(&ProofChecker::check_statement_B4, this, _1, _2, _3, _4) },
-        { "b5", std::bind(&ProofChecker::check_statement_B5, this, _1, _2, _3, _4) },
+        { "b1", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_statement_B1(cid, lid, rid, pids);} },
+        { "b2", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_statement_B2(cid, lid, rid, pids);} },
+        { "b3", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_statement_B3(cid, lid, rid, pids);} },
+        { "b4", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_statement_B4(cid, lid, rid, pids);} },
+        { "b5", [&](auto cid, auto lid, auto rid, auto pids)
+          {return check_statement_B5(cid, lid, rid, pids);} },
     };
 
     manager = Cudd(task.get_number_of_facts()*2);
@@ -170,11 +203,11 @@ void ProofChecker::verify_knowledge(std::string &line) {
             premises.push_back(tmp);
         }
 
-        if (subset_knowledge_functions.find(word) == subset_knowledge_functions.end()) {
+        if (check_subset_knowledge.find(word) == check_subset_knowledge.end()) {
             std::cerr << "unknown justification for subset knowledge " << word << std::endl;
             exit_with(ExitCode::CRITICAL_ERROR);
         }
-        knowledge_is_correct = subset_knowledge_functions[word](knowledge_id, left_id, right_id, premises);
+        knowledge_is_correct = check_subset_knowledge[word](knowledge_id, left_id, right_id, premises);
 
     } else if(word == "d") { // dead knowledge
         int dead_set_id, tmp;
@@ -190,11 +223,11 @@ void ProofChecker::verify_knowledge(std::string &line) {
             premises.push_back(tmp);
         }
 
-        if (dead_knowledge_functions.find(word) == dead_knowledge_functions.end()) {
+        if (check_dead_knowlege.find(word) == check_dead_knowlege.end()) {
             std::cerr << "unknown justification for dead set knowledge " << word << std::endl;
             exit_with(ExitCode::CRITICAL_ERROR);
         }
-        knowledge_is_correct = dead_knowledge_functions[word](knowledge_id, dead_set_id, premises);
+        knowledge_is_correct = check_dead_knowlege[word](knowledge_id, dead_set_id, premises);
 
     } else if(word == "u") { // unsolvability knowledge
         int premise;
