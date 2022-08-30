@@ -33,14 +33,14 @@ void expand_environment_variables(std::string &file) {
 }
 
 void print_help_and_exit() {
-    std::cout << "Usage: verify <task-file> <certificate-file> [--timeout=x]" << std::endl;
+    std::cout << "Usage: verify <task-file> <certificate-file> [--timeout=x] [--continue-upon-error] [--print-line]" << std::endl;
     std::cout << "timeout is an optional parameter in seconds" << std::endl;
     exit(0);
 }
 
 
 int main(int argc, char** argv) {
-    if(argc < 3 || argc > 4) {
+    if(argc < 3 || argc > 6) {
         print_help_and_exit();
     }
     register_event_handlers();
@@ -49,8 +49,10 @@ int main(int argc, char** argv) {
     expand_environment_variables(task_file);
     std::string certificate_file = argv[2];
     expand_environment_variables(certificate_file);
-
     int timeout = std::numeric_limits<int>::max();
+    bool exit_upon_error = true;
+    bool print_line = false;
+
     for(int i = 3; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg.substr(0,10).compare("--timeout=") == 0) {
@@ -58,14 +60,19 @@ int main(int argc, char** argv) {
             if (!(ss >> timeout) || timeout < 0) {
             }
             std::cout << "using timeout of " << timeout << " seconds" << std::endl;
+        } else if (arg.compare("--continue-upon-error") == 0) {
+            exit_upon_error = false;
+        } else if (arg.compare("--print-line") == 0) {
+            print_line = true;
         } else {
+            std::cout << "unknown argument: "<< arg << std::endl;
             print_help_and_exit();
         }
     }
     set_timeout(timeout);
 
-    // TODO: should task be a global variable? (would save references)
     ProofChecker proofchecker(task_file);
+    unsigned int line = 0;
 
     std::ifstream certstream;
     certstream.open(certificate_file);
@@ -75,6 +82,7 @@ int main(int argc, char** argv) {
     std::string input_type;
     std::string input;
     while(certstream >> input_type) {
+        line++;
         // check if timeout is reached
         if(timer() > g_timeout) {
             exit_timeout("");
@@ -82,18 +90,32 @@ int main(int argc, char** argv) {
 
         // read in rest of line
         std::getline(certstream, input);
+        if (print_line) {
+            std::cout << "Checking line " << line << ": " << input_type
+                      << " " << input << std::endl;
+        }
 
-        if(input_type.compare("e") == 0) {
-            proofchecker.add_state_set(input);
-        } else if(input_type.compare("k") == 0) {
-            proofchecker.verify_knowledge(input);
-        } else if(input_type.compare("a") == 0) {
-            proofchecker.add_action_set(input);
-        } else if(input_type.at(0) == '#') {
-            continue;
-        } else {
-            std::cerr << "unknown start of line: " << input_type << std::endl;
-            exit_with(ExitCode::CRITICAL_ERROR);
+        try {
+            if(input_type.compare("e") == 0) {
+                proofchecker.add_state_set(input);
+            } else if(input_type.compare("k") == 0) {
+                proofchecker.verify_knowledge(input);
+            } else if(input_type.compare("a") == 0) {
+                proofchecker.add_action_set(input);
+            } else if(input_type.at(0) == '#') {
+                continue;
+            } else {
+                throw std::runtime_error("Unknown start of line: " +
+                                         input_type + ".");
+            }
+        // TODO: case distinction for different kinds of errors
+        } catch (const std::exception &e) {
+            std::cerr << "Critical error when checking line " << line << ":\n"
+                      << input_type << input << "\n"
+                      << e.what() << "\n";
+            if (exit_upon_error) {
+                exit_with(ExitCode::CRITICAL_ERROR);
+            }
         }
     }
 
