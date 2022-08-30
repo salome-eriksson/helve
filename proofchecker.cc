@@ -8,6 +8,14 @@
 #include <cmath>
 #include <iostream>
 
+inline size_t get_id_from_string(std::string input) {
+    long tmp  = std::stol(input);
+    if (tmp < 0) {
+       throw std::invalid_argument("ID " + input + " is negative.");
+    }
+    return (size_t) tmp;
+}
+
 // TODO: should all error messages here be printed in cerr?
 
 ProofChecker::ProofChecker(std::string &task_file)
@@ -93,7 +101,6 @@ ProofChecker::ProofChecker(std::string &task_file)
     manager.setTimeoutHandler(exit_timeout);
     manager.InstallOutOfMemoryHandler(exit_oom);
     manager.UnregisterOutOfMemoryCallback();
-    std::cout << "Amount of Actions: " << task.get_number_of_actions() << std::endl;
 }
 
 template<>
@@ -106,46 +113,50 @@ const StateSet *ProofChecker::get_set_expression<StateSet>(SetID set_id) const {
     return statesets[set_id].get();
 }
 
-void ProofChecker::add_knowledge(std::unique_ptr<Knowledge> entry, KnowledgeID id) {
-    assert(id >= knowledgebase.size());
-    if(id > knowledgebase.size()) {
-        knowledgebase.resize(id);
+void ProofChecker::add_knowledge(std::unique_ptr<Knowledge> entry,
+                                 KnowledgeID id) {
+    if(id >= knowledgebase.size()) {
+        knowledgebase.resize(id+1);
     }
-    knowledgebase.push_back(std::move(entry));
+    assert(!knowledgebase[id]);
+    knowledgebase[id] = std::move(entry);
 }
 
+// line format: <id> <type> <description>
 void ProofChecker::add_state_set(std::string &line) {
     std::stringstream ssline(line);
-    int expression_index;
-    ssline >> expression_index;
-    std::string word;
+    std::string word, state_set_type;
     ssline >> word;
+    SetID set_id = get_id_from_string(word);
+    ssline >> state_set_type;
     auto stateset_constructors = StateSet::get_stateset_constructors();
-    if (stateset_constructors->find(word) == stateset_constructors->end()) {
-        std::cerr << "unknown expression type " << word << std::endl;
+    if (stateset_constructors->find(state_set_type)
+            == stateset_constructors->end()) {
+        std::cerr << "unknown expression type " << state_set_type << std::endl;
         exit_with(ExitCode::CRITICAL_ERROR);
     }
-    std::unique_ptr<StateSet> expression = StateSet::get_stateset_constructors()->at(word)(ssline, task);
-    if (expression_index >= statesets.size()) {
-        statesets.resize(expression_index+1);
+    std::unique_ptr<StateSet> expression =
+            StateSet::get_stateset_constructors()->at(state_set_type)(ssline, task);
+    if (set_id >= statesets.size()) {
+        statesets.resize(set_id+1);
     }
-    assert(!statesets[expression_index]);
-    statesets[expression_index] = std::move(expression);
+    assert(!statesets[set_id]);
+    statesets[set_id] = std::move(expression);
 }
 
-
+// line format: <id> <type> <description>
 void ProofChecker::add_action_set(std::string &line) {
     std::stringstream ssline(line);
-    int action_index;
+    std::string word, action_set_type;
+    SetID set_id;
     std::unique_ptr<ActionSet> action_set;
-    ssline >> action_index;
-    std::string type;
-    // read in action type
-    ssline >> type;
+    ssline >> word;
+    set_id = get_id_from_string(word);
+    ssline >> action_set_type;
 
-    if(type.compare("b") == 0) { // basic enumeration of actions
-        int amount;
+    if(action_set_type.compare("b") == 0) { // basic enumeration of actions
         // the first number denotes the amount of actions being enumerated
+        int amount;
         std::unordered_set<int> actions;
         ssline >> amount;
         int a;
@@ -155,98 +166,105 @@ void ProofChecker::add_action_set(std::string &line) {
         }
         action_set = std::unique_ptr<ActionSet>(new ActionSetBasic(actions));
 
-    } else if(type.compare("u") == 0) { // union of action sets
-        int left_id, right_id;
-        ssline >> left_id;
-        ssline >> right_id;
+    } else if(action_set_type.compare("u") == 0) { // union of action sets
+        SetID left_id, right_id;
+        ssline >> word;
+        left_id = get_id_from_string(word);
+        ssline >> word;
+        right_id = get_id_from_string(word);
         action_set = std::unique_ptr<ActionSet>(new ActionSetUnion(left_id, right_id));
 
-    } else if(type.compare("a") == 0) { // constant (denoting the set of all actions)
+    } else if(action_set_type.compare("a") == 0) { // constant (denoting the set of all actions)
         action_set = std::unique_ptr<ActionSet>(new ActionSetConstantAll(task));
 
     } else {
-        std::cerr << "unknown actionset type " << type << std::endl;
+        std::cerr << "unknown actionset type " << action_set_type << std::endl;
         exit_with(ExitCode::CRITICAL_ERROR);
     }
 
-    if (action_index >= actionsets.size()) {
-        actionsets.resize(action_index+1);
+    if (set_id >= actionsets.size()) {
+        actionsets.resize(set_id+1);
     }
-    assert(!actionsets[action_index]);
-    actionsets[action_index] = std::move(action_set);
+    assert(!actionsets[set_id]);
+    actionsets[set_id] = std::move(action_set);
 }
 
 // TODO: unify error messages
 
+// line format: <id> <type> <description>
 void ProofChecker::verify_knowledge(std::string &line) {
-    int knowledge_id;
+    KnowledgeID knowledge_id;
     std::stringstream ssline(line);
-    ssline >> knowledge_id;
+    std::string word, rule, knowledge_type;
     bool knowledge_is_correct = false;
 
-    std::string word;
-    // read in knowledge type
     ssline >> word;
+    knowledge_id = get_id_from_string(word);
+    ssline >> knowledge_type;
 
-    if(word == "s") { // subset knowledge
-        int left_id, right_id, tmp;
-        std::vector<int> premises;
+    if(knowledge_type == "s") {
+        // Subset knowledge is defined by "<left_id> <right_id> <rule> {premise_ids}".
+        SetID left_id, right_id;
+        std::vector<KnowledgeID> premises;
         // reserve max amount of premises (currently 2)
         premises.reserve(2);
 
-        ssline >> left_id;
-        ssline >> right_id;
-        // read in with which basic statement or derivation rule this knowledge should be checked
         ssline >> word;
-        // read in premises
-        while (ssline >> tmp) {
-            premises.push_back(tmp);
+        left_id = get_id_from_string(word);
+        ssline >> word;
+        right_id = get_id_from_string(word);
+        ssline >> rule;
+        while (ssline >> word) {
+            premises.push_back(get_id_from_string(word));
         }
 
-        if (check_subset_knowledge.find(word) == check_subset_knowledge.end()) {
-            std::cerr << "unknown justification for subset knowledge " << word << std::endl;
+        if (check_subset_knowledge.find(rule) == check_subset_knowledge.end()) {
+            std::cerr << "Rule " << rule << " is not a subset rule." << std::endl;
             exit_with(ExitCode::CRITICAL_ERROR);
         }
-        knowledge_is_correct = check_subset_knowledge[word](knowledge_id, left_id, right_id, premises);
+        knowledge_is_correct =
+                check_subset_knowledge[rule](knowledge_id, left_id, right_id, premises);
 
-    } else if(word == "d") { // dead knowledge
-        int dead_set_id, tmp;
-        std::vector<int> premises;
+    } else if(knowledge_type == "d") {
+        // Dead knowledge is defined by "<dead_id> <rule> {premise_ids}".
+        SetID dead_set_id;
+        std::vector<KnowledgeID> premises;
         // reserve max amount of premises (currently 3)
-        premises.reserve(2);
+        premises.reserve(3);
 
-        ssline >> dead_set_id;
-        // read in with which derivation rule this knowledge should be checked
         ssline >> word;
-        // read in premises
-        while (ssline >> tmp) {
-            premises.push_back(tmp);
+        dead_set_id = get_id_from_string(word);
+        ssline >> rule;
+        while (ssline >> word) {
+            premises.push_back(get_id_from_string(word));
         }
 
-        if (check_dead_knowlege.find(word) == check_dead_knowlege.end()) {
-            std::cerr << "unknown justification for dead set knowledge " << word << std::endl;
+        if (check_dead_knowlege.find(rule) == check_dead_knowlege.end()) {
+            std::cerr << " Rule " << rule << " is not a dead rule." << std::endl;
             exit_with(ExitCode::CRITICAL_ERROR);
         }
-        knowledge_is_correct = check_dead_knowlege[word](knowledge_id, dead_set_id, premises);
+        knowledge_is_correct =
+                check_dead_knowlege[rule](knowledge_id, dead_set_id, premises);
 
-    } else if(word == "u") { // unsolvability knowledge
-        int premise;
+    } else if(knowledge_type == "u") {
+        // Unsolvability knowledge is defined by "<rule> <premise_id>".
+        KnowledgeID premise;
 
-        // read in with which derivation rule unsolvability should be proven
+        ssline >> rule;
         ssline >> word;
-        ssline >> premise;
+        premise = get_id_from_string(word);
 
-        if (word.compare("ci") == 0) {
+        if (rule.compare("ci") == 0) {
             knowledge_is_correct = check_rule_ci(knowledge_id, premise);
-        } else if (word.compare("cg") == 0) {
+        } else if (rule.compare("cg") == 0) {
             knowledge_is_correct = check_rule_cg(knowledge_id, premise);
         } else {
-            std::cerr << "unknown justification for unsolvability knowledge " << word << std::endl;
+            std::cerr << "Rule " << rule << " is not an unsolvability rule." << std::endl;
             exit_with(ExitCode::CRITICAL_ERROR);
         }
 
     } else {
-        std::cerr << "unknown knowledge type " << word << std::endl;
+        std::cerr << "unknown knowledge type " << knowledge_type << std::endl;
         exit_with(ExitCode::CRITICAL_ERROR);
     }
 

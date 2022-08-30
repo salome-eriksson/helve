@@ -16,9 +16,9 @@
 class ProofChecker
 {
 private:
-    using ActionID = int;
-    using SetID = int;
-    using KnowledgeID = int;
+    using ActionID = size_t;
+    using SetID = size_t;
+    using KnowledgeID = size_t;
     using DeadKnowledgeFunction =
         std::function<bool(KnowledgeID, SetID, std::vector<KnowledgeID> &)>;
     using SubsetKnowledgeFunction =
@@ -92,7 +92,6 @@ public:
 
     void add_state_set(std::string &line);
     void add_action_set(std::string &line);
-
     void verify_knowledge(std::string &line);
 
     bool is_unsolvability_proven();
