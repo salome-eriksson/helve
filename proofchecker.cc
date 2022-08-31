@@ -1060,7 +1060,7 @@ void ProofChecker::check_rule_si(KnowledgeID conclusion_id,
                                  " does not state (E \\subseteq E').");
     }
     subset_knowledge =
-            dynamic_cast<const SubsetKnowledge<T> *>(knowledgebase[premise_ids[1]].get());
+            dynamic_cast<SubsetKnowledge<T> *>(knowledgebase[premise_ids[1]].get());
     if (!subset_knowledge) {
         throw std::runtime_error("Cannot apply rule SI: knowledge #" +
                                  std::to_string(premise_ids[1]) +
@@ -1273,7 +1273,7 @@ void ProofChecker::check_rule_pt(KnowledgeID conclusion_id,
     s0 = progression->get_actionset_id();
 
     SubsetKnowledge<StateSet> *subset_knowledge =
-            dynamic_cast<const SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
+            dynamic_cast<SubsetKnowledge<StateSet> *>(knowledgebase[premise_ids[0]].get());
     if (!subset_knowledge) {
         throw std::runtime_error("Cannot apply rule PT: knowledge #" +
                                  std::to_string(premise_ids[0]) +
