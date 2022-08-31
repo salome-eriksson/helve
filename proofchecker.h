@@ -20,9 +20,9 @@ private:
     using SetID = size_t;
     using KnowledgeID = size_t;
     using DeadKnowledgeFunction =
-        std::function<void(KnowledgeID, SetID, std::vector<KnowledgeID> &)>;
+        std::function<std::unique_ptr<Knowledge>(SetID, std::vector<KnowledgeID> &)>;
     using SubsetKnowledgeFunction =
-        std::function<void(KnowledgeID, SetID, SetID, std::vector<KnowledgeID> &)>;
+        std::function<std::unique_ptr<Knowledge>(SetID, SetID, std::vector<KnowledgeID> &)>;
     Task task;
 
     std::deque<std::unique_ptr<StateSet>> statesets;
@@ -38,81 +38,76 @@ private:
     void add_knowledge(std::unique_ptr<Knowledge> entry, KnowledgeID id);
 
     // rules for checking if state sets are dead
-    void check_rule_ed(KnowledgeID conclusion_id, SetID stateset_id,
-                       std::vector<KnowledgeID> &premise_ids);
-    void check_rule_ud(KnowledgeID conclusion_id, SetID stateset_id,
-                       std::vector<KnowledgeID> &premise_ids);
-    void check_rule_sd(KnowledgeID conclusion_id, SetID stateset_id,
-                       std::vector<KnowledgeID> &premise_ids);
-    void check_rule_pg(KnowledgeID conclusion_id, SetID stateset_id,
-                       std::vector<KnowledgeID> &premise_ids);
-    void check_rule_pi(KnowledgeID conclusion_id, SetID stateset_id,
-                       std::vector<KnowledgeID> &premise_ids);
-    void check_rule_rg(KnowledgeID conclusion_id, SetID stateset_id,
-                       std::vector<KnowledgeID> &premise_ids);
-    void check_rule_ri(KnowledgeID conclusion_id, SetID stateset_id,
-                       std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_ed(
+            SetID stateset_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_ud(
+            SetID stateset_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_sd(
+            SetID stateset_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_pg(
+            SetID stateset_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_pi(
+            SetID stateset_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_rg(
+            SetID stateset_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_ri(
+            SetID stateset_id, std::vector<KnowledgeID> &premise_ids);
 
     // rules for ending the proof
-    void check_rule_ci(KnowledgeID conclusion_id, KnowledgeID premise_id);
-    void check_rule_cg(KnowledgeID conclusion_id, KnowledgeID premise_id);
+    std::unique_ptr<Knowledge> check_rule_ci(KnowledgeID premise_id);
+    std::unique_ptr<Knowledge> check_rule_cg(KnowledgeID premise_id);
 
     // rules from basic set theory
     template<class T>
-    void check_rule_ur(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_ur(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
     template<class T>
-    void check_rule_ul(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_ul(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
     template<class T>
-    void check_rule_ir(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_ir(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
     template<class T>
-    void check_rule_il(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_il(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
     template<class T>
-    void check_rule_di(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_di(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
     template<class T>
-    void check_rule_su(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_su(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
     template<class T>
-    void check_rule_si(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_si(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
     template<class T>
-    void check_rule_st(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_st(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
 
     // rules for progression and its relation to regression
-    void check_rule_at(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
-    void check_rule_au(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
-    void check_rule_pt(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
-    void check_rule_pu(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
-    void check_rule_rp(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
-    void check_rule_pr(KnowledgeID conclusion_id, SetID left_id, SetID right_id,
-                       std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_at(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_au(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_pt(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_pu(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_rp(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_rule_pr(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
 
     // basic statements
-    void check_statement_b1(KnowledgeID conclusion_id,
-                            SetID left_id, SetID right_id,
-                            std::vector<KnowledgeID> &premise_ids);
-    void check_statement_b2(KnowledgeID conclusion_id,
-                            SetID left_id, SetID right_id,
-                            std::vector<KnowledgeID> &premise_ids);
-    void check_statement_b3(KnowledgeID conclusion_id,
-                            SetID left_id, SetID right_id,
-                            std::vector<KnowledgeID> &premise_ids);
-    void check_statement_b4(KnowledgeID conclusion_id,
-                            SetID left_id, SetID right_id,
-                            std::vector<KnowledgeID> &premise_ids);
-    void check_statement_b5(KnowledgeID conclusion_id,
-                            SetID left_id, SetID right_id,
-                            std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_statement_b1(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_statement_b2(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_statement_b3(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_statement_b4(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
+    std::unique_ptr<Knowledge> check_statement_b5(
+            SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids);
     // helper function for finding formalism for b* statements
     const StateSetFormalism *get_reference_formula(std::vector<const StateSetVariable *> &vars) const;
 

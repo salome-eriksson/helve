@@ -20,79 +20,72 @@ ProofChecker::ProofChecker(std::string &task_file)
     : task(task_file), unsolvability_proven(false) {
 
     check_dead_knowlege = {
-        { "ed", [&](auto cid, auto sid, auto pids)
-          {return check_rule_ed(cid, sid, pids);} },
-        { "ud", [&](auto cid, auto sid, auto pids)
-          {return check_rule_ud(cid, sid, pids);} },
-        { "sd", [&](auto cid, auto sid, auto pids)
-          {return check_rule_sd(cid, sid, pids);} },
-        { "pg", [&](auto cid, auto sid, auto pids)
-          {return check_rule_pg(cid, sid, pids);} },
-        { "pi", [&](auto cid, auto sid, auto pids)
-          {return check_rule_pi(cid, sid, pids);} },
-        { "rg", [&](auto cid, auto sid, auto pids)
-          {return check_rule_rg(cid, sid, pids);} },
-        { "ri", [&](auto cid, auto sid, auto pids)
-          {return check_rule_ri(cid, sid, pids);} },
+        { "ed", [&](auto sid, auto pids) {return check_rule_ed(sid, pids);} },
+        { "ud", [&](auto sid, auto pids) {return check_rule_ud(sid, pids);} },
+        { "sd", [&](auto sid, auto pids) {return check_rule_sd(sid, pids);} },
+        { "pg", [&](auto sid, auto pids) {return check_rule_pg(sid, pids);} },
+        { "pi", [&](auto sid, auto pids) {return check_rule_pi(sid, pids);} },
+        { "rg", [&](auto sid, auto pids) {return check_rule_rg(sid, pids);} },
+        { "ri", [&](auto sid, auto pids) {return check_rule_ri(sid, pids);} },
     };
 
     check_subset_knowledge = {
-        { "ura", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_ur<ActionSet>(cid, lid, rid, pids);} },
-        { "urs", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_ur<StateSet>(cid, lid, rid, pids);} },
-        { "ula", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_ul<ActionSet>(cid, lid, rid, pids);} },
-        { "uls", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_ul<StateSet>(cid, lid, rid, pids);} },
-        { "ira", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_ir<ActionSet>(cid, lid, rid, pids);} },
-        { "irs", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_ir<StateSet>(cid, lid, rid, pids);} },
-        { "ila", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_il<ActionSet>(cid, lid, rid, pids);} },
-        { "ils", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_il<StateSet>(cid, lid, rid, pids);} },
-        { "dia", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_di<ActionSet>(cid, lid, rid, pids);} },
-        { "dis", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_di<StateSet>(cid, lid, rid, pids);} },
-        { "sua", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_su<ActionSet>(cid, lid, rid, pids);} },
-        { "sus", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_su<StateSet>(cid, lid, rid, pids);} },
-        { "sia", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_si<ActionSet>(cid, lid, rid, pids);} },
-        { "sis", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_si<StateSet>(cid, lid, rid, pids);} },
-        { "sta", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_st<ActionSet>(cid, lid, rid, pids);} },
-        { "sts", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_st<StateSet>(cid, lid, rid, pids);} },
+        { "ura", [&](auto lid, auto rid, auto pids)
+          {return check_rule_ur<ActionSet>(lid, rid, pids);} },
+        { "urs", [&](auto lid, auto rid, auto pids)
+          {return check_rule_ur<StateSet>(lid, rid, pids);} },
+        { "ula", [&](auto lid, auto rid, auto pids)
+          {return check_rule_ul<ActionSet>(lid, rid, pids);} },
+        { "uls", [&](auto lid, auto rid, auto pids)
+          {return check_rule_ul<StateSet>(lid, rid, pids);} },
+        { "ira", [&](auto lid, auto rid, auto pids)
+          {return check_rule_ir<ActionSet>(lid, rid, pids);} },
+        { "irs", [&](auto lid, auto rid, auto pids)
+          {return check_rule_ir<StateSet>(lid, rid, pids);} },
+        { "ila", [&](auto lid, auto rid, auto pids)
+          {return check_rule_il<ActionSet>(lid, rid, pids);} },
+        { "ils", [&](auto lid, auto rid, auto pids)
+          {return check_rule_il<StateSet>(lid, rid, pids);} },
+        { "dia", [&](auto lid, auto rid, auto pids)
+          {return check_rule_di<ActionSet>(lid, rid, pids);} },
+        { "dis", [&](auto lid, auto rid, auto pids)
+          {return check_rule_di<StateSet>(lid, rid, pids);} },
+        { "sua", [&](auto lid, auto rid, auto pids)
+          {return check_rule_su<ActionSet>(lid, rid, pids);} },
+        { "sus", [&](auto lid, auto rid, auto pids)
+          {return check_rule_su<StateSet>(lid, rid, pids);} },
+        { "sia", [&](auto lid, auto rid, auto pids)
+          {return check_rule_si<ActionSet>(lid, rid, pids);} },
+        { "sis", [&](auto lid, auto rid, auto pids)
+          {return check_rule_si<StateSet>(lid, rid, pids);} },
+        { "sta", [&](auto lid, auto rid, auto pids)
+          {return check_rule_st<ActionSet>(lid, rid, pids);} },
+        { "sts", [&](auto lid, auto rid, auto pids)
+          {return check_rule_st<StateSet>(lid, rid, pids);} },
 
-        { "at", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_at(cid, lid, rid, pids);} },
-        { "au", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_au(cid, lid, rid, pids);} },
-        { "pt", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_pt(cid, lid, rid, pids);} },
-        { "pu", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_pu(cid, lid, rid, pids);} },
-        { "pr", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_pr(cid, lid, rid, pids);} },
-        { "rp", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_rule_rp(cid, lid, rid, pids);} },
+        { "at", [&](auto lid, auto rid, auto pids)
+          {return check_rule_at(lid, rid, pids);} },
+        { "au", [&](auto lid, auto rid, auto pids)
+          {return check_rule_au(lid, rid, pids);} },
+        { "pt", [&](auto lid, auto rid, auto pids)
+          {return check_rule_pt(lid, rid, pids);} },
+        { "pu", [&](auto lid, auto rid, auto pids)
+          {return check_rule_pu(lid, rid, pids);} },
+        { "pr", [&](auto lid, auto rid, auto pids)
+          {return check_rule_pr(lid, rid, pids);} },
+        { "rp", [&](auto lid, auto rid, auto pids)
+          {return check_rule_rp(lid, rid, pids);} },
 
-        { "b1", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_statement_b1(cid, lid, rid, pids);} },
-        { "b2", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_statement_b2(cid, lid, rid, pids);} },
-        { "b3", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_statement_b3(cid, lid, rid, pids);} },
-        { "b4", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_statement_b4(cid, lid, rid, pids);} },
-        { "b5", [&](auto cid, auto lid, auto rid, auto pids)
-          {return check_statement_b5(cid, lid, rid, pids);} },
+        { "b1", [&](auto lid, auto rid, auto pids)
+          {return check_statement_b1(lid, rid, pids);} },
+        { "b2", [&](auto lid, auto rid, auto pids)
+          {return check_statement_b2(lid, rid, pids);} },
+        { "b3", [&](auto lid, auto rid, auto pids)
+          {return check_statement_b3(lid, rid, pids);} },
+        { "b4", [&](auto lid, auto rid, auto pids)
+          {return check_statement_b4(lid, rid, pids);} },
+        { "b5", [&](auto lid, auto rid, auto pids)
+          {return check_statement_b5(lid, rid, pids);} },
     };
 
     manager = Cudd(task.get_number_of_facts()*2);
@@ -190,6 +183,7 @@ void ProofChecker::add_action_set(std::string &line) {
 // line format: <id> <type> <description>
 void ProofChecker::verify_knowledge(std::string &line) {
     KnowledgeID conclusion_id;
+    std::unique_ptr<Knowledge> conclusion;
     std::stringstream ssline(line);
     std::string word, rule, knowledge_type;
 
@@ -216,7 +210,7 @@ void ProofChecker::verify_knowledge(std::string &line) {
         if (check_subset_knowledge.find(rule) == check_subset_knowledge.end()) {
             throw std::runtime_error("Rule " + rule + " is not a subset rule.");
         }
-        check_subset_knowledge[rule](conclusion_id, left_id, right_id, premises);
+        conclusion = check_subset_knowledge[rule](left_id, right_id, premises);
 
     } else if(knowledge_type == "d") {
         // Dead knowledge is defined by "<dead_id> <rule> {premise_ids}".
@@ -235,8 +229,7 @@ void ProofChecker::verify_knowledge(std::string &line) {
         if (check_dead_knowlege.find(rule) == check_dead_knowlege.end()) {
             throw std::runtime_error(" Rule " + rule + " is not a dead rule.");
         }
-        check_dead_knowlege[rule](conclusion_id, dead_set_id, premises);
-
+        conclusion = check_dead_knowlege[rule](dead_set_id, premises);
     } else if(knowledge_type == "u") {
         // Unsolvability knowledge is defined by "<rule> <premise_id>".
         KnowledgeID premise;
@@ -246,18 +239,20 @@ void ProofChecker::verify_knowledge(std::string &line) {
         premise = get_id_from_string(word);
 
         if (rule.compare("ci") == 0) {
-            check_rule_ci(conclusion_id, premise);
+            conclusion = check_rule_ci(premise);
         } else if (rule.compare("cg") == 0) {
-            check_rule_cg(conclusion_id, premise);
+            conclusion = check_rule_cg(premise);
         } else {
             throw std::runtime_error("Rule " + rule
                                      + " is not an unsolvability rule.");
         }
+        unsolvability_proven = true;
 
     } else {
         throw std::runtime_error("Knowledge type " + knowledge_type
                                  + " does not exist.");
     }
+    add_knowledge(std::move(conclusion), conclusion_id);
 }
 
 
@@ -266,9 +261,8 @@ void ProofChecker::verify_knowledge(std::string &line) {
  */
 
 // Emptyset Dead: Without premises, \emptyset is dead.
-void ProofChecker::check_rule_ed(KnowledgeID conclusion_id,
-                                 SetID stateset_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_ed(
+        SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
     SSVConstant *f =
@@ -278,15 +272,13 @@ void ProofChecker::check_rule_ed(KnowledgeID conclusion_id,
                                  std::to_string(stateset_id) +
                                  " is not the constant empty set.");
     }
-    add_knowledge(std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id));
 }
 
 
 // Union Dead: Given (1) S is dead and (2) S' is dead, then S \cup S' is dead.
-void ProofChecker::check_rule_ud(KnowledgeID conclusion_id,
-                                 SetID stateset_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_ud(
+        SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
@@ -322,15 +314,13 @@ void ProofChecker::check_rule_ud(KnowledgeID conclusion_id,
                                  std::to_string(right_id) + " is dead.");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id));
 }
 
 
 // Subset Dead: Given (1) S \subseteq S' and (2) S' is dead, set=S is dead.
-void ProofChecker::check_rule_sd(KnowledgeID conclusion_id,
-                                 SetID stateset_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_sd(
+        SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
@@ -358,15 +348,13 @@ void ProofChecker::check_rule_sd(KnowledgeID conclusion_id,
                                  " is dead.");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id));
 }
 
 // Progression Goal: Given (1) S[A] \subseteq S \cup S', (2) S' is dead and
 // (3) S \cap S_G^\Pi is dead, then set=S is dead.
-void ProofChecker::check_rule_pg(KnowledgeID conclusion_id,
-                                 SetID stateset_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_pg(
+        SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 3 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]] &&
@@ -446,16 +434,14 @@ void ProofChecker::check_rule_pg(KnowledgeID conclusion_id,
                                  "the constant goal set on the right side.");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id));
 }
 
 
 // Progression Initial: Given (1) S[A] \subseteq S \cup S', (2) S' is dead and
 // (3) {I} \subseteq S_not, then set=S_not is dead.
-void ProofChecker::check_rule_pi(KnowledgeID conclusion_id,
-                                 SetID stateset_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_pi(
+        SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 3 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]] &&
@@ -542,16 +528,14 @@ void ProofChecker::check_rule_pi(KnowledgeID conclusion_id,
                                  std::to_string(s_id) + ".");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id));
 }
 
 
 // Regression Goal: Given (1)[A]S \subseteq S \cup S', (2) S' is dead and
 // (3) S_not \cap S_G^\Pi is dead, then S_not is dead.
-void ProofChecker::check_rule_rg(KnowledgeID conclusion_id,
-                                 SetID stateset_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_rg(
+        SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 3 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]] &&
@@ -640,16 +624,14 @@ void ProofChecker::check_rule_rg(KnowledgeID conclusion_id,
                                  "with the constant goal set on the right side.");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id));
 }
 
 
 // Regression Initial: Given (1) [A]S \subseteq S \cup S', (2) S' is dead and
 // (3) {I} \subseteq S_not, then set=S is dead.
-void ProofChecker::check_rule_ri(KnowledgeID conclusion_id,
-                                 SetID stateset_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_ri(
+        SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 3 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]] &&
@@ -728,8 +710,7 @@ void ProofChecker::check_rule_ri(KnowledgeID conclusion_id,
                                  std::to_string(stateset_id) + ".");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id));
 }
 
 
@@ -738,8 +719,7 @@ void ProofChecker::check_rule_ri(KnowledgeID conclusion_id,
  */
 
 // Conclusion Initial: Given (1) {I} is dead, then the task is unsolvable.
-void ProofChecker::check_rule_ci(KnowledgeID conclusion_id,
-                                 KnowledgeID premise_id) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_ci(KnowledgeID premise_id) {
     assert(knowledgebase[premise_id] != nullptr);
 
     // Check that premise says that {I} is dead.
@@ -758,14 +738,11 @@ void ProofChecker::check_rule_ci(KnowledgeID conclusion_id,
                                  "that the constant initial set is dead.");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new UnsolvableKnowledge()),
-                  conclusion_id);
-    unsolvability_proven = true;
+    return std::unique_ptr<Knowledge>(new UnsolvableKnowledge());
 }
 
 // Conclusion Goal: Given (1) S_G^\Pi is dead, then the task is unsolvable.
-void ProofChecker::check_rule_cg(KnowledgeID conclusion_id,
-                                 KnowledgeID premise_id) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_cg(KnowledgeID premise_id) {
     assert(knowledgebase[premise_id] != nullptr);
 
     // Check that premise says that S_G^\Pi is dead.
@@ -784,9 +761,7 @@ void ProofChecker::check_rule_cg(KnowledgeID conclusion_id,
                                  " that the constant goal set is dead.");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new UnsolvableKnowledge()),
-                  conclusion_id);
-    unsolvability_proven = true;
+    return std::unique_ptr<Knowledge>(new UnsolvableKnowledge());
 }
 
 /*
@@ -795,9 +770,8 @@ void ProofChecker::check_rule_cg(KnowledgeID conclusion_id,
 
 // Union Right: without premises, E \subseteq E \cup E'.
 template<class T>
-void ProofChecker::check_rule_ur(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_ur(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
     const SetUnion *runion =
@@ -815,15 +789,13 @@ void ProofChecker::check_rule_ur(KnowledgeID conclusion_id,
                                  + " on its left side.");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id, right_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id, right_id));
 }
 
 // Union Left: Without premises, E \subseteq E' \cup E.
 template<class T>
-void ProofChecker::check_rule_ul(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_ul(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
     const SetUnion *runion =
@@ -841,15 +813,13 @@ void ProofChecker::check_rule_ul(KnowledgeID conclusion_id,
                                  " on its right side.");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id, right_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id, right_id));
 }
 
 // Intersection Right: Without premises, E \cap E' \subseteq E.
 template<class T>
-void ProofChecker::check_rule_ir(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_ir(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
     const SetIntersection *lintersection =
@@ -869,15 +839,13 @@ void ProofChecker::check_rule_ir(KnowledgeID conclusion_id,
 
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id));
 }
 
 // Intersection Left: Without premises, E' \cap E \subseteq E.
 template <class T>
-void ProofChecker::check_rule_il(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_il(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
     const SetIntersection *lintersection =
@@ -897,16 +865,14 @@ void ProofChecker::check_rule_il(KnowledgeID conclusion_id,
 
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id));
 }
 
 // DIstributivity: Without premises,
 // ((E \cup E') \cap E'') \subseteq ((E \cap E'') \cup (E' \cap E''))
 template<class T>
-void ProofChecker::check_rule_di(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_di(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
     int e0,e1,e2;
@@ -966,16 +932,14 @@ void ProofChecker::check_rule_di(KnowledgeID conclusion_id,
                                  std::to_string(left_id) + ".");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id));
 }
 
 // Subset Union: Given (1) E \subseteq E'' and (2) E' \subseteq E'',
 // then (E \cup E') \subseteq E''.
 template<class T>
-void ProofChecker::check_rule_su(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_su(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
@@ -1018,17 +982,14 @@ void ProofChecker::check_rule_su(KnowledgeID conclusion_id,
                                  " does not state (E' \\subseteq E'').");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id)),
-                  conclusion_id);
-
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id));
 }
 
 // Subset Intersection: Given (1) E \subseteq E' and (2) E \subseteq E'',
 // then E \subseteq (E' \cap E'').
 template<class T>
-void ProofChecker::check_rule_si(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_si(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
@@ -1073,17 +1034,14 @@ void ProofChecker::check_rule_si(KnowledgeID conclusion_id,
                                  " does not state (E \\subseteq E'').");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id)),
-                  conclusion_id);
-
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id));
 }
 
 // Subset Transitivity: Given (1) E \subseteq E' and (2) E' \subseteq E'',
 // then E \subseteq E''.
 template<class T>
-void ProofChecker::check_rule_st(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_st(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
@@ -1119,9 +1077,8 @@ void ProofChecker::check_rule_st(KnowledgeID conclusion_id,
                                  " does not state (E' \\subset E'').");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id)),
-                  conclusion_id);
-    }
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<T>(left_id,right_id));
+}
 
 
 /*
@@ -1130,9 +1087,8 @@ void ProofChecker::check_rule_st(KnowledgeID conclusion_id,
 
 // Action Transitivity: Given (1) S[A] \subseteq S' and (2) A' \subseteq A,
 // then S[A'] \subseteq S'.
-void ProofChecker::check_rule_at(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_at(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
@@ -1180,15 +1136,13 @@ void ProofChecker::check_rule_at(KnowledgeID conclusion_id,
                                  " does not state (A' \\subseteq A");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id));
 }
 
 // Action Union: Given (1) S[A] \subseteq S' and (2) S[A'] \subseteq S',
 // then S[A \cup A'] \subseteq S'.
-void ProofChecker::check_rule_au(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_au(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
@@ -1247,15 +1201,13 @@ void ProofChecker::check_rule_au(KnowledgeID conclusion_id,
                                  " does not state (S[A'] \\subseteq S').");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id)),
-                  conclusion_id);
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id));
 }
 
 // Progression Transitivity: Given (1) S[A] \subseteq S'' and (2) S' \subseteq S,
 // then S'[A] \subseteq S''.
-void ProofChecker::check_rule_pt(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_pt(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
@@ -1303,15 +1255,13 @@ void ProofChecker::check_rule_pt(KnowledgeID conclusion_id,
                                  " does not state (S' \\subseteq S).");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id)),
-                  conclusion_id);
-    }
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id));
+}
 
 // Progression Union: Given (1) S[A] \subseteq S'' and (2) S'[A] \subseteq S'',
 // then (S \cup S')[A] \subseteq S''.
-void ProofChecker::check_rule_pu(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_pu(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 2 &&
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
@@ -1369,16 +1319,14 @@ void ProofChecker::check_rule_pu(KnowledgeID conclusion_id,
                                  " does not state (S'[A] \\subseteq S'').");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id)),
-                  conclusion_id);
-    }
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id));
+}
 
 
 // Progression to Regression: Given (1) S[A] \subseteq S',
 // then [A]S'_not \subseteq S_not.
-void ProofChecker::check_rule_pr(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_pr(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 1 &&
            knowledgebase[premise_ids[0]]);
 
@@ -1425,16 +1373,14 @@ void ProofChecker::check_rule_pr(KnowledgeID conclusion_id,
                                  " does not state S[A] \\subseteq S'.");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id)),
-                  conclusion_id);
-    }
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id));
+}
 
 
 // Regression to Progression: Given (1) [A]S \subseteq S',
 // then S'_not[A] \subseteq S_not.
-void ProofChecker::check_rule_rp(KnowledgeID conclusion_id,
-                                 SetID left_id, SetID right_id,
-                                 std::vector<KnowledgeID> &premise_ids) {
+std::unique_ptr<Knowledge> ProofChecker::check_rule_rp(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.size() == 1 &&
            knowledgebase[premise_ids[0]]);
 
@@ -1481,9 +1427,8 @@ void ProofChecker::check_rule_rp(KnowledgeID conclusion_id,
                                  " does not state ([A]S \\subseteq S').");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id)),
-                  conclusion_id);
-    }
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id, right_id));
+}
 
 
 
@@ -1503,9 +1448,8 @@ void ProofChecker::check_rule_rp(KnowledgeID conclusion_id,
  */
 
 // B1: \bigcap_{L \in \mathcal L} L \subseteq \bigcup_{L' \in \mathcal L'} L'
-void ProofChecker::check_statement_b1(KnowledgeID conclusion_id,
-                                      SetID left_id, SetID right_id,
-                                      std::vector<KnowledgeID> &) {
+std::unique_ptr<Knowledge> ProofChecker::check_statement_b1(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &) {
 
     std::vector<const StateSetVariable *> left;
     std::vector<const StateSetVariable *> right;
@@ -1549,16 +1493,14 @@ void ProofChecker::check_statement_b1(KnowledgeID conclusion_id,
         throw std::runtime_error("Statement B1 is false.");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id,right_id)),
-                  conclusion_id);
-    }
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id,right_id));
+}
 
 
 // B2: (\bigcap_{X \in \mathcal X} X)[A] \land \bigcap_{L \in \mathcal L} L
 //     \subseteq \bigcup_{L' \in \mathcal L'} L'
-void ProofChecker::check_statement_b2(KnowledgeID conclusion_id,
-                                      SetID left_id, SetID right_id,
-                                      std::vector<KnowledgeID> &) {
+std::unique_ptr<Knowledge> ProofChecker::check_statement_b2(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &) {
 
     std::vector<const StateSetVariable *> prog;
     std::vector<const StateSetVariable *> left;
@@ -1645,15 +1587,13 @@ void ProofChecker::check_statement_b2(KnowledgeID conclusion_id,
     if(!reference->check_statement_b2(prog, left, right, actions)) {
         throw std::runtime_error("Statement B2 is false.");
     }
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id,right_id)),
-                  conclusion_id);
-    }
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id,right_id));
+}
 
 // B3: [A](\bigcap_{X \in \mathcal X} X) \land \bigcap_{L \in \mathcal L} L
 //     \subseteq \bigcup_{L' \in \mathcal L'} L'
-void ProofChecker::check_statement_b3(KnowledgeID conclusion_id,
-                                      SetID left_id, SetID right_id,
-                                      std::vector<KnowledgeID> &) {
+std::unique_ptr<Knowledge> ProofChecker::check_statement_b3(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &) {
     std::vector<const StateSetVariable *> reg;
     std::vector<const StateSetVariable *> left;
     std::vector<const StateSetVariable *> right;
@@ -1740,15 +1680,13 @@ void ProofChecker::check_statement_b3(KnowledgeID conclusion_id,
     if(!reference->check_statement_b3(reg, left, right, actions)) {
         throw std::runtime_error("Statement B3 is false.");
     }
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id,right_id)),
-                  conclusion_id);
-    }
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id,right_id));
+}
 
 
 // B4: L \subseteq L', where L and L' are represented by arbitrary formalisms
-void ProofChecker::check_statement_b4(KnowledgeID conclusion_id,
-                                      SetID left_id, SetID right_id,
-                                      std::vector<KnowledgeID> &) {
+std::unique_ptr<Knowledge> ProofChecker::check_statement_b4(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &) {
     bool left_positive = true;
     bool right_positive = true;
 
@@ -1788,15 +1726,13 @@ void ProofChecker::check_statement_b4(KnowledgeID conclusion_id,
         throw std::runtime_error("Statement B4 is false.");
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id,right_id)),
-                  conclusion_id);
-    }
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<StateSet>(left_id,right_id));
+}
 
 
 // check if A \subseteq A'
-void ProofChecker::check_statement_b5(KnowledgeID conclusion_id,
-                                      SetID left_id, SetID right_id,
-                                      std::vector<KnowledgeID> &) {
+std::unique_ptr<Knowledge> ProofChecker::check_statement_b5(
+        SetID left_id, SetID right_id, std::vector<KnowledgeID> &) {
     std::unordered_set<int> left_indices, right_indices;
     const ActionSet *left_set = get_set_expression<ActionSet>(right_id);
     const ActionSet *right_set = get_set_expression<ActionSet>(right_id);
@@ -1809,9 +1745,8 @@ void ProofChecker::check_statement_b5(KnowledgeID conclusion_id,
         }
     }
 
-    add_knowledge(std::unique_ptr<Knowledge>(new SubsetKnowledge<ActionSet>(left_id,right_id)),
-                  conclusion_id);
-    }
+    return std::unique_ptr<Knowledge>(new SubsetKnowledge<ActionSet>(left_id,right_id));
+}
 
 // TODO: would it be better to make a vector of vectors?
 const StateSetFormalism *ProofChecker::get_reference_formula(std::vector<const StateSetVariable *> &vars) const {
