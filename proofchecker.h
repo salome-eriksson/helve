@@ -13,12 +13,12 @@
 #include <unordered_map>
 #include <vector>
 
+using SetID = size_t;
+using KnowledgeID = size_t;
+
 class ProofChecker
 {
 private:
-    using ActionID = size_t;
-    using SetID = size_t;
-    using KnowledgeID = size_t;
     using DeadKnowledgeFunction =
         std::function<std::unique_ptr<Knowledge>(SetID, std::vector<KnowledgeID> &)>;
     using SubsetKnowledgeFunction =
@@ -33,8 +33,6 @@ private:
     std::unordered_map<std::string, DeadKnowledgeFunction> check_dead_knowlege;
     std::unordered_map<std::string, SubsetKnowledgeFunction> check_subset_knowledge;
 
-    template<class T>
-    const T *get_set_expression(SetID set_id) const;
     void add_knowledge(std::unique_ptr<Knowledge> entry, KnowledgeID id);
 
     // rules for checking if state sets are dead
@@ -114,6 +112,12 @@ private:
 public:
     ProofChecker(std::string &task_file);
 
+    template<class T, typename std::enable_if<std::is_base_of<ActionSet, T>::value>::type * = nullptr>
+    const T *get_set_expression(SetID set_id) const;
+    template<class T, typename std::enable_if<std::is_base_of<StateSet, T>::value>::type * = nullptr>
+    const T *get_set_expression(SetID set_id) const;
+    template<class T, typename std::enable_if<std::is_base_of<Knowledge, T>::value>::type * = nullptr>
+    const T *get_knowledge(KnowledgeID knowledge_id) const;
     void add_state_set(std::string &line);
     void add_action_set(std::string &line);
     void verify_knowledge(std::string &line);

@@ -4,6 +4,8 @@
 #include "statesetcompositions.h"
 #include "ssvconstant.h"
 
+#include "rules/rules.h"
+
 #include <cassert>
 #include <cmath>
 #include <iostream>
@@ -18,16 +20,6 @@ inline size_t get_id_from_string(std::string input) {
 
 ProofChecker::ProofChecker(std::string &task_file)
     : task(task_file), unsolvability_proven(false) {
-
-    check_dead_knowlege = {
-        { "ed", [&](auto sid, auto pids) {return check_rule_ed(sid, pids);} },
-        { "ud", [&](auto sid, auto pids) {return check_rule_ud(sid, pids);} },
-        { "sd", [&](auto sid, auto pids) {return check_rule_sd(sid, pids);} },
-        { "pg", [&](auto sid, auto pids) {return check_rule_pg(sid, pids);} },
-        { "pi", [&](auto sid, auto pids) {return check_rule_pi(sid, pids);} },
-        { "rg", [&](auto sid, auto pids) {return check_rule_rg(sid, pids);} },
-        { "ri", [&](auto sid, auto pids) {return check_rule_ri(sid, pids);} },
-    };
 
     check_subset_knowledge = {
         { "ura", [&](auto lid, auto rid, auto pids)
@@ -94,14 +86,51 @@ ProofChecker::ProofChecker(std::string &task_file)
     manager.UnregisterOutOfMemoryCallback();
 }
 
-template<>
-const ActionSet *ProofChecker::get_set_expression<ActionSet>(SetID set_id) const {
-    return actionsets[set_id].get();
+template<class T, typename std::enable_if<std::is_base_of<ActionSet, T>::value>::type * = nullptr>
+const T *ProofChecker::get_set_expression(SetID set_id) const {
+    if (set_id < 0 || set_id >= actionsets.size() || !actionsets[set_id]) {
+        throw std::runtime_error("Action set expression #" +
+                                 std::to_string(set_id) +
+                                 " does not exist.");
+    }
+    const T* ret= dynamic_cast<const T *>(actionsets[set_id].get());
+    if (!ret) {
+        throw std::runtime_error("Action set expression #" +
+                                 std::to_string(set_id) +
+                                 " is not of type" + typeid(T).name());
+    }
+    return ret;
 }
 
-template<>
-const StateSet *ProofChecker::get_set_expression<StateSet>(SetID set_id) const {
-    return statesets[set_id].get();
+template<class T, typename std::enable_if<std::is_base_of<StateSet, T>::value>::type * = nullptr>
+const T *ProofChecker::get_set_expression(SetID set_id) const {
+    if (set_id < 0 || set_id >= statesets.size() || !statesets[set_id]) {
+        throw std::runtime_error("State set expression #" +
+                                 std::to_string(set_id) +
+                                 " does not exist.");
+    }
+    const T* ret= dynamic_cast<const T *>(statesets[set_id].get());
+    if (!ret) {
+        throw std::runtime_error("State set expression #" +
+                                 std::to_string(set_id) +
+                                 " is not of type" + typeid(T).name());
+    }
+    return ret;
+}
+
+template<class T, typename std::enable_if<std::is_base_of<Knowledge, T>::value>::type * = nullptr>
+const T *ProofChecker::get_knowledge(KnowledgeID knowledge_id) const {
+    if (knowledge_id < 0 || knowledge_id >= knowledgebase.size()
+            || !knowledgebase[knowledge_id]) {
+        throw std::runtime_error("Knowledge #" + std::to_string(knowledge_id) +
+                                 " does not exist.");
+    }
+    const T* ret= dynamic_cast<const T *>(knowledgebase[knowledge_id].get());
+    if (!ret) {
+        throw std::runtime_error("Knowledge #" + std::to_string(knowledge_id) +
+                                 " is not of type" + typeid(T).name());
+    }
+    return ret;
 }
 
 void ProofChecker::add_knowledge(std::unique_ptr<Knowledge> entry,
@@ -226,10 +255,10 @@ void ProofChecker::verify_knowledge(std::string &line) {
             premises.push_back(get_id_from_string(word));
         }
 
-        if (check_dead_knowlege.find(rule) == check_dead_knowlege.end()) {
+        if (rules::deadness_rules.find(rule) == rules::deadness_rules.end()) {
             throw std::runtime_error(" Rule " + rule + " is not a dead rule.");
         }
-        conclusion = check_dead_knowlege[rule](dead_set_id, premises);
+        conclusion = rules::deadness_rules[rule](dead_set_id, premises, *this);
     } else if(knowledge_type == "u") {
         // Unsolvability knowledge is defined by "<rule> <premise_id>".
         KnowledgeID premise;
@@ -259,7 +288,7 @@ void ProofChecker::verify_knowledge(std::string &line) {
 /*
  * RULES ABOUT DEADNESS
  */
-
+/*
 // Emptyset Dead: Without premises, \emptyset is dead.
 std::unique_ptr<Knowledge> ProofChecker::check_rule_ed(
         SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
@@ -712,7 +741,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_ri(
 
     return std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id));
 }
-
+*/
 
 /*
  * CONCLUSION RULES
