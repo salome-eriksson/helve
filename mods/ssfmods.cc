@@ -363,9 +363,9 @@ bool SSFMods::check_statement_b3(std::vector<const StateSetVariable *> &regress,
                     model[eff_not_pre[i]] = ((count >> i) % 2 == 1);
                 }
                 if(!util->is_model_contained(model,helper)) {
-                    for (bool val : model) {
+                    /*for (bool val : model) {
                         std::cout << val << " ";
-                    } std::cout << std::endl;
+                    } std::cout << std::endl;*/
                     return false;
                 }
             }

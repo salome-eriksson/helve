@@ -12,6 +12,14 @@ Timer timer;
 int g_timeout;
 Cudd manager;
 
+size_t get_id_from_string(std::string input) {
+    long tmp  = std::stol(input);
+    if (tmp < 0) {
+       throw std::invalid_argument("ID " + input + " is negative.");
+    }
+    return (size_t) tmp;
+}
+
 void initialize_timer() {
     timer = Timer();
 }

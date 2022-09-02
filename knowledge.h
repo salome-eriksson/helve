@@ -1,6 +1,8 @@
 #ifndef KNOWLEDGE_H
 #define KNOWLEDGE_H
 
+#include "global_funcs.h"
+
 class Knowledge
 {
 public:
@@ -11,26 +13,26 @@ template<class T>
 class SubsetKnowledge : public Knowledge
 {
 private:
-    int left_id;
-    int right_id;
+    SetID left_id;
+    SetID right_id;
 public:
-    SubsetKnowledge(int left_id, int right_id);
+    SubsetKnowledge(SetID left_id, SetID right_id);
     virtual ~SubsetKnowledge() {}
 
-    int get_left_id();
-    int get_right_id();
+    SetID get_left_id() const;
+    SetID get_right_id() const;
 };
 
 // no template needed - only state sets can be dead (so far...)
 class DeadKnowledge : public Knowledge
 {
 private:
-    int set_id;
+    SetID set_id;
 public:
-    DeadKnowledge(int set_id);
+    DeadKnowledge(SetID set_id);
     virtual ~DeadKnowledge() {}
 
-    int get_set_id();
+    SetID get_set_id() const;
 };
 
 class UnsolvableKnowledge : public Knowledge

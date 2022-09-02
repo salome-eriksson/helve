@@ -4,19 +4,9 @@
 #include "statesetcompositions.h"
 #include "ssvconstant.h"
 
-#include "rules/rules.h"
-
 #include <cassert>
 #include <cmath>
 #include <iostream>
-
-inline size_t get_id_from_string(std::string input) {
-    long tmp  = std::stol(input);
-    if (tmp < 0) {
-       throw std::invalid_argument("ID " + input + " is negative.");
-    }
-    return (size_t) tmp;
-}
 
 ProofChecker::ProofChecker(std::string &task_file)
     : task(task_file), unsolvability_proven(false) {
@@ -255,10 +245,10 @@ void ProofChecker::verify_knowledge(std::string &line) {
             premises.push_back(get_id_from_string(word));
         }
 
-        if (rules::deadness_rules.find(rule) == rules::deadness_rules.end()) {
+        if (check_dead_knowlege.find(rule) == check_dead_knowlege.end()) {
             throw std::runtime_error(" Rule " + rule + " is not a dead rule.");
         }
-        conclusion = rules::deadness_rules[rule](dead_set_id, premises, *this);
+        conclusion = check_dead_knowlege[rule](dead_set_id, premises);
     } else if(knowledge_type == "u") {
         // Unsolvability knowledge is defined by "<rule> <premise_id>".
         KnowledgeID premise;
@@ -288,7 +278,7 @@ void ProofChecker::verify_knowledge(std::string &line) {
 /*
  * RULES ABOUT DEADNESS
  */
-/*
+
 // Emptyset Dead: Without premises, \emptyset is dead.
 std::unique_ptr<Knowledge> ProofChecker::check_rule_ed(
         SetID stateset_id, std::vector<KnowledgeID> &premise_ids) {
@@ -320,8 +310,8 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_ud(
                                  + std::to_string(stateset_id)
                                  + " is not a union.");
     }
-    int left_id = f->get_left_id();
-    int right_id = f->get_right_id();
+    SetID left_id = f->get_left_id();
+    SetID right_id = f->get_right_id();
 
     // Check if premise_ids[0] says that S is dead.
     DeadKnowledge *dead_knowledge =
@@ -422,7 +412,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_pg(
                                  std::to_string(stateset_id) + ".");
     }
 
-    int sp_id = s_cup_sp->get_right_id();
+    SetID sp_id = s_cup_sp->get_right_id();
 
     // Check if premise_ids[1] says that S' is dead.
     DeadKnowledge *dead_knowledge =
@@ -484,7 +474,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_pi(
                                  std::to_string(stateset_id) +
                                  " is not a negation.");
     }
-    int s_id = s_not->get_child_id();
+    SetID s_id = s_not->get_child_id();
 
     // Check if premise_ids[0] says that S[A] \subseteq S \cup S'.
     auto subset_knowledge =
@@ -519,7 +509,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_pi(
                                  std::to_string(s_id) + ".");
     }
 
-    int sp_id = s_cup_sp->get_right_id();
+    SetID sp_id = s_cup_sp->get_right_id();
 
     // Check if premise_ids[1] says that S' is dead.
     DeadKnowledge *dead_knowledge =
@@ -578,7 +568,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_rg(
                                  std::to_string(stateset_id) +
                                  " is not a negation.");
     }
-    int s_id = s_not->get_child_id();
+    SetID s_id = s_not->get_child_id();
 
     // Check if premise_ids[0] says that [A]S \subseteq S \cup S'.
     auto subset_knowledge =
@@ -613,7 +603,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_rg(
                                  std::to_string(s_id) + ".");
     }
 
-    int sp_id = s_cup_sp->get_right_id();
+    SetID sp_id = s_cup_sp->get_right_id();
 
     // Check if premise_ids[1] says that S' is dead.
     DeadKnowledge *dead_knowledge =
@@ -699,7 +689,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_ri(
                                  std::to_string(stateset_id) + ".");
     }
 
-    int sp_id = s_cup_sp->get_right_id();
+    SetID sp_id = s_cup_sp->get_right_id();
 
     // Check if premise_ids[1] says that S' is dead.
     DeadKnowledge *dead_knowledge =
@@ -741,7 +731,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_ri(
 
     return std::unique_ptr<Knowledge>(new DeadKnowledge(stateset_id));
 }
-*/
+
 
 /*
  * CONCLUSION RULES
@@ -904,7 +894,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_di(
         SetID left_id, SetID right_id, std::vector<KnowledgeID> &premise_ids) {
     assert(premise_ids.empty());
 
-    int e0,e1,e2;
+    SetID e0,e1,e2;
 
     // Get sets E, E' and E'' from the left side.
     const SetIntersection *si =
@@ -973,7 +963,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_su(
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
 
-    int e0,e1,e2;
+    SetID e0,e1,e2;
     const StateSetUnion *su =
             dynamic_cast<const StateSetUnion *>(get_set_expression<T>(left_id));
     if (!su) {
@@ -1023,7 +1013,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_si(
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
 
-    int e0,e1,e2;
+    SetID e0,e1,e2;
     const StateSetIntersection *si =
             dynamic_cast<const StateSetIntersection*>(get_set_expression<T>(right_id));
     if (!si) {
@@ -1075,7 +1065,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_st(
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
 
-    int e0,e1,e2;
+    SetID e0,e1,e2;
     e0 = left_id;
     e2 = right_id;
 
@@ -1122,7 +1112,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_at(
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
 
-    int s0, s1, a0, a1;
+    SetID s0, s1, a0, a1;
     s1 = right_id;
     const StateSetProgression *progression =
             dynamic_cast<const StateSetProgression *>(get_set_expression<StateSet>(left_id));
@@ -1176,7 +1166,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_au(
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
 
-    int s0,s1,a0,a1;
+    SetID s0,s1,a0,a1;
     s1 = right_id;
     const StateSetProgression *progression =
             dynamic_cast<const StateSetProgression *>(get_set_expression<StateSet>(left_id));
@@ -1241,7 +1231,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_pt(
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
 
-    int s0,s1,s2,a0;
+    SetID s0,s1,s2,a0;
     s2 = right_id;
     const StateSetProgression *progression =
             dynamic_cast<const StateSetProgression *>(get_set_expression<StateSet>(left_id));
@@ -1295,7 +1285,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_pu(
            knowledgebase[premise_ids[0]] &&
            knowledgebase[premise_ids[1]]);
 
-    int s0,s1,s2,a0;
+    SetID s0,s1,s2,a0;
     const StateSetProgression *progression =
             dynamic_cast<const StateSetProgression *>(get_set_expression<StateSet>(left_id));
     if (!progression) {
@@ -1359,7 +1349,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_pr(
     assert(premise_ids.size() == 1 &&
            knowledgebase[premise_ids[0]]);
 
-    int s0,s1,a0;
+    SetID s0,s1,a0;
     const StateSetRegression *regression =
             dynamic_cast<const StateSetRegression *>(get_set_expression<StateSet>(left_id));
     if (!regression) {
@@ -1413,7 +1403,7 @@ std::unique_ptr<Knowledge> ProofChecker::check_rule_rp(
     assert(premise_ids.size() == 1 &&
            knowledgebase[premise_ids[0]]);
 
-    int s0,s1,a0;
+    SetID s0,s1,a0;
     const StateSetProgression *progression =
             dynamic_cast<const StateSetProgression *>(get_set_expression<StateSet>(left_id));
     if (!progression) {

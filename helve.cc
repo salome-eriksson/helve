@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
         std::getline(certstream, input);
         if (print_line) {
             std::cout << "Checking line " << line << ": " << input_type
-                      << " " << input << std::endl;
+                      << input << std::endl;
         }
 
         try {

@@ -30,14 +30,14 @@ public:
 class ActionSetUnion : public ActionSet, public SetUnion
 {
 private:
-    int id_left;
-    int id_right;
+    SetID id_left;
+    SetID id_right;
 public:
     ActionSetUnion(int id_left, int id_right);
     virtual void get_actions(const std::deque<std::unique_ptr<ActionSet>> &action_sets, std::unordered_set<int> &indices) const;
     virtual bool is_constantall() const;
-    virtual int get_left_id() const;
-    virtual int get_right_id() const;
+    virtual SetID get_left_id() const;
+    virtual SetID get_right_id() const;
 };
 
 class ActionSetConstantAll : public ActionSet

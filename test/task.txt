@@ -62,7 +62,7 @@ end_action
 begin_action
 o7
 cost: 1
-PRE:6
-ADD:6
+PRE:5
+ADD:5
 end_action
 end_actions

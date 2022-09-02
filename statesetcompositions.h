@@ -17,14 +17,14 @@
 class StateSetUnion : public StateSet, public SetUnion
 {
 private:
-    int id_left;
-    int id_right;
+    SetID id_left;
+    SetID id_right;
 public:
     StateSetUnion(std::stringstream &input, Task &task);
     virtual ~StateSetUnion() {}
 
-    virtual int get_left_id() const;
-    virtual int get_right_id() const;
+    virtual SetID get_left_id() const;
+    virtual SetID get_right_id() const;
     virtual bool gather_union_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
                                         std::vector<const StateSetVariable *> &positive,
                                         std::vector<const StateSetVariable *> &negative,
@@ -34,14 +34,14 @@ public:
 class StateSetIntersection : public StateSet, public SetIntersection
 {
 private:
-    int id_left;
-    int id_right;
+    SetID id_left;
+    SetID id_right;
 public:
     StateSetIntersection(std::stringstream &input, Task &task);
     virtual ~StateSetIntersection() {}
 
-    virtual int get_left_id() const;
-    virtual int get_right_id() const;
+    virtual SetID get_left_id() const;
+    virtual SetID get_right_id() const;
     virtual bool gather_intersection_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
                                                std::vector<const StateSetVariable *> &positive,
                                                std::vector<const StateSetVariable *> &negative,
@@ -56,7 +56,7 @@ public:
     StateSetNegation(std::stringstream &input, Task &task);
     virtual ~StateSetNegation() {}
 
-    virtual int get_child_id() const;
+    virtual SetID get_child_id() const;
     virtual bool gather_union_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
                                         std::vector<const StateSetVariable *> &positive,
                                         std::vector<const StateSetVariable *> &negative,
@@ -70,27 +70,27 @@ public:
 class StateSetProgression : public StateSet
 {
 private:
-    int id_stateset;
-    int id_actionset;
+    SetID id_stateset;
+    SetID id_actionset;
 public:
     StateSetProgression(std::stringstream &input, Task &task);
     virtual ~StateSetProgression() {}
 
-    virtual int get_stateset_id() const;
-    virtual int get_actionset_id() const;
+    virtual SetID get_stateset_id() const;
+    virtual SetID get_actionset_id() const;
 };
 
 class StateSetRegression : public StateSet
 {
 private:
-    int id_stateset;
-    int id_actionset;
+    SetID id_stateset;
+    SetID id_actionset;
 public:
     StateSetRegression(std::stringstream &input, Task &task);
     virtual ~StateSetRegression() {}
 
-    virtual int get_stateset_id() const;
-    virtual int get_actionset_id() const;
+    virtual SetID get_stateset_id() const;
+    virtual SetID get_actionset_id() const;
 };
 
 

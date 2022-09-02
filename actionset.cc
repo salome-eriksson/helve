@@ -29,10 +29,10 @@ void ActionSetUnion::get_actions(const std::deque<std::unique_ptr<ActionSet>> &a
 bool ActionSetUnion::is_constantall() const {
     return false;
 }
-int ActionSetUnion::get_left_id() const {
+SetID ActionSetUnion::get_left_id() const {
     return id_left;
 }
-int ActionSetUnion::get_right_id() const {
+SetID ActionSetUnion::get_right_id() const {
     return id_right;
 }
 

@@ -7,6 +7,9 @@
 #include <vector>
 #include "cuddObj.hh"
 
+using KnowledgeID = size_t;
+using SetID = size_t;
+
 extern Timer timer;
 extern int g_timeout;
 extern Cudd manager;
@@ -32,6 +35,7 @@ struct IntVectorHasher {
     }
 };
 
+size_t get_id_from_string(std::string input);
 void initialize_timer();
 void set_timeout(int x);
 int get_peak_memory_in_kb(bool use_buffered_input = true);

@@ -1,15 +1,20 @@
 #include "statesetcompositions.h"
 
+#include "global_funcs.h"
+
 StateSetUnion::StateSetUnion(std::stringstream &input, Task &) {
-    input >> id_left;
-    input >> id_right;
+    std::string word;
+    input >> word;
+    id_left = get_id_from_string(word);
+    input >> word;
+    id_right = get_id_from_string(word);
 }
 
-int StateSetUnion::get_left_id() const {
+SetID StateSetUnion::get_left_id() const {
     return id_left;
 }
 
-int StateSetUnion::get_right_id() const {
+SetID StateSetUnion::get_right_id() const {
     return id_right;
 }
 
@@ -27,15 +32,18 @@ StateSetBuilder<StateSetUnion> union_builder("u");
 
 
 StateSetIntersection::StateSetIntersection(std::stringstream &input, Task &) {
-    input >> id_left;
-    input >> id_right;
+    std::string word;
+    input >> word;
+    id_left = get_id_from_string(word);
+    input >> word;
+    id_right = get_id_from_string(word);
 }
 
-int StateSetIntersection::get_left_id() const {
+SetID StateSetIntersection::get_left_id() const {
     return id_left;
 }
 
-int StateSetIntersection::get_right_id() const {
+SetID StateSetIntersection::get_right_id() const {
     return id_right;
 }
 
@@ -53,10 +61,12 @@ StateSetBuilder<StateSetIntersection> intersection_builder("i");
 
 
 StateSetNegation::StateSetNegation(std::stringstream &input, Task &) {
-    input >> id_child;
+    std::string word;
+    input >> word;
+    id_child = get_id_from_string(word);
 }
 
-int StateSetNegation::get_child_id() const {
+SetID StateSetNegation::get_child_id() const {
     return id_child;
 }
 
@@ -83,30 +93,36 @@ StateSetBuilder<StateSetNegation> negation_builder("n");
 
 
 StateSetProgression::StateSetProgression(std::stringstream &input, Task &) {
-    input >> id_stateset;
-    input >> id_actionset;
+    std::string word;
+    input >> word;
+    id_stateset = get_id_from_string(word);
+    input >> word;
+    id_actionset = get_id_from_string(word);
 }
 
-int StateSetProgression::get_actionset_id() const {
+SetID StateSetProgression::get_actionset_id() const {
     return id_actionset;
 }
 
-int StateSetProgression::get_stateset_id() const {
+SetID StateSetProgression::get_stateset_id() const {
     return id_stateset;
 }
 StateSetBuilder<StateSetProgression> progression_builder("p");
 
 
 StateSetRegression::StateSetRegression(std::stringstream &input, Task &) {
-    input >> id_stateset;
-    input >> id_actionset;
+    std::string word;
+    input >> word;
+    id_stateset = get_id_from_string(word);
+    input >> word;
+    id_actionset = get_id_from_string(word);
 }
 
-int StateSetRegression::get_actionset_id() const {
+SetID StateSetRegression::get_actionset_id() const {
     return id_actionset;
 }
 
-int StateSetRegression::get_stateset_id() const {
+SetID StateSetRegression::get_stateset_id() const {
     return id_stateset;
 }
 StateSetBuilder<StateSetRegression> regression_builder("r");

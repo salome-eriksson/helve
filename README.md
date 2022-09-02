@@ -90,8 +90,8 @@ The following tree represents the delcaration syntax for set expressions:
     e # ------- n #                                            (negation)
         \------ i # #                                          (intersection)
          \----- u # #                                          (union)
-          \---- p #                                            (progression)
-           \--- r #                                            (regression)
+          \---- p # #                                          (progression)
+           \--- r # #                                          (regression)
 
 (the different parts of the description are separated by space characters)
 
