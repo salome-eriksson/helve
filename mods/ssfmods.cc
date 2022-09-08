@@ -143,7 +143,7 @@ bool SSFMods::check_statement_b1(std::vector<const StateSetVariable *> &left,
 bool SSFMods::check_statement_b2(std::vector<const StateSetVariable *> &progress,
                                      std::vector<const StateSetVariable *> &left,
                                      std::vector<const StateSetVariable *> &right,
-                                     std::unordered_set<int> &action_indices) const {
+                                     std::unordered_set<size_t> &action_indices) const {
     assert(!progress.empty());
     std::vector<SSFMods *> left_mods = convert_to_formalism<SSFMods>(left, this);
     std::vector<SSFMods *> right_mods = convert_to_formalism<SSFMods>(right, this);
@@ -166,7 +166,7 @@ bool SSFMods::check_statement_b2(std::vector<const StateSetVariable *> &progress
     }
     std::vector<int> varorder;
     ModsUtil::SubsetCheckHelper helper;
-    for (int action_index : action_indices) {
+    for (size_t action_index : action_indices) {
 
         // check if varorder stays the same; if not get a new helper
         std::vector<int> new_varorder(prog_singular->vars);
@@ -260,7 +260,7 @@ bool SSFMods::check_statement_b2(std::vector<const StateSetVariable *> &progress
 bool SSFMods::check_statement_b3(std::vector<const StateSetVariable *> &regress,
                                      std::vector<const StateSetVariable *> &left,
                                      std::vector<const StateSetVariable *> &right,
-                                     std::unordered_set<int> &action_indices) const {
+                                     std::unordered_set<size_t> &action_indices) const {
     assert(!regress.empty());
     std::vector<SSFMods *> left_mods = convert_to_formalism<SSFMods>(left, this);
     std::vector<SSFMods *> right_mods = convert_to_formalism<SSFMods>(right, this);
@@ -283,7 +283,7 @@ bool SSFMods::check_statement_b3(std::vector<const StateSetVariable *> &regress,
     }
     std::vector<int> varorder;
     ModsUtil::SubsetCheckHelper helper;
-    for (int action_index : action_indices) {
+    for (size_t action_index : action_indices) {
 
         // check if varorder stays the same; if not get a new helper
         std::vector<int> new_varorder(reg_singular->vars);

@@ -137,7 +137,7 @@ const std::string& Task::get_fact(int n) const {
     return fact_names[n];
 }
 
-const Action& Task::get_action(int n) const {
+const Action& Task::get_action(size_t n) const {
   return actions[n];
 }
 

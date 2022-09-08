@@ -35,11 +35,11 @@ public:
     virtual bool check_statement_b2(std::vector<const StateSetVariable *> &progress,
                                     std::vector<const StateSetVariable *> &left,
                                     std::vector<const StateSetVariable *> &right,
-                                    std::unordered_set<int> &action_indices) const;
+                                    std::unordered_set<size_t> &action_indices) const;
     virtual bool check_statement_b3(std::vector<const StateSetVariable *> &regress,
                                     std::vector<const StateSetVariable *> &left,
                                     std::vector<const StateSetVariable *> &right,
-                                    std::unordered_set<int> &action_indices) const;
+                                    std::unordered_set<size_t> &action_indices) const;
     virtual bool check_statement_b4(const StateSetFormalism *right,
                                     bool left_positive, bool right_positive) const;
 

@@ -3,6 +3,7 @@
 
 #include "timer.h"
 
+#include <sstream>
 #include <string>
 #include <vector>
 #include "cuddObj.hh"
@@ -35,7 +36,8 @@ struct IntVectorHasher {
     }
 };
 
-size_t get_id_from_string(std::string input);
+size_t read_uint(std::stringstream &input);
+std::string read_word(std::stringstream &input);
 void initialize_timer();
 void set_timeout(int x);
 int get_peak_memory_in_kb(bool use_buffered_input = true);

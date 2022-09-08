@@ -29,7 +29,7 @@ BDD BDDUtil::build_bdd_from_cube(const Cube &cube) {
 
 void BDDUtil::build_actionformulas() {
     actionformulas.reserve(task.get_number_of_actions());
-    for(int i = 0; i < task.get_number_of_actions(); ++i) {
+    for(size_t i = 0; i < task.get_number_of_actions(); ++i) {
         BDDAction bddaction;
         const Action &action = task.get_action(i);
         bddaction.pre = manager.bddOne();

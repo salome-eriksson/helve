@@ -25,10 +25,11 @@ public:
 
     virtual SetID get_left_id() const;
     virtual SetID get_right_id() const;
-    virtual bool gather_union_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                        std::vector<const StateSetVariable *> &positive,
-                                        std::vector<const StateSetVariable *> &negative,
-                                        bool must_be_variable = false) const override;
+    virtual bool gather_union_variables(
+            const ProofChecker &proof_checker,
+            std::vector<const StateSetVariable *> &positive,
+            std::vector<const StateSetVariable *> &negative,
+            bool must_be_variable = false) const override;
 };
 
 class StateSetIntersection : public StateSet, public SetIntersection
@@ -42,10 +43,11 @@ public:
 
     virtual SetID get_left_id() const;
     virtual SetID get_right_id() const;
-    virtual bool gather_intersection_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                               std::vector<const StateSetVariable *> &positive,
-                                               std::vector<const StateSetVariable *> &negative,
-                                               bool must_be_variable = false) const override;
+    virtual bool gather_intersection_variables(
+            const ProofChecker &proof_checker,
+            std::vector<const StateSetVariable *> &positive,
+            std::vector<const StateSetVariable *> &negative,
+            bool must_be_variable = false) const override;
 };
 
 class StateSetNegation : public StateSet, public SetNegation
@@ -57,14 +59,16 @@ public:
     virtual ~StateSetNegation() {}
 
     virtual SetID get_child_id() const;
-    virtual bool gather_union_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                        std::vector<const StateSetVariable *> &positive,
-                                        std::vector<const StateSetVariable *> &negative,
-                                        bool must_be_variable = false) const override;
-    virtual bool gather_intersection_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                               std::vector<const StateSetVariable *> &positive,
-                                               std::vector<const StateSetVariable *> &negative,
-                                               bool must_be_variable = false) const override;
+    virtual bool gather_union_variables(
+            const ProofChecker &proof_checker,
+            std::vector<const StateSetVariable *> &positive,
+            std::vector<const StateSetVariable *> &negative,
+            bool must_be_variable = false) const override;
+    virtual bool gather_intersection_variables(
+            const ProofChecker &proof_checker,
+            std::vector<const StateSetVariable *> &positive,
+            std::vector<const StateSetVariable *> &negative,
+            bool must_be_variable = false) const override;
 };
 
 class StateSetProgression : public StateSet

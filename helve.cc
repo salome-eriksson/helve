@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <regex>
 #include <string>
 #include <sstream>
 
@@ -72,7 +73,7 @@ int main(int argc, char** argv) {
     set_timeout(timeout);
 
     ProofChecker proofchecker(task_file);
-    unsigned int line = 0;
+    unsigned int linenr = 0;
 
     std::ifstream certstream;
     certstream.open(certificate_file);
@@ -80,28 +81,32 @@ int main(int argc, char** argv) {
         exit_with(ExitCode::NO_CERTIFICATE_FILE);
     }
     std::string input_type;
-    std::string input;
-    while(certstream >> input_type) {
-        line++;
+    std::string line;
+    while(std::getline(certstream, line)) {
+        linenr++;
         // check if timeout is reached
         if(timer() > g_timeout) {
             exit_timeout("");
         }
+        // remove leading and trailing whitespaces
+        line = std::regex_replace(line, std::regex("^ +| +$"), "$1");
+        if(line.compare("") == 0) {
+            continue;
+        }
+        std::stringstream ss(line);
+        ss >> input_type;
 
-        // read in rest of line
-        std::getline(certstream, input);
         if (print_line) {
-            std::cout << "Checking line " << line << ": " << input_type
-                      << input << std::endl;
+            std::cout << "Checking line " << linenr << ": " << line << std::endl;
         }
 
         try {
             if(input_type.compare("e") == 0) {
-                proofchecker.add_state_set(input);
+                proofchecker.add_state_set(ss);
             } else if(input_type.compare("k") == 0) {
-                proofchecker.verify_knowledge(input);
+                proofchecker.verify_knowledge(ss);
             } else if(input_type.compare("a") == 0) {
-                proofchecker.add_action_set(input);
+                proofchecker.add_action_set(ss);
             } else if(input_type.at(0) == '#') {
                 continue;
             } else {
@@ -110,9 +115,8 @@ int main(int argc, char** argv) {
             }
         // TODO: case distinction for different kinds of errors
         } catch (const std::exception &e) {
-            std::cerr << "Critical error when checking line " << line << ":\n"
-                      << input_type << input << "\n"
-                      << e.what() << "\n";
+            std::cerr << "Critical error when checking line " << linenr << " ("
+                      << line << "): " << e.what() << "\n";
             if (exit_upon_error) {
                 exit_with(ExitCode::CRITICAL_ERROR);
             }

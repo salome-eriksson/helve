@@ -1,13 +1,10 @@
 #include "statesetcompositions.h"
 
 #include "global_funcs.h"
+#include "proofchecker.h"
 
-StateSetUnion::StateSetUnion(std::stringstream &input, Task &) {
-    std::string word;
-    input >> word;
-    id_left = get_id_from_string(word);
-    input >> word;
-    id_right = get_id_from_string(word);
+StateSetUnion::StateSetUnion(std::stringstream &input, Task &)
+    : id_left(read_uint(input)), id_right(read_uint(input)) {
 }
 
 SetID StateSetUnion::get_left_id() const {
@@ -18,25 +15,24 @@ SetID StateSetUnion::get_right_id() const {
     return id_right;
 }
 
-bool StateSetUnion::gather_union_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                           std::vector<const StateSetVariable *> &positive,
-                                           std::vector<const StateSetVariable *> &negative,
-                                           bool must_be_variable) const {
+bool StateSetUnion::gather_union_variables(
+        const ProofChecker &proof_checker,
+        std::vector<const StateSetVariable *> &positive,
+        std::vector<const StateSetVariable *> &negative,
+        bool must_be_variable) const {
     if (must_be_variable) {
         return false;
     }
-    return formulas[id_left]->gather_union_variables(formulas, positive, negative, false) &&
-           formulas[id_right]->gather_union_variables(formulas, positive, negative, false);
+    const StateSet *left = proof_checker.get_set<StateSet>(id_left);
+    const StateSet *right = proof_checker.get_set<StateSet>(id_right);
+    return left->gather_union_variables(proof_checker, positive, negative, false)
+           && right->gather_union_variables(proof_checker, positive, negative, false);
 }
 StateSetBuilder<StateSetUnion> union_builder("u");
 
 
-StateSetIntersection::StateSetIntersection(std::stringstream &input, Task &) {
-    std::string word;
-    input >> word;
-    id_left = get_id_from_string(word);
-    input >> word;
-    id_right = get_id_from_string(word);
+StateSetIntersection::StateSetIntersection(std::stringstream &input, Task &)
+    : id_left(read_uint(input)), id_right(read_uint(input)) {
 }
 
 SetID StateSetIntersection::get_left_id() const {
@@ -47,57 +43,58 @@ SetID StateSetIntersection::get_right_id() const {
     return id_right;
 }
 
-bool StateSetIntersection::gather_intersection_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                                         std::vector<const StateSetVariable *> &positive,
-                                                         std::vector<const StateSetVariable *> &negative,
-                                                         bool must_be_variable) const {
+bool StateSetIntersection::gather_intersection_variables(
+        const ProofChecker &proof_checker,
+        std::vector<const StateSetVariable *> &positive,
+        std::vector<const StateSetVariable *> &negative,
+        bool must_be_variable) const {
     if (must_be_variable) {
         return false;
     }
-    return formulas[id_left]->gather_intersection_variables(formulas, positive, negative, false) &&
-           formulas[id_right]->gather_intersection_variables(formulas, positive, negative, false);
+    const StateSet *left = proof_checker.get_set<StateSet>(id_left);
+    const StateSet *right = proof_checker.get_set<StateSet>(id_right);
+    return left->gather_intersection_variables(proof_checker, positive, negative, false)
+           && right->gather_intersection_variables(proof_checker, positive, negative, false);
 }
 StateSetBuilder<StateSetIntersection> intersection_builder("i");
 
 
-StateSetNegation::StateSetNegation(std::stringstream &input, Task &) {
-    std::string word;
-    input >> word;
-    id_child = get_id_from_string(word);
+StateSetNegation::StateSetNegation(std::stringstream &input, Task &)
+    : id_child(read_uint(input)) {
 }
 
 SetID StateSetNegation::get_child_id() const {
     return id_child;
 }
 
-bool StateSetNegation::gather_union_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                              std::vector<const StateSetVariable *> &positive,
-                                              std::vector<const StateSetVariable *> &negative,
-                                              bool must_be_variable) const {
+bool StateSetNegation::gather_union_variables(
+        const ProofChecker &proof_checker,
+        std::vector<const StateSetVariable *> &positive,
+        std::vector<const StateSetVariable *> &negative,
+        bool must_be_variable) const {
     if (must_be_variable) {
         return false;
     }
-    return formulas[id_child]->gather_union_variables(formulas, negative, positive, true);
+    const StateSet *child = proof_checker.get_set<StateSet>(id_child);
+    return child->gather_union_variables(proof_checker, negative, positive, true);
 }
 
-bool StateSetNegation::gather_intersection_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                                     std::vector<const StateSetVariable *> &positive,
-                                                     std::vector<const StateSetVariable *> &negative,
-                                                     bool must_be_variable) const {
+bool StateSetNegation::gather_intersection_variables(
+        const ProofChecker &proof_checker,
+        std::vector<const StateSetVariable *> &positive,
+        std::vector<const StateSetVariable *> &negative,
+        bool must_be_variable) const {
     if (must_be_variable) {
         return false;
     }
-    return formulas[id_child]->gather_intersection_variables(formulas, negative, positive, true);
+    const StateSet *child = proof_checker.get_set<StateSet>(id_child);
+    return child->gather_intersection_variables(proof_checker, negative, positive, true);
 }
 StateSetBuilder<StateSetNegation> negation_builder("n");
 
 
-StateSetProgression::StateSetProgression(std::stringstream &input, Task &) {
-    std::string word;
-    input >> word;
-    id_stateset = get_id_from_string(word);
-    input >> word;
-    id_actionset = get_id_from_string(word);
+StateSetProgression::StateSetProgression(std::stringstream &input, Task &)
+    : id_stateset(read_uint(input)), id_actionset(read_uint(input)) {
 }
 
 SetID StateSetProgression::get_actionset_id() const {
@@ -110,12 +107,8 @@ SetID StateSetProgression::get_stateset_id() const {
 StateSetBuilder<StateSetProgression> progression_builder("p");
 
 
-StateSetRegression::StateSetRegression(std::stringstream &input, Task &) {
-    std::string word;
-    input >> word;
-    id_stateset = get_id_from_string(word);
-    input >> word;
-    id_actionset = get_id_from_string(word);
+StateSetRegression::StateSetRegression(std::stringstream &input, Task &)
+    : id_stateset(read_uint(input)), id_actionset(read_uint(input)) {
 }
 
 SetID StateSetRegression::get_actionset_id() const {

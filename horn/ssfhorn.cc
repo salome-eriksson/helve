@@ -461,7 +461,7 @@ bool SSFHorn::check_statement_b1(std::vector<const StateSetVariable *> &left,
 bool SSFHorn::check_statement_b2(std::vector<const StateSetVariable *> &progress,
                                  std::vector<const StateSetVariable *> &left,
                                  std::vector<const StateSetVariable *> &right,
-                                 std::unordered_set<int> &action_indices) const {
+                                 std::unordered_set<size_t> &action_indices) const {
     std::vector<SSFHorn *> horn_formulas_left = convert_to_formalism<SSFHorn>(left, this);
     std::vector<SSFHorn *> horn_formulas_right = convert_to_formalism<SSFHorn>(right, this);
     std::vector<SSFHorn *> horn_formulas_prog = convert_to_formalism<SSFHorn>(progress, this);
@@ -489,7 +489,7 @@ bool SSFHorn::check_statement_b2(std::vector<const StateSetVariable *> &progress
     if (left_singular) {
         vec.push_back(left_singular);
     }
-    for (int a : action_indices) {
+    for (size_t a : action_indices) {
         SSFHorn prog_applied(*prog_singular, util->task.get_action(a), true);
         vec.push_back(&prog_applied);
         if (!util->conjunction_implies_disjunction(vec, horn_formulas_right)) {
@@ -503,7 +503,7 @@ bool SSFHorn::check_statement_b2(std::vector<const StateSetVariable *> &progress
 bool SSFHorn::check_statement_b3(std::vector<const StateSetVariable *> &regress,
                                  std::vector<const StateSetVariable *> &left,
                                  std::vector<const StateSetVariable *> &right,
-                                 std::unordered_set<int> &action_indices) const {
+                                 std::unordered_set<size_t> &action_indices) const {
     std::vector<SSFHorn *> horn_formulas_left = convert_to_formalism<SSFHorn>(left, this);
     std::vector<SSFHorn *> horn_formulas_right = convert_to_formalism<SSFHorn>(right,this);
     std::vector<SSFHorn *> horn_formulas_reg  = convert_to_formalism<SSFHorn>(regress, this);
@@ -531,7 +531,7 @@ bool SSFHorn::check_statement_b3(std::vector<const StateSetVariable *> &regress,
     if (left_singular) {
         vec.push_back(left_singular);
     }
-    for (int a : action_indices) {
+    for (size_t a : action_indices) {
         SSFHorn reg_applied(*reg_singular, util->task.get_action(a), false);
         vec.push_back(&reg_applied);
         if (!util->conjunction_implies_disjunction(vec, horn_formulas_right)) {

@@ -19,6 +19,7 @@ enum class ConstantType {
 };
 
 // TODO: can we avoid these forward declarations? I don't think so
+class ProofChecker;
 class StateSet;
 typedef std::function<std::unique_ptr<StateSet>(std::stringstream &input, Task &task)> StateSetConstructor;
 
@@ -30,15 +31,16 @@ public:
     virtual ~StateSet() = 0;
 
     static std::map<std::string, StateSetConstructor> *get_stateset_constructors();
-    virtual bool gather_union_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                std::vector<const StateSetVariable *> &positive,
-                                std::vector<const StateSetVariable *> &negative,
-                                bool must_be_variable = false) const;
-    virtual bool gather_intersection_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                std::vector<const StateSetVariable *> &positive,
-                                std::vector<const StateSetVariable *> &negative,
-                                bool must_be_variable = false) const;
-    // TODO: is it problematic to have the formulas passed like this? We could probably also pass the (const?) proofchecker to call get_set_expression)
+    virtual bool gather_union_variables(
+            const ProofChecker &proof_checker,
+            std::vector<const StateSetVariable *> &positive,
+            std::vector<const StateSetVariable *> &negative,
+            bool must_be_variable = false) const;
+    virtual bool gather_intersection_variables(
+            const ProofChecker &proof_checker,
+            std::vector<const StateSetVariable *> &positive,
+            std::vector<const StateSetVariable *> &negative,
+            bool must_be_variable = false) const;
 };
 
 
@@ -46,14 +48,16 @@ class StateSetVariable : public StateSet
 {
 public:
     virtual ~StateSetVariable () = 0;
-    virtual bool gather_union_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                        std::vector<const StateSetVariable *> &positive,
-                                        std::vector<const StateSetVariable *> &negative,
-                                        bool must_be_variable = false) const override;
-    virtual bool gather_intersection_variables(const std::deque<std::unique_ptr<StateSet>> &formulas,
-                                               std::vector<const StateSetVariable *> &positive,
-                                               std::vector<const StateSetVariable *> &negative,
-                                               bool must_be_variable = false) const override;
+    virtual bool gather_union_variables(
+            const ProofChecker &proof_checker,
+            std::vector<const StateSetVariable *> &positive,
+            std::vector<const StateSetVariable *> &negative,
+            bool must_be_variable = false) const override;
+    virtual bool gather_intersection_variables(
+            const ProofChecker &proof_checker,
+            std::vector<const StateSetVariable *> &positive,
+            std::vector<const StateSetVariable *> &negative,
+            bool must_be_variable = false) const override;
 };
 
 
@@ -65,11 +69,11 @@ public:
     virtual bool check_statement_b2(std::vector<const StateSetVariable *> &progress,
                                     std::vector<const StateSetVariable *> &left,
                                     std::vector<const StateSetVariable *> &right,
-                                    std::unordered_set<int> &action_indices) const = 0;
+                                    std::unordered_set<size_t> &action_indices) const = 0;
     virtual bool check_statement_b3(std::vector<const StateSetVariable *> &regress,
                                     std::vector<const StateSetVariable *> &left,
                                     std::vector<const StateSetVariable *> &right,
-                                    std::unordered_set<int> &action_indices) const = 0;
+                                    std::unordered_set<size_t> &action_indices) const = 0;
     virtual bool check_statement_b4(const StateSetFormalism *right, bool left_positive,
                                     bool right_positive) const = 0;
 

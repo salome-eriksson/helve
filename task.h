@@ -34,7 +34,7 @@ public:
   Task(std::string file);
   const std::vector<std::string>& get_fact_names() const;
   const std::string& get_fact(int n) const;
-  const Action& get_action(int n) const;
+  const Action& get_action(size_t n) const;
   int get_number_of_actions() const;
   int get_number_of_facts() const;
   const Cube& get_initial_state() const;

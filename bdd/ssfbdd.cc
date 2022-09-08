@@ -68,7 +68,7 @@ bool SSFBDD::check_statement_b1(std::vector<const StateSetVariable *> &left,
 bool SSFBDD::check_statement_b2(std::vector<const StateSetVariable *> &progress,
                                 std::vector<const StateSetVariable *> &left,
                                 std::vector<const StateSetVariable *> &right,
-                                std::unordered_set<int> &action_indices) const {
+                                std::unordered_set<size_t> &action_indices) const {
 
     std::vector<SSFBDD *> left_bdds = convert_to_formalism<SSFBDD>(left, this);
     std::vector<SSFBDD *> right_bdds = convert_to_formalism<SSFBDD>(right, this);
@@ -93,7 +93,7 @@ bool SSFBDD::check_statement_b2(std::vector<const StateSetVariable *> &progress,
         util->build_actionformulas();
     }
 
-    for (int a : action_indices) {
+    for (size_t a : action_indices) {
         const Action &action = util->task.get_action(a);
         BDD prog_rn = prog_singular * util->actionformulas[a].pre;
 
@@ -118,7 +118,7 @@ bool SSFBDD::check_statement_b2(std::vector<const StateSetVariable *> &progress,
 bool SSFBDD::check_statement_b3(std::vector<const StateSetVariable *> &regress,
                                 std::vector<const StateSetVariable *> &left,
                                 std::vector<const StateSetVariable *> &right,
-                                std::unordered_set<int> &action_indices) const {
+                                std::unordered_set<size_t> &action_indices) const {
     std::vector<SSFBDD *> left_bdds = convert_to_formalism<SSFBDD>(left, this);
     std::vector<SSFBDD *> right_bdds = convert_to_formalism<SSFBDD>(right, this);
     std::vector<SSFBDD *> reg_bdds = convert_to_formalism<SSFBDD>(regress, this);
@@ -142,7 +142,7 @@ bool SSFBDD::check_statement_b3(std::vector<const StateSetVariable *> &regress,
         util->build_actionformulas();
     }
 
-    for (int a : action_indices) {
+    for (size_t a : action_indices) {
         const Action &action = util->task.get_action(a);
         BDD reg_rn = reg_singular * util->actionformulas[a].eff;
         for (int var = 0; var < util->task.get_number_of_facts(); ++var) {
