@@ -1,7 +1,7 @@
 #ifndef BASIC_STATEMENT_FUNCTIONS_H
 #define BASIC_STATEMENT_FUNCTIONS_H
 
-#include "../../stateset.h"
+#include "../../statesetformalism.h"
 
 #include <vector>
 

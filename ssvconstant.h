@@ -5,6 +5,12 @@
 
 #include <sstream>
 
+enum class ConstantType {
+    EMPTY,
+    GOAL,
+    INIT
+};
+
 class SSVConstant : public StateSetVariable
 {
 private:

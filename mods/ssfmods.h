@@ -1,7 +1,7 @@
 #ifndef SSFMODS_H
 #define SSFMODS_H
 
-#include "../stateset.h"
+#include "../statesetformalism.h"
 #include "../task.h"
 
 #include <sstream>

@@ -1,7 +1,7 @@
 #ifndef SSFHORN_H
 #define SSFHORN_H
 
-#include "../stateset.h"
+#include "../statesetformalism.h".h"
 #include "../task.h"
 
 #include <forward_list>

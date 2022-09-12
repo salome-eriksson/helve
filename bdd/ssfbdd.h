@@ -1,7 +1,7 @@
 #ifndef SSFBDD_H
 #define SSFBDD_H
 
-#include "../stateset.h"
+#include "../statesetformalism.h"
 #include "../task.h"
 
 #include <unordered_map>
