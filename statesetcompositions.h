@@ -28,8 +28,7 @@ public:
     virtual bool gather_union_variables(
             const ProofChecker &proof_checker,
             std::vector<const StateSetVariable *> &positive,
-            std::vector<const StateSetVariable *> &negative,
-            bool must_be_variable = false) const override;
+            std::vector<const StateSetVariable *> &negative) const override;
 };
 
 class StateSetIntersection : public StateSet, public SetIntersection
@@ -41,13 +40,12 @@ public:
     StateSetIntersection(std::stringstream &input, Task &task);
     virtual ~StateSetIntersection() {}
 
-    virtual SetID get_left_id() const;
-    virtual SetID get_right_id() const;
+    virtual SetID get_left_id() const override;
+    virtual SetID get_right_id() const override;
     virtual bool gather_intersection_variables(
             const ProofChecker &proof_checker,
             std::vector<const StateSetVariable *> &positive,
-            std::vector<const StateSetVariable *> &negative,
-            bool must_be_variable = false) const override;
+            std::vector<const StateSetVariable *> &negative) const override;
 };
 
 class StateSetNegation : public StateSet, public SetNegation
@@ -58,17 +56,15 @@ public:
     StateSetNegation(std::stringstream &input, Task &task);
     virtual ~StateSetNegation() {}
 
-    virtual SetID get_child_id() const;
+    virtual SetID get_child_id() const override;
     virtual bool gather_union_variables(
             const ProofChecker &proof_checker,
             std::vector<const StateSetVariable *> &positive,
-            std::vector<const StateSetVariable *> &negative,
-            bool must_be_variable = false) const override;
+            std::vector<const StateSetVariable *> &negative) const override;
     virtual bool gather_intersection_variables(
             const ProofChecker &proof_checker,
             std::vector<const StateSetVariable *> &positive,
-            std::vector<const StateSetVariable *> &negative,
-            bool must_be_variable = false) const override;
+            std::vector<const StateSetVariable *> &negative) const override;
 };
 
 class StateSetProgression : public StateSet

@@ -18,15 +18,11 @@ SetID StateSetUnion::get_right_id() const {
 bool StateSetUnion::gather_union_variables(
         const ProofChecker &proof_checker,
         std::vector<const StateSetVariable *> &positive,
-        std::vector<const StateSetVariable *> &negative,
-        bool must_be_variable) const {
-    if (must_be_variable) {
-        return false;
-    }
+        std::vector<const StateSetVariable *> &negative) const {
     const StateSet *left = proof_checker.get_set<StateSet>(id_left);
     const StateSet *right = proof_checker.get_set<StateSet>(id_right);
-    return left->gather_union_variables(proof_checker, positive, negative, false)
-           && right->gather_union_variables(proof_checker, positive, negative, false);
+    return left->gather_union_variables(proof_checker, positive, negative)
+           && right->gather_union_variables(proof_checker, positive, negative);
 }
 StateSetBuilder<StateSetUnion> union_builder("u");
 
@@ -46,15 +42,11 @@ SetID StateSetIntersection::get_right_id() const {
 bool StateSetIntersection::gather_intersection_variables(
         const ProofChecker &proof_checker,
         std::vector<const StateSetVariable *> &positive,
-        std::vector<const StateSetVariable *> &negative,
-        bool must_be_variable) const {
-    if (must_be_variable) {
-        return false;
-    }
+        std::vector<const StateSetVariable *> &negative) const {
     const StateSet *left = proof_checker.get_set<StateSet>(id_left);
     const StateSet *right = proof_checker.get_set<StateSet>(id_right);
-    return left->gather_intersection_variables(proof_checker, positive, negative, false)
-           && right->gather_intersection_variables(proof_checker, positive, negative, false);
+    return left->gather_intersection_variables(proof_checker, positive, negative)
+           && right->gather_intersection_variables(proof_checker, positive, negative);
 }
 StateSetBuilder<StateSetIntersection> intersection_builder("i");
 
@@ -70,25 +62,30 @@ SetID StateSetNegation::get_child_id() const {
 bool StateSetNegation::gather_union_variables(
         const ProofChecker &proof_checker,
         std::vector<const StateSetVariable *> &positive,
-        std::vector<const StateSetVariable *> &negative,
-        bool must_be_variable) const {
-    if (must_be_variable) {
-        return false;
-    }
+        std::vector<const StateSetVariable *> &negative) const {
     const StateSet *child = proof_checker.get_set<StateSet>(id_child);
-    return child->gather_union_variables(proof_checker, negative, positive, true);
+
+    //Negation is only allowed to occur directly before a StateSetVariable
+    const StateSetVariable *child_var = dynamic_cast<const StateSetVariable *>(child);
+    if (!child_var) {
+        throw std::runtime_error("Encountered negation of a composed state set.");
+    }
+
+    return child->gather_union_variables(proof_checker, negative, positive);
 }
 
 bool StateSetNegation::gather_intersection_variables(
         const ProofChecker &proof_checker,
         std::vector<const StateSetVariable *> &positive,
-        std::vector<const StateSetVariable *> &negative,
-        bool must_be_variable) const {
-    if (must_be_variable) {
-        return false;
-    }
+        std::vector<const StateSetVariable *> &negative) const {
     const StateSet *child = proof_checker.get_set<StateSet>(id_child);
-    return child->gather_intersection_variables(proof_checker, negative, positive, true);
+
+    //Negation is only allowed to occur directly before a StateSetVariable
+    const StateSetVariable *child_var = dynamic_cast<const StateSetVariable *>(child);
+    if (!child_var) {
+        throw std::runtime_error("Encountered negation of a composed state set.");
+    }
+    return child->gather_intersection_variables(proof_checker, negative, positive);
 }
 StateSetBuilder<StateSetNegation> negation_builder("n");
 

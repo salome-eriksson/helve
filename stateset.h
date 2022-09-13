@@ -5,34 +5,54 @@
 
 #include <deque>
 #include <functional>
-#include <map>
 #include <memory>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 class ProofChecker;
 class StateSet;
 class StateSetVariable;
-typedef std::function<std::unique_ptr<StateSet>(std::stringstream &input, Task &task)> StateSetConstructor;
+using StateSetConstructor = std::function<std::unique_ptr<StateSet>(std::stringstream &input, Task &task)>;
+using StateSetConstructorMap = std::unordered_map<std::string, StateSetConstructor>;
 
-class StateSet
-{
+class StateSet {
+private:
+    static StateSetConstructorMap &get_stateset_constructors_map();
 public:
     virtual ~StateSet() = 0;
 
-    static std::map<std::string, StateSetConstructor> *get_stateset_constructors();
+    static void register_stateset_constructor(std::string key,
+                                       StateSetConstructor constructor);
+    static StateSetConstructor get_stateset_constructor(std::string key);
+
+    /*
+     * Called on state sets of the form \bigcup L, where L is a StateSetVariable
+     * or a negation thereof. Collects all StateSetVariables occuring
+     * positively (negatively) in positive (negative).
+     * Returns false if the state set does not fit the required form.
+     *
+     * Default implementation returns false.
+     */
     virtual bool gather_union_variables(
             const ProofChecker &proof_checker,
             std::vector<const StateSetVariable *> &positive,
-            std::vector<const StateSetVariable *> &negative,
-            bool must_be_variable = false) const;
+            std::vector<const StateSetVariable *> &negative) const;
+
+    /*
+     * Called on state sets of the form \bigcap L, where L is a StateSetVariable
+     * or a negation thereof. Collects all StateSetVariables occuring
+     * positively (negatively) in positive (negative).
+     * Returns false if the state set does not fit the required form.
+     *
+     * Default implementation returns false.
+     */
     virtual bool gather_intersection_variables(
             const ProofChecker &proof_checker,
             std::vector<const StateSetVariable *> &positive,
-            std::vector<const StateSetVariable *> &negative,
-            bool must_be_variable = false) const;
+            std::vector<const StateSetVariable *> &negative) const;
 };
 
 
@@ -43,17 +63,14 @@ public:
     virtual bool gather_union_variables(
             const ProofChecker &proof_checker,
             std::vector<const StateSetVariable *> &positive,
-            std::vector<const StateSetVariable *> &negative,
-            bool must_be_variable = false) const override;
+            std::vector<const StateSetVariable *> &negative) const override;
     virtual bool gather_intersection_variables(
             const ProofChecker &proof_checker,
             std::vector<const StateSetVariable *> &positive,
-            std::vector<const StateSetVariable *> &negative,
-            bool must_be_variable = false) const override;
+            std::vector<const StateSetVariable *> &negative) const override;
 };
 
 
-// TODO: can we force each class derived from StateSet to have a fitting constructor (not just inherit, but dedicated implementation)
 template<class T>
 class StateSetBuilder {
 public:
@@ -61,7 +78,7 @@ public:
         StateSetConstructor constructor = [](std::stringstream &input, Task &task) -> std::unique_ptr<StateSet> {
             return std::unique_ptr<T>(new T(input, task));
         };
-        StateSet::get_stateset_constructors()->insert(std::make_pair(key, constructor));
+        StateSet::register_stateset_constructor(key, constructor);
     }
 
     ~StateSetBuilder() = default;

@@ -45,14 +45,9 @@ void ProofChecker::add_state_set(std::stringstream &line) {
     SetID set_id = read_uint(line);
     std::string state_set_type = read_word(line);
 
-    auto stateset_constructors = StateSet::get_stateset_constructors();
-    if (stateset_constructors->find(state_set_type)
-            == stateset_constructors->end()) {
-        throw std::runtime_error("State set expression type " + state_set_type
-                                 + " does not exist.");
-    }
+
     std::unique_ptr<StateSet> expression =
-            StateSet::get_stateset_constructors()->at(state_set_type)(line, task);
+            StateSet::get_stateset_constructor(state_set_type)(line, task);
     check_end_of_line(line);
 
     if (set_id >= statesets.size()) {

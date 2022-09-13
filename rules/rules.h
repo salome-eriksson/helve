@@ -12,16 +12,21 @@ namespace rules {
 using DeadnessRuleFunction =
     std::function<std::unique_ptr<Knowledge>
     (SetID, std::vector<KnowledgeID> &, const ProofChecker &)>;
+using DeadnessRuleFunctionMap = std::unordered_map<std::string, DeadnessRuleFunction>;
+
 using SubsetRuleFunction =
     std::function<std::unique_ptr<Knowledge>
     (SetID, SetID, std::vector<KnowledgeID> &, const ProofChecker &)>;
+using SubsetRuleFunctionMap = std::unordered_map<std::string, SubsetRuleFunction>;
+
 using UnsolvableRuleFunction =
     std::function<std::unique_ptr<Knowledge>
     (KnowledgeID, const ProofChecker &)>;
+using UnsolvableRuleFunctionMap = std::unordered_map<std::string, UnsolvableRuleFunction>;
 
 class DeadnessRule {
 private:
-    static std::unordered_map<std::string, DeadnessRuleFunction> deadness_rules;
+    static DeadnessRuleFunctionMap &get_deadness_rules_map();
 public:
     DeadnessRule(std::string key, DeadnessRuleFunction rule_function);
     ~DeadnessRule() = default;
@@ -32,7 +37,7 @@ public:
 
 class SubsetRule {
 private:
-    static std::unordered_map<std::string, SubsetRuleFunction> subset_rules;
+    static SubsetRuleFunctionMap &get_subset_rules_map();
 public:
     SubsetRule(std::string key, SubsetRuleFunction rule_function);
     ~SubsetRule() = default;
@@ -42,7 +47,7 @@ public:
 
 class UnsolvableRule{
 private:
-    static std::unordered_map<std::string, UnsolvableRuleFunction> unsolvable_rules;
+    static UnsolvableRuleFunctionMap &get_unsolvable_rules_map();
 public:
     UnsolvableRule(std::string key, UnsolvableRuleFunction unsolvable_function);
     ~UnsolvableRule() = default;
