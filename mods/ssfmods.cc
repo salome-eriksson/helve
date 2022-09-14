@@ -379,9 +379,7 @@ bool SSFMods::check_statement_b3(std::vector<const StateSetVariable *> &regress,
 bool SSFMods::check_statement_b4(const StateSetFormalism *right, bool left_positive, bool right_positive) const {
     const std::vector<int> &superset_varorder = right->get_varorder();
     bool superset_varorder_is_subset = true;
-    std::cout << "SDFS" << std::endl;
     std::vector<int> var_pos;
-    std::cout << "SDFDSFSDFSF" << std::endl;
     for (int var : superset_varorder) {
         auto pos = std::find(vars.begin(), vars.end(), var);
         if (pos == vars.end()) {
