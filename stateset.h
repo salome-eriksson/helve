@@ -3,30 +3,28 @@
 
 #include "task.h"
 
-#include <deque>
 #include <functional>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 class ProofChecker;
-class StateSet;
 class StateSetVariable;
-using StateSetConstructor = std::function<std::unique_ptr<StateSet>(std::stringstream &input, Task &task)>;
-using StateSetConstructorMap = std::unordered_map<std::string, StateSetConstructor>;
 
 class StateSet {
+public:
+    using Constructor = std::function<std::unique_ptr<StateSet>(std::stringstream &input, Task &task)>;
 private:
-    static StateSetConstructorMap &get_stateset_constructors_map();
+    using ConstructorMap = std::unordered_map<std::string, Constructor>;
+    static ConstructorMap &get_stateset_constructors_map();
 public:
     virtual ~StateSet() = 0;
 
     static void register_stateset_constructor(std::string key,
-                                       StateSetConstructor constructor);
-    static StateSetConstructor get_stateset_constructor(std::string key);
+                                       Constructor constructor);
+    static Constructor get_stateset_constructor(std::string key);
 
     /*
      * Called on state sets of the form \bigcup L, where L is a StateSetVariable
@@ -75,7 +73,7 @@ template<class T>
 class StateSetBuilder {
 public:
     StateSetBuilder(std::string key) {
-        StateSetConstructor constructor = [](std::stringstream &input, Task &task) -> std::unique_ptr<StateSet> {
+        StateSet::Constructor constructor = [](std::stringstream &input, Task &task) -> std::unique_ptr<StateSet> {
             return std::unique_ptr<T>(new T(input, task));
         };
         StateSet::register_stateset_constructor(key, constructor);

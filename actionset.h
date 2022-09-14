@@ -4,8 +4,6 @@
 #include "setcompositions.h"
 #include "task.h"
 
-#include <deque>
-#include <memory>
 #include <unordered_set>
 
 class ProofChecker;

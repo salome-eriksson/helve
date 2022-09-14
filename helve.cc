@@ -11,8 +11,6 @@
 #include <string>
 #include <sstream>
 
-// TODO: check for virtual destructors!
-
 void expand_environment_variables(std::string &file) {
     size_t found = file.find('$');
     while(found != std::string::npos) {

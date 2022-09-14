@@ -1,12 +1,12 @@
 #include "rules.h"
 
 namespace rules{
-DeadnessRuleFunctionMap &DeadnessRule::get_deadness_rules_map() {
-    static DeadnessRuleFunctionMap deadness_rules_map = {};
+DeadnessRule::FunctionMap &DeadnessRule::get_deadness_rules_map() {
+    static FunctionMap deadness_rules_map = {};
     return deadness_rules_map;
 }
 
-DeadnessRule::DeadnessRule(std::string key, DeadnessRuleFunction rule_function) {
+DeadnessRule::DeadnessRule(std::string key, VerifyFunction rule_function) {
     if (get_deadness_rules_map().count(key) != 0) {
         std::cerr << "Multiple definition of deadness rule \""
                   << key << "\"" << std::endl;
@@ -15,7 +15,7 @@ DeadnessRule::DeadnessRule(std::string key, DeadnessRuleFunction rule_function) 
     get_deadness_rules_map()[key] = rule_function;
 }
 
-DeadnessRuleFunction DeadnessRule::get_deadness_rule(std::string key) {
+DeadnessRule::VerifyFunction DeadnessRule::get_deadness_rule(std::string key) {
     if (get_deadness_rules_map().count(key) == 0) {
         throw std::runtime_error("Rule " + key + " is not a deadness rule.");
     }
@@ -23,12 +23,12 @@ DeadnessRuleFunction DeadnessRule::get_deadness_rule(std::string key) {
 }
 
 
-SubsetRuleFunctionMap &SubsetRule::get_subset_rules_map() {
-    static SubsetRuleFunctionMap subset_rules_map = {};
+SubsetRule::FunctionMap &SubsetRule::get_subset_rules_map() {
+    static FunctionMap subset_rules_map = {};
     return subset_rules_map;
 }
 
-SubsetRule::SubsetRule(std::string key, SubsetRuleFunction rule_function) {
+SubsetRule::SubsetRule(std::string key, VerifyFunction rule_function) {
     if (get_subset_rules_map().count(key) != 0) {
         std::cerr << "Multiple definition of subset rule \""
                   << key << "\"" << std::endl;
@@ -37,7 +37,7 @@ SubsetRule::SubsetRule(std::string key, SubsetRuleFunction rule_function) {
     get_subset_rules_map()[key] = rule_function;
 }
 
-SubsetRuleFunction SubsetRule::get_subset_rule(std::string key) {
+SubsetRule::VerifyFunction SubsetRule::get_subset_rule(std::string key) {
     if (get_subset_rules_map().count(key) == 0) {
         throw std::runtime_error("Rule " + key + " is not a subset rule.");
     }
@@ -45,12 +45,12 @@ SubsetRuleFunction SubsetRule::get_subset_rule(std::string key) {
 }
 
 
-UnsolvableRuleFunctionMap &UnsolvableRule::get_unsolvable_rules_map() {
-    static UnsolvableRuleFunctionMap unsolvable_rules_map = {};
+UnsolvableRule::FunctionMap &UnsolvableRule::get_unsolvable_rules_map() {
+    static FunctionMap unsolvable_rules_map = {};
     return unsolvable_rules_map;
 }
 
-UnsolvableRule::UnsolvableRule(std::string key, UnsolvableRuleFunction rule_function) {
+UnsolvableRule::UnsolvableRule(std::string key, VerifyFunction rule_function) {
     if (get_unsolvable_rules_map().count(key) != 0) {
         std::cerr << "Multiple definition of subset rule \""
                   << key << "\"" << std::endl;
@@ -59,7 +59,7 @@ UnsolvableRule::UnsolvableRule(std::string key, UnsolvableRuleFunction rule_func
     get_unsolvable_rules_map()[key] = rule_function;
 }
 
-UnsolvableRuleFunction UnsolvableRule::get_unsolvable_rule(std::string key) {
+UnsolvableRule::VerifyFunction UnsolvableRule::get_unsolvable_rule(std::string key) {
     if (get_unsolvable_rules_map().count(key) == 0) {
         throw std::runtime_error("Rule " + key + " is not an unsolvable rule.");
     }

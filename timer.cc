@@ -5,8 +5,6 @@
 #include <sys/times.h>
 #include <unistd.h>
 
-using namespace std;
-
 Timer::Timer() {
     last_start_clock = current_clock();
     collected_time = 0;
@@ -50,12 +48,12 @@ double Timer::reset() {
     return result;
 }
 
-ostream &operator<<(ostream &os, const Timer &timer) {
+std::ostream &operator<<(std::ostream &os, const Timer &timer) {
     double value = timer();
     if (value < 0 && value > -1e-10)
         value = 0.0;  // We sometimes get inaccuracies from god knows where.
     if (value < 1e-10)
         value = 0.0;  // Don't care about such small values.
-    os << fixed << setprecision(2) << value << "s";
+    os << std::fixed << std::setprecision(2) << value << "s";
     return os;
 }

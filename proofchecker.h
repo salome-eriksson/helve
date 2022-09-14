@@ -7,20 +7,15 @@
 #include "task.h"
 
 #include <deque>
-#include <functional>
 #include <memory>
 #include <sstream>
-#include <unordered_map>
+#include <string>
 #include <vector>
-
-using SetID = size_t;
-using KnowledgeID = size_t;
 
 class ProofChecker
 {
 private:
     Task task;
-
     std::deque<std::unique_ptr<StateSet>> statesets;
     std::deque<std::unique_ptr<ActionSet>> actionsets;
     std::deque<std::unique_ptr<Knowledge>> knowledgebase;

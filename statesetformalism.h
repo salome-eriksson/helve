@@ -4,6 +4,7 @@
 #include "stateset.h"
 #include "ssvconstant.h"
 
+#include <unordered_set>
 #include <vector>
 
 

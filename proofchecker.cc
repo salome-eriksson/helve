@@ -1,14 +1,21 @@
 #include "proofchecker.h"
 
 #include "global_funcs.h"
-#include "statesetcompositions.h"
-#include "ssvconstant.h"
 
 #include "rules/rules.h"
 
-#include <cassert>
 #include <cmath>
 #include <iostream>
+
+inline void check_end_of_line(std::stringstream &line) {
+    if (!line.eof()) {
+        std::string tmp;
+        std::getline(line, tmp);
+        throw std::runtime_error("Line should be finished but still contains \""
+                                 + tmp + "\"");
+    }
+}
+
 
 ProofChecker::ProofChecker(std::string &task_file)
     : task(task_file), unsolvability_proven(false) {
@@ -29,15 +36,6 @@ void ProofChecker::add_knowledge(std::unique_ptr<Knowledge> entry,
                                  + ", it already exists.");
     }
     knowledgebase[id] = std::move(entry);
-}
-
-inline void check_end_of_line(std::stringstream &line) {
-    if (!line.eof()) {
-        std::string tmp;
-        std::getline(line, tmp);
-        throw std::runtime_error("Line should be finished but still contains \""
-                                 + tmp + "\"");
-    }
 }
 
 // line format: <id> <type> <description>
@@ -106,7 +104,7 @@ void ProofChecker::add_action_set(std::stringstream &line) {
 void ProofChecker::verify_knowledge(std::stringstream &line) {
     KnowledgeID conclusion_id;
     std::unique_ptr<Knowledge> conclusion;
-    std::string rule, knowledge_type;
+    std::string knowledge_type, rule;
     bool unsolvable_rule = false;
 
     conclusion_id = read_uint(line);

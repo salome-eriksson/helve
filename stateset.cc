@@ -2,16 +2,16 @@
 
 #include "proofchecker.h"
 
-StateSet::~StateSet() {}
-StateSetVariable::~StateSetVariable() {}
 
-StateSetConstructorMap &StateSet::get_stateset_constructors_map() {
-    static StateSetConstructorMap constructors_map = {};
+StateSet::~StateSet() {}
+
+StateSet::ConstructorMap &StateSet::get_stateset_constructors_map() {
+    static ConstructorMap constructors_map = {};
     return constructors_map;
 }
 
 void StateSet::register_stateset_constructor(std::string key,
-                                                    StateSetConstructor constructor) {
+                                             StateSet::Constructor constructor) {
     if (get_stateset_constructors_map().count(key) != 0) {
         throw std::runtime_error("State set expression type" + key
                                  + "already exists.");
@@ -19,7 +19,7 @@ void StateSet::register_stateset_constructor(std::string key,
     get_stateset_constructors_map().insert(std::make_pair(key, constructor));
 }
 
-StateSetConstructor StateSet::get_stateset_constructor(std::string key) {
+StateSet::Constructor StateSet::get_stateset_constructor(std::string key) {
     if (get_stateset_constructors_map().count(key) == 0) {
         throw std::runtime_error("State set expression type " + key
                                  + " does not exist.");
@@ -39,6 +39,8 @@ bool StateSet::gather_intersection_variables(
     return false;
 }
 
+
+StateSetVariable::~StateSetVariable() {}
 
 bool StateSetVariable::gather_union_variables(
         const ProofChecker &, std::vector<const StateSetVariable *> &positive,
