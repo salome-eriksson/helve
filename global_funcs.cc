@@ -12,18 +12,6 @@ Timer timer;
 int g_timeout;
 Cudd manager;
 
-size_t read_uint(std::stringstream &input) {
-    if (input.eof()) {
-        throw std::runtime_error("Unexpected end of line.");
-    }
-    std::string id_str;
-    input >> id_str;
-    long tmp  = std::stol(id_str);
-    if (tmp < 0) {
-       throw std::runtime_error("ID " + id_str + " is negative.");
-    }
-    return (size_t) tmp;
-}
 
 std::string read_word(std::stringstream & input) {
     if(input.eof()) {
@@ -33,6 +21,19 @@ std::string read_word(std::stringstream & input) {
     input >> ret;
     return ret;
 }
+
+int read_int(std::stringstream &input) {
+    return std::stoi(read_word(input));
+}
+
+size_t read_uint(std::stringstream &input) {
+    long tmp  = std::stol(read_word(input));
+    if (tmp < 0) {
+       throw std::runtime_error("ID " + std::to_string(tmp) + " is negative.");
+    }
+    return (size_t) tmp;
+}
+
 
 void initialize_timer() {
     timer = Timer();

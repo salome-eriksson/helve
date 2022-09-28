@@ -54,18 +54,35 @@ public:
     virtual const StateSetFormalism *get_compatible(const StateSetVariable *stateset) const = 0;
     /*
      * return a constant formula in the formalism of this (using covariance)
+     * TODO: this should probably vanish and be handled by the formalisms separately.
      */
     virtual const StateSetFormalism *get_constant(ConstantType ctype) const = 0;
 
     // TODO: think about error handling!
     // TOOD: do we need reference? after all we are calling it from a T * formula
     // TODO: const_cast is a HACK; remove!
+    // TODO: duplicate functions are a HACK while not all formalisms use const pointers
     template <class T>
     std::vector<T *> convert_to_formalism(std::vector<const StateSetVariable *> &vector, const T *reference) const {
         std::vector<T *>ret;
         ret.reserve(vector.size());
         for (const StateSetVariable *formula : vector) {
             T *element = const_cast<T *>(reference->get_compatible(formula));
+            if (!element) {
+                std::string msg = "could not convert vector to specific formalism, incompatible formulas!";
+                throw std::runtime_error(msg);
+            }
+            ret.push_back(element);
+        }
+        return std::move(ret);
+    }
+
+    template <class T>
+    std::vector<const T *> const_convert_to_formalism(std::vector<const StateSetVariable *> &vector, const T *reference) const {
+        std::vector<const T *>ret;
+        ret.reserve(vector.size());
+        for (const StateSetVariable *formula : vector) {
+            const T *element = reference->get_compatible(formula);
             if (!element) {
                 std::string msg = "could not convert vector to specific formalism, incompatible formulas!";
                 throw std::runtime_error(msg);

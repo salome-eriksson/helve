@@ -5,11 +5,15 @@
 
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include "cuddObj.hh"
 
 using KnowledgeID = size_t;
 using SetID = size_t;
+using Literal = std::pair<unsigned, bool>;
+using Clause = std::unordered_map<unsigned, bool>;
+using PartialAssignment = std::unordered_map<unsigned, bool>;
 
 extern Timer timer;
 extern int g_timeout;
@@ -36,8 +40,9 @@ struct IntVectorHasher {
     }
 };
 
-size_t read_uint(std::stringstream &input);
 std::string read_word(std::stringstream &input);
+int read_int(std::stringstream &input);
+size_t read_uint(std::stringstream &input);
 void initialize_timer();
 void set_timeout(int x);
 int get_peak_memory_in_kb(bool use_buffered_input = true);

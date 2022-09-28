@@ -19,8 +19,10 @@ HEADERS = \
 	  bdd/bddfile.h \
 	  bdd/bddutil.h \
 	  bdd/ssfbdd.h \
-	  horn/hornutil.h \
-	  horn/ssfhorn.h \
+	  horn/cnfformula.h \
+	  horn/hornstateset.h \
+	  horn/horntypeformula.h \
+	  horn/taskinformation.h \
 	  mods/modsutil.h \
 	  mods/ssfmods.h \
 	  rules/rules.h \

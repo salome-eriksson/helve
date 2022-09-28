@@ -32,7 +32,7 @@ k 250 d 250 ud 201 202
 k 260 d 200 ud 260 202
 
 #subset dead
-e 300 h p cnf 6 2 1 0 -1 0;
+e 300 h p cnf 6 2 1 0 -1 0 ;
 k 301 d 0 ed
 k 302 s 300 0 b1
 k 300 d 300 sd 301 302
@@ -46,12 +46,12 @@ k 340 d 300 sd 301 301
 # second premise is about wrong sets
 k 351 s 300 2 b1 
 k 350 d 300 sd 301 351
-e 360 h p cnf 6 2 1 0 -1 0;
+e 360 h p cnf 6 2 1 0 -1 0 ;
 k 361 s 360 0 b1
 k 360 d 300 sd 301 361
 
 # progression goal
-e 400 h p cnf 6 2 -2 -4 0 -6 0;
+e 400 h p cnf 6 2 -2 -4 0 -6 0 ;
 e 401 p 400 0
 e 402 u 400 0
 k 401 s 401 402 b2
@@ -68,7 +68,7 @@ k 430 d 400 pg 402 402 403
 # first premise does not have a progression on the left side
 k 440 d 400 pg 404 402 403
 # first premise left side does not progress over S
-e 450 h p cnf 6 2 -2 -4 0 -6 0;
+e 450 h p cnf 6 2 -2 -4 0 -6 0 ;
 e 451 p 450 0
 k 451 s 451 402 b2
 k 450 d 400 pg 451 402 403
@@ -104,7 +104,7 @@ k 553 d 550 sd 402 551
 k 550 d 400 pg 401 402 553
 
 #progression initial
-e 601 h p cnf 6 2 -2 -4 0 -6 0;
+e 601 h p cnf 6 2 -2 -4 0 -6 0 ;
 e 600 n 601
 e 602 p 601 0
 e 603 u 601 0
@@ -120,7 +120,7 @@ k 630 d 600 pi 602 602 603
 # first premise does not have a progression on the left side
 k 640 d 600 pi 603 602 603
 # first premise left side does not progress over S
-e 651 h p cnf 6 2 -2 -4 0 -6 0;
+e 651 h p cnf 6 2 -2 -4 0 -6 0 ;
 e 652 p 651 0
 k 651 s 652 603 b2
 k 650 d 600 pi 651 602 603
@@ -151,7 +151,7 @@ k 730 d 600 pi 601 602 733
 k 743 s 0 601 b1
 k 740 d 600 pi 601 602 743
 # third premise right side is not S
-e 750 h p cnf 6 2 -2 -4 0 -6 0;
+e 750 h p cnf 6 2 -2 -4 0 -6 0 ;
 k 753 s 2 750 b1
 k 750 d 600 pi 601 602 753
 # S is not a negation
@@ -268,7 +268,7 @@ k 1163 s 2 1161 b1
 k 1160 d 1000 ri 1001 1002 1163
 
 #conclusion initial
-e 1200 h p cnf 6 2 -2 -4 0 -6 0;
+e 1200 h p cnf 6 2 -2 -4 0 -6 0 ;
 e 1201 p 1200 0
 e 1202 u 1200 0
 k 1201 s 1201 1202 b2
@@ -291,7 +291,7 @@ k 1240 u ci 1204
 k 1250 u ci 1202
 
 #conclusion goal
-e 1300 h p cnf 6 2 -2 -4 0 -6 0;
+e 1300 h p cnf 6 2 -2 -4 0 -6 0 ;
 e 1301 p 1300 0
 e 1302 u 1300 0
 k 1301 s 1301 1302 b2
@@ -485,9 +485,9 @@ k 2290 s 2200 2290 dis
 #k 2390 s 2300 2390 dis
 
 #subset union state set
-e 2401 h p cnf 6 1 -1 0;
-e 2402 h p cnf 6 1 -2 0;
-e 2403 h p cnf 6 1 -1 -2 0;
+e 2401 h p cnf 6 1 -1 0 ;
+e 2402 h p cnf 6 1 -2 0 ;
+e 2403 h p cnf 6 1 -1 -2 0 ;
 k 2401 s 2401 2403 b1
 k 2402 s 2402 2403 b1
 e 2400 u 2401 2402
@@ -543,9 +543,9 @@ k 2580 s 2500 2503 sus 2501 2502
 k 2590 s 2501 2503 sua 2501 2502 2501
 
 #subset intersection state set
-e 2601 h p cnf 6 2 -1 0 -2 0;
-e 2602 h p cnf 6 1 -1 0;
-e 2603 h p cnf 6 1 -2 0;
+e 2601 h p cnf 6 2 -1 0 -2 0 ;
+e 2602 h p cnf 6 1 -1 0 ;
+e 2603 h p cnf 6 1 -2 0 ;
 e 2600 i 2602 2603
 k 2601 s 2601 2602 b1
 k 2602 s 2601 2603 b1
@@ -556,7 +556,7 @@ k 2610 s 2601 2601 sis 2601 2602
 k 2621 d 0 ed
 k 2620 s 2601 2600 sis 2621 2602
 # first premise talks about the wrong sets
-e 2631 h p cnf 6 3 -1 0 -2 0 -3 0;
+e 2631 h p cnf 6 3 -1 0 -2 0 -3 0 ;
 k 2631 s 2631 2602 b1
 k 2630 s 2601 2600 sis 2631 2602
 k 2640 s 2601 2600 sis 2602 2602
@@ -564,7 +564,7 @@ k 2640 s 2601 2600 sis 2602 2602
 k 2651 d 0 ed
 k 2650 s 2601 2600 sis 2651 2602
 # second premise talks about the wrong sets
-e 2661 h p cnf 6 3 -1 0 -2 0 -3 0;
+e 2661 h p cnf 6 3 -1 0 -2 0 -3 0 ;
 k 2662 s 2661 2603 b1
 k 2660 s 2601 2600 sis 2601 2662
 k 2670 s 2601 2600 sis 2601 2601
@@ -601,9 +601,9 @@ k 2780 s 2601 2600 sis 2601 2602 2601
 #k 2780 s 2701 2700 sis 2701
 
 #subset transitivity state set
-e 2800 h p cnf 6 1 -1 0;
-e 2801 h p cnf 6 1 -1 -2 0;
-e 2802 h p cnf 6 1 -1 -2 -3 0;
+e 2800 h p cnf 6 1 -1 0 ;
+e 2801 h p cnf 6 1 -1 -2 0 ;
+e 2802 h p cnf 6 1 -1 -2 -3 0 ;
 k 2801 s 2800 2801 b1
 k 2802 s 2801 2802 b1
 k 2800 s 2800 2802 sts 2801 2802
@@ -612,7 +612,7 @@ k 2811 d 0 ed
 k 2810 s 2800 2802 sts 2811 2802
 # first premise talks about the wrong sets
 k 2820 s 2800 2802 sts 2802 2802
-e 2831 h p cnf 6 1 -1 -3 0;
+e 2831 h p cnf 6 1 -1 -3 0 ;
 k 2831 s 2800 2831 b1
 k 2830 s 2800 2802 sts 2831 2802
 # second premise is not subset knowledge
@@ -620,7 +620,7 @@ k 2842 d 0 ed
 k 2840 s 2800 2802 sts 2801 2842
 # second premise talks about the wrong sets
 k 2850 s 2800 2802 sts 2801 2801
-e 2861 h p cnf 6 1 -1 -2 -4 0;
+e 2861 h p cnf 6 1 -1 -2 -4 0 ;
 k 2862 s 2801 2861 b1
 k 2860 s 2800 2802 sts 2801 2862
 # wrong number of premises
@@ -656,7 +656,7 @@ k 2980 s 2900 2902 sta 2901 2902 2901
 
 #action transitivity
 a 3000 b 1 0
-e 3000 h p cnf 6 1 -2 -4 0;
+e 3000 h p cnf 6 1 -2 -4 0 ;
 e 3001 p 3000 0
 e 3002 p 3000 3000
 k 3001 s 3001 3000 b2
@@ -675,7 +675,7 @@ e 3040 p 0 0
 k 3041 s 3040 3000 b2
 k 3040 s 3002 3000 at 3041 3002
 # first premise right side is not S'
-e 3050 h p cnf 6 1 -2 -4 -5 0;
+e 3050 h p cnf 6 1 -2 -4 -5 0 ;
 k 3051 s 3001 3050 b2
 k 3050 s 3002 3000 at 3051 3002
 # second premise is not subset knowledge
@@ -694,7 +694,7 @@ k 3090 s 3002 3000 at 3001 3002 3001
 a 3101 b 1 0
 a 3102 b 1 1
 a 3103 u 3101 3102 
-e 3100 h p cnf 6 1 -2 -4 0;
+e 3100 h p cnf 6 1 -2 -4 0 ;
 e 3101 p 3100 3101
 e 3102 p 3100 3102
 e 3103 p 3100 3103
@@ -714,7 +714,7 @@ k 3130 s 3103 3100 au 3131 3102
 # first premise left side does not progress over A
 k 3140 s 3103 3100 au 3102 3012
 # first premise does not have S' on the right side
-e 3150 h p cnf 6 1 -2 -4 -5 0;
+e 3150 h p cnf 6 1 -2 -4 -5 0 ;
 k 3151 s 3101 3150 b2
 k 3150 s 3103 3100 au 3151 3102
 # second premise is not subset knowledge
@@ -730,7 +730,7 @@ k 3180 s 3103 3100 au 3101 3182
 # second premise left side does not progress over A
 k 3190 s 3103 3100 au 3101 3101
 # second premise does not have S' on the right side
-e 3210 h p cnf 6 1 -2 -4 -5 0;
+e 3210 h p cnf 6 1 -2 -4 -5 0 ;
 k 3212 s 3102 3210 b2
 k 3210 s 3103 3100 au 3101 3212
 # wrong number of premises
@@ -738,10 +738,10 @@ k 3220 s 3103 3100 au 3101
 k 3230 s 3101 3100 au 3101 3102 3101
 
 #progression transitivity
-e 3300 h p cnf 6 1 -2 -4 0;
+e 3300 h p cnf 6 1 -2 -4 0 ;
 e 3301 p 3300 0
 e 3302 p 0 0
-e 3303 h p cnf 6 1 -2 -4 -5 0;
+e 3303 h p cnf 6 1 -2 -4 -5 0 ;
 k 3301 s 3301 3303 b2
 k 3302 s 0 3300 b1
 k 3300 s 3302 3303 pt 3301 3302
@@ -772,9 +772,9 @@ k 3380 s 3302 3303 pt 3301 3382
 k 3380 s 3302 3303 pt 3301 3302 3301
 
 #progression union
-e 3400 h p cnf 6 1 -2 0;
-e 3401 h p cnf 6 1 -4 0;
-e 3402 h p cnf 6 1 -2 -4 0;
+e 3400 h p cnf 6 1 -2 0 ;
+e 3401 h p cnf 6 1 -4 0 ;
+e 3402 h p cnf 6 1 -2 -4 0 ;
 e 3403 u 3400 3401
 e 3404 p 3400 0
 e 3405 p 3401 0
@@ -813,9 +813,9 @@ k 3522 s 3405 3403 b2
 k 3520 s 3406 3402 pu 3401 3522
 
 #progression to regression
-e 3600 h p cnf 6 1 -2 0;
+e 3600 h p cnf 6 1 -2 0 ;
 e 3601 p 3600 0
-e 3602 h p cnf 6 1 -2 -4 0;
+e 3602 h p cnf 6 1 -2 -4 0 ;
 k 3601 s 3601 3602 b2
 e 3603 n 3600
 e 3604 n 3602
@@ -835,7 +835,7 @@ k 3640 s 3605 3603 pr 3641
 k 3651 s 3600 3600 b1
 k 3650 s 3605 3603 pr 3651
 # premise talks about wrong sets
-e 3660 h p cnf 6 1 -4 0;
+e 3660 h p cnf 6 1 -4 0 ;
 e 3661 p 3660 0
 k 3661 s 3661 3602 b2
 k 3660 s 3605 3603 pr 3661
@@ -843,7 +843,7 @@ a 3670 b 1 0
 e 3671 p 3600 3670
 k 3671 s 3671 3602 b2
 k 3670 s 3605 3603 pr 3671
-e 3680 h p cnf 6 1 -2 -4 -5 0;
+e 3680 h p cnf 6 1 -2 -4 -5 0 ;
 k 3681 s 3601 3680 b2
 k 3680 s 3605 3603 pr 3681
 # wrong number of premises
@@ -851,9 +851,9 @@ k 3690 s 3605 3603 pr
 
 # premise: [A]S \subseteq S'
 #regression to progression
-e 3700 h p cnf 6 3 2 0 4 0 5 0;
+e 3700 h p cnf 6 3 2 0 4 0 5 0 ;
 e 3701 r 3700 0
-e 3702 h p cnf 6 2 2 0 4 0;
+e 3702 h p cnf 6 2 2 0 4 0 ;
 k 3701 s 3701 3702 b3
 e 3703 n 3700
 e 3704 n 3702
@@ -881,7 +881,7 @@ a 3770 b 1 0
 e 3771 r 3700 3770
 k 3771 s 3771 3702 b3
 k 3770 s 3705 3703 rp 3771
-e 3780 h p cnf 6 1 2 0;
+e 3780 h p cnf 6 1 2 0 ;
 k 3781 s 3701 3780 b3
 k 3780 s 3705 3703 rp 3781
 # wrong number of premises
