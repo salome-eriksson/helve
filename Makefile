@@ -21,6 +21,7 @@ HEADERS = \
 	  bdd/ssfbdd.h \
 	  horn/cnfformula.h \
 	  horn/hornstateset.h \
+	  horn/horntypedisjunction.h \
 	  horn/horntypeformula.h \
 	  horn/taskinformation.h \
 	  mods/modsutil.h \
