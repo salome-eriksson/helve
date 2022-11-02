@@ -24,6 +24,21 @@ public:
     static VerifyFunction get_deadness_rule(std::string key);
 };
 
+class BoundRule {
+public:
+    using VerifyFunction = std::function<std::unique_ptr<Knowledge>
+        (SetID, unsigned, std::vector<KnowledgeID> &, const ProofChecker &)>;
+private:
+    using FunctionMap = std::unordered_map<std::string, VerifyFunction>;
+    static FunctionMap &get_bound_rules_map();
+public:
+    BoundRule(std::string key, VerifyFunction rule_function);
+    ~BoundRule() = default;
+    BoundRule(const BoundRule &other) = delete;
+
+    static VerifyFunction get_bound_rule(std::string key);
+};
+
 class SubsetRule {
 public:
     using VerifyFunction = std::function<std::unique_ptr<Knowledge>
@@ -50,6 +65,20 @@ public:
     ~UnsolvableRule() = default;
     UnsolvableRule(const VerifyFunction &other) = delete;
     static VerifyFunction get_unsolvable_rule(std::string key);
+};
+
+class OptimalityRule {
+public:
+    using VerifyFunction = std::function<std::unique_ptr<Knowledge>
+        (unsigned, KnowledgeID, const ProofChecker &)>;
+private:
+    using FunctionMap = std::unordered_map<std::string, VerifyFunction>;
+    static FunctionMap &get_optimality_rules_map();
+public:
+    OptimalityRule(std::string key, VerifyFunction optimality_function);
+    ~OptimalityRule() = default;
+    OptimalityRule(const VerifyFunction &other) = delete;
+    static VerifyFunction get_optimality_rule(std::string key);
 };
 }
 

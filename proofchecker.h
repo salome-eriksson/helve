@@ -20,6 +20,7 @@ private:
     std::deque<std::unique_ptr<ActionSet>> actionsets;
     std::deque<std::unique_ptr<Knowledge>> knowledgebase;
     bool unsolvability_proven;
+    unsigned proven_lower_bound;
 
     void add_knowledge(std::unique_ptr<Knowledge> entry, KnowledgeID id);
 public:
@@ -29,6 +30,7 @@ public:
     void add_action_set(std::stringstream &line);
     void verify_knowledge(std::stringstream &line);
     bool is_unsolvability_proven();
+    unsigned get_proven_lower_bound();
 
     template<class T, typename std::enable_if<std::is_base_of<ActionSet, T>::value>::type * = nullptr>
     const T *get_set(SetID set_id) const {
