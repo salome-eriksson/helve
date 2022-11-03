@@ -29,8 +29,10 @@ public:
     void add_state_set(std::stringstream &line);
     void add_action_set(std::stringstream &line);
     void verify_knowledge(std::stringstream &line);
-    bool is_unsolvability_proven();
-    unsigned get_proven_lower_bound();
+    bool is_unsolvability_proven() const;
+    unsigned get_proven_lower_bound() const;
+
+    const Task &get_task() const;
 
     template<class T, typename std::enable_if<std::is_base_of<ActionSet, T>::value>::type * = nullptr>
     const T *get_set(SetID set_id) const {

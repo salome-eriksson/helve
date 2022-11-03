@@ -16,6 +16,7 @@ public:
     virtual void get_actions(const ProofChecker &proof_checker,
                              std::unordered_set<size_t> &indices) const = 0;
     virtual bool is_constantall() const = 0;
+    unsigned get_min_cost(const ProofChecker &proof_checker) const;
 };
 
 class ActionSetBasic : public ActionSet

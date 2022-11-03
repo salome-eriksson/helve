@@ -3,6 +3,8 @@
 #include "../../knowledge.h"
 #include "../../ssvconstant.h"
 
+#include <limits>
+
 namespace rules {
 // Without premises, \emptyset has a cost bound of infinity
 std::unique_ptr<Knowledge> emptyset_costbound(SetID stateset_id, unsigned bound,
@@ -19,7 +21,7 @@ std::unique_ptr<Knowledge> emptyset_costbound(SetID stateset_id, unsigned bound,
                                  " is not the constant empty set.");
     }
 
-    if (!bound == std::numeric_limits<unsigned>::max()) {
+    if (bound != std::numeric_limits<unsigned>::max()) {
         throw std::runtime_error("Empty set bound is not infinity.");
     }
 

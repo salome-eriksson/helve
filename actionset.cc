@@ -1,12 +1,25 @@
 #include "actionset.h"
 
 #include "proofchecker.h"
+#include "task.h"
 
 #include <cassert>
+#include <limits>
 
 ActionSet::ActionSet()
 {
 
+}
+
+unsigned ActionSet::get_min_cost(const ProofChecker &proof_checker) const {
+    int ret = std::numeric_limits<int>::max();
+    std::unordered_set<size_t> action_indices;
+    get_actions(proof_checker, action_indices);
+    const Task &task = proof_checker.get_task();
+    for (size_t index : action_indices) {
+        ret = std::min(ret, task.get_action(index).cost);
+    }
+    return ((unsigned) ret);
 }
 
 ActionSetBasic::ActionSetBasic(std::unordered_set<size_t> &action_indices)

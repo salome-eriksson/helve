@@ -183,10 +183,14 @@ void ProofChecker::verify_knowledge(std::stringstream &line) {
     add_knowledge(std::move(conclusion), conclusion_id);
 }
 
-bool ProofChecker::is_unsolvability_proven() {
+bool ProofChecker::is_unsolvability_proven() const {
     return unsolvability_proven;
 }
 
-unsigned ProofChecker::get_proven_lower_bound() {
+unsigned ProofChecker::get_proven_lower_bound() const {
     return proven_lower_bound;
+}
+
+const Task &ProofChecker::get_task() const {
+    return task;
 }
