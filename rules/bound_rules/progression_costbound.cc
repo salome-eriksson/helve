@@ -60,7 +60,7 @@ std::unique_ptr<Knowledge> progression_costbound(SetID stateset_id, unsigned bou
     // premise_ids[2] ... premise_ids[n]
     std::unordered_set<SetID> covered_action_set_ids;
     unsigned bound_from_premises = std::numeric_limits<unsigned>::max();
-    for (size_t i = 1; i < (premise_ids.size()-2); ++i) {
+    for (size_t i = 1; i < (premise_ids.size()/2); ++i) {
         // S[A_j] \subseteq S \cup S_j
         subset_knowledge =
                 proof_checker.get_knowledge<SubsetKnowledge<StateSet>>(premise_ids[2*i]);
@@ -99,9 +99,11 @@ std::unique_ptr<Knowledge> progression_costbound(SetID stateset_id, unsigned bou
         // Update the minimum bound and covered actions
         const ActionSet *action_set =
                 proof_checker.get_set<ActionSet>(action_set_id);
-        bound_from_premises =
-                std::min(bound_from_premises,
-                         bound_knowledge->get_bound()+action_set->get_min_cost(proof_checker));
+        if (bound_knowledge->get_bound() != std::numeric_limits<unsigned>::max()) {
+            bound_from_premises =
+                    std::min(bound_from_premises,
+                             bound_knowledge->get_bound()+action_set->get_min_cost(proof_checker));
+        }
         covered_action_set_ids.insert(action_set_id);
     }
 
@@ -130,7 +132,8 @@ std::unique_ptr<Knowledge> progression_costbound(SetID stateset_id, unsigned bou
     }
 
     // Check if bound matches
-    if (bound != bound_from_premises) {
+    // TODO: can we change this to != by writing the certifiate differently?
+    if (bound > bound_from_premises) {
         throw std::runtime_error("Bound " + std::to_string(bound) + " does not"
                                  " match the bound derived from the premises ("
                                  + std::to_string(bound_from_premises) +")");
