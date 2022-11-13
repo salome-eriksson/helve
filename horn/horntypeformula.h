@@ -22,6 +22,8 @@ public:
     bool entails(const Clause &clause) const;
 
     static const HornTypeFormula &get_unsatisfiable_formula(bool dual);
+
+    void dump() const;
 };
 }
 

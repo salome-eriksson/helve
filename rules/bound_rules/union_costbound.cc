@@ -37,7 +37,7 @@ std::unique_ptr<Knowledge> union_costbound(SetID stateset_id, unsigned bound,
     unsigned sp_bound = bound_knowledge->get_bound();
 
     // Check that bound = min(s_bound,sp_bound)
-    if (bound != std::min(s_bound, sp_bound)) {
+    if (bound > std::min(s_bound, sp_bound)) {
         throw std::runtime_error("bound=" + std::to_string(bound) + " is not"
                                  "the minimum of " + std::to_string(s_bound)
                                  + " and " + std::to_string(sp_bound));

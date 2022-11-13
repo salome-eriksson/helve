@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+#include <iostream>
+
 namespace horn {
 void HornTypeFormula::verify_horn_type() {
     for (const Clause &clause : clauses) {
@@ -73,6 +75,24 @@ const HornTypeFormula &HornTypeFormula::get_unsatisfiable_formula(bool dual) {
         return dual_horn_unsatisfiable_formula;
     } else {
         return horn_unsatisfiable_formula;
+    }
+}
+
+void HornTypeFormula::dump() const {
+    if (has_no_clauses()) {
+        std::cout << "TRUE" << std::endl;
+    } else if (has_empty_clause) {
+        std::cout << "FALSE" << std::endl;
+    } else {
+        for (Literal lit : unit_clauses) {
+            std::cout << lit.first << "->" << lit.second << std::endl;
+        }
+        for (const Clause &clause : clauses) {
+            for (Literal lit : clause) {
+                std::cout << lit.first << "->" << lit.second << " ";
+            }
+            std::cout << std::endl;
+        }
     }
 }
 
