@@ -25,7 +25,7 @@ private:
     // global variable i is at position varorder[i](*2)
     std::vector<int> varorder;
     // bdd variable i is global variable other_varorder[i]
-    std::vector<int> other_varorder;
+    std::vector<unsigned> other_varorder;
     // constant formulas
     SSFBDD emptyformula;
     SSFBDD initformula;

@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace horn {
+namespace cnf {
 // TODO: We might want to move this class somewhere else eventually
 class CNFFormula
 {
@@ -32,6 +32,7 @@ public:
   CNFFormula(std::stringstream &ss);
   CNFFormula(const std::vector<const CNFFormula *> &&conjuncts);
   CNFFormula(const PartialAssignment &partial_assignment);
+  CNFFormula(std::vector<Clause > &&clauses);
 
   /*
    * Perform unit propagation given the partial assignment (without
@@ -41,6 +42,8 @@ public:
    */
   static bool unit_propagation(const std::vector<const CNFFormula *> &formulas,
                                PartialAssignment &partial_assignment);
+
+  static const CNFFormula &get_unsatisfiable_formula();
 
   unsigned get_varamount() const;
   size_t get_number_of_clauses() const;

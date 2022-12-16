@@ -1,7 +1,9 @@
 #include "hornstateset.h"
 
-#include "horntypedisjunction.h"
 #include "taskinformation.h"
+
+#include "../cnf/cnfformula.h"
+#include "../cnf/disjunction.h"
 
 #include <algorithm> //TODO: remove after rewriting B4
 #include <cassert>
@@ -32,16 +34,30 @@ std::vector<Literal> HornStateSet::get_effect_literals(const Action &action) con
     return ret;
 }
 
-std::vector<const HornTypeFormula *> HornStateSet::get_formulas(
+const HornTypeFormula *HornStateSet::get_formula() const {
+    return &formula;
+}
+
+
+// helper functions for check_statement_*
+std::vector<const HornTypeFormula *> get_formulas(
         const std::vector<const HornStateSet *> &state_sets) {
     std::vector<const HornTypeFormula *>formulas;
     formulas.reserve(state_sets.size());
     for (const HornStateSet *state_set : state_sets) {
-        formulas.push_back(&(state_set->formula));
+        formulas.push_back(state_set->get_formula());
     }
     return formulas;
 }
-
+std::vector<const cnf::CNFFormula *> get_cnf_formulas(
+        const std::vector<const HornStateSet *> &state_sets) {
+    std::vector<const cnf::CNFFormula *>formulas;
+    formulas.reserve(state_sets.size());
+    for (const HornStateSet *state_set : state_sets) {
+        formulas.push_back(state_set->get_formula());
+    }
+    return formulas;
+}
 
 bool HornStateSet::check_statement_b1(std::vector<const StateSetVariable *> &left,
                                       std::vector<const StateSetVariable *> &right) const {
@@ -55,7 +71,7 @@ bool HornStateSet::check_statement_b1(std::vector<const StateSetVariable *> &lef
         return true;
     }
 
-    HornTypeDisjunction right_disjunction(std::move(get_formulas(right_horn)));
+    cnf::Disjunction right_disjunction(get_cnf_formulas(right_horn));
 
     // phi implies (/\ c_i) is true iff phi implies c_i for each c_i.
     for (const Clause &clause : right_disjunction) {
@@ -96,7 +112,7 @@ bool HornStateSet::check_statement_b2(std::vector<const StateSetVariable *> &pro
     }
     varamount = std::max(varamount, left_formula.get_varamount());
 
-    HornTypeDisjunction right_disjunction(std::move(get_formulas(right_horn)));
+    cnf::Disjunction right_disjunction(get_cnf_formulas(right_horn));
     // If the conjunction of clauses representing the disjunction is empty,
     // the disjunction is valid.
     if (right_disjunction.begin() == right_disjunction.end()) {
@@ -182,7 +198,7 @@ bool HornStateSet::check_statement_b3(std::vector<const StateSetVariable *> &reg
     }
     varamount = std::max(varamount, left_formula.get_varamount());
 
-    HornTypeDisjunction right_disjunction(std::move(get_formulas(right_horn)));
+    cnf::Disjunction right_disjunction(get_cnf_formulas(right_horn));
     // If the conjunction of clauses representing the disjunction is empty,
     // the disjunction is valid.
     if (right_disjunction.begin() == right_disjunction.end()) {
@@ -239,7 +255,7 @@ bool HornStateSet::check_statement_b4(const StateSetFormalism *right_const, bool
     if (left_positive && right_positive) {
         if (right->supports_tocnf()) {
             int count = 0;
-            std::vector<int> varorder;
+            std::vector<unsigned> varorder;
             std::vector<bool> clause;
             while (right->get_clause(count, varorder, clause)) {
                 if (!is_entailed(varorder, clause)) {
@@ -249,7 +265,7 @@ bool HornStateSet::check_statement_b4(const StateSetFormalism *right_const, bool
             }
             return true;
         } else if (right->is_nonsuccint()) {
-            const std::vector<int> &sup_varorder = right->get_varorder();
+            const std::vector<unsigned> &sup_varorder = right->get_varorder();
             std::vector<bool> model(sup_varorder.size());
             std::vector<int> var_transform(varorder.size(), -1);
             std::vector<int> vars_to_fill;
@@ -269,9 +285,9 @@ bool HornStateSet::check_statement_b4(const StateSetFormalism *right_const, bool
             std::vector<bool> mark(varorder.size(),false);
             std::vector<int> old_solution(varorder.size(),2);
             PartialAssignment partial_assignment;
-            std::vector<const CNFFormula *>vec({&formula});
+            std::vector<const cnf::CNFFormula *>vec({&formula});
 
-            bool solution_found = CNFFormula::unit_propagation(vec, partial_assignment);
+            bool solution_found = cnf::CNFFormula::unit_propagation(vec, partial_assignment);
             while(solution_found) {
                 for(size_t i = 0; i < old_solution.size(); ++i) {
                     if(old_solution[i] == 2) {
@@ -309,7 +325,8 @@ bool HornStateSet::check_statement_b4(const StateSetFormalism *right_const, bool
                                 partial_assignment[i] = false;
                             }
                         }
-                        if (CNFFormula::unit_propagation(vec, partial_assignment)) {
+                        if (cnf::CNFFormula::unit_propagation(
+                                    vec, partial_assignment)) {
                             solution_found = true;
                             mark[i] = true;
                             for (int j = i+1; j < mark.size(); ++j) {
@@ -338,7 +355,7 @@ bool HornStateSet::check_statement_b4(const StateSetFormalism *right_const, bool
         }
     } else if (!left_positive && right_positive) {
         if (right->supports_im()) {
-            std::vector<int> vars(0);
+            std::vector<unsigned> vars(0);
             vars.reserve(formula.get_varamount());
             std::vector<bool> implicant(0);
             implicant.reserve(formula.get_varamount());
@@ -401,29 +418,30 @@ std::string HornStateSet::print() {
 }
 
 // TODO: remove all these once B4 is overhauled
-std::vector<int> get_increasing_vector(size_t size) {
-    std::vector<int> ret(size, -1);
+std::vector<unsigned> get_increasing_vector(size_t size) {
+    std::vector<unsigned> ret(size, -1);
     for (size_t i = 0; i < size; ++i) {
         ret[i] = i;
     }
     return ret;
 }
 
-const std::vector<int> &HornStateSet::get_varorder() const {
-    static std::vector<int> varorder(get_increasing_vector(formula.get_varamount()));
+const std::vector<unsigned> &HornStateSet::get_varorder() const {
+    static std::vector<unsigned> varorder(get_increasing_vector(formula.get_varamount()));
     return varorder;
 }
 
-bool HornStateSet::is_contained(const std::vector<bool> &model) const {
+bool HornStateSet::is_contained(const Model &model) const {
     PartialAssignment partial_assignment;
     for (size_t i = 0; i < model.size(); ++i) {
         partial_assignment[i] = model[i];
     }
-    std::vector<const CNFFormula *> vec({&formula});
-    return CNFFormula::unit_propagation(vec, partial_assignment);
+    std::vector<const cnf::CNFFormula *> vec({&formula});
+    return cnf::CNFFormula::unit_propagation(vec, partial_assignment);
 }
 
-bool HornStateSet::is_implicant(const std::vector<int> &varorder, const std::vector<bool> &implicant) const {
+bool HornStateSet::is_implicant(const VariableOrder &varorder,
+                                const std::vector<bool> &implicant) const {
     PartialAssignment left_pa;
     for (size_t i = 0; i < varorder.size(); ++i) {
         left_pa[varorder[i]] = implicant[i];
@@ -435,14 +453,15 @@ bool HornStateSet::is_implicant(const std::vector<int> &varorder, const std::vec
         for (Literal literal : clause) {
             right_pa[literal.first] = !literal.second;
         }
-        if (CNFFormula::unit_propagation({&left}, right_pa)) {
+        if (cnf::CNFFormula::unit_propagation({&left}, right_pa)) {
             return false;
         }
     }
     return true;
 }
 
-bool HornStateSet::is_entailed(const std::vector<int> &varorder, const std::vector<bool> &clause) const {
+bool HornStateSet::is_entailed(const VariableOrder &varorder,
+                               const std::vector<bool> &clause) const {
     PartialAssignment partial_assignment;
     for (size_t i = 0; i < clause.size(); ++i) {
         partial_assignment[varorder[i]] = !clause[i];
@@ -450,14 +469,14 @@ bool HornStateSet::is_entailed(const std::vector<int> &varorder, const std::vect
     return formula.entails(partial_assignment);
 }
 
-bool HornStateSet::get_clause(int i, std::vector<int> &vars, std::vector<bool> &clause) const {
+bool HornStateSet::get_clause(int i, VariableOrder &varorder, std::vector<bool> &clause) const {
     int count = 0;
-    vars.clear();
+    varorder.clear();
     clause.clear();
     for (const Clause &c : formula) {
         if (count == i) {
             for (Literal literal : c) {
-                vars.push_back(literal.first);
+                varorder.push_back(literal.first);
                 clause.push_back(literal.second);
                 return true;
             }

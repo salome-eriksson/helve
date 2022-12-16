@@ -192,7 +192,7 @@ bool SSFBDD::check_statement_b4(const StateSetFormalism *right_const, bool left_
 
     if (right->supports_tocnf()) {
         int count = 0;
-        std::vector<int> varorder;
+        std::vector<unsigned> varorder;
         std::vector<bool> clause;
         while (right->get_clause(count, varorder, clause)) {
             BDD clause_bdd = manager.bddZero();
@@ -216,7 +216,7 @@ bool SSFBDD::check_statement_b4(const StateSetFormalism *right_const, bool left_
 
     // enumerate models (only works with right if right is nonsuccinct has all vars this has)
     } else if (right->is_nonsuccint()) {
-        const std::vector<int> sup_varorder = right->get_varorder();
+        const std::vector<unsigned> sup_varorder = right->get_varorder();
         std::vector<bool> model(sup_varorder.size());
         std::vector<int> var_transform(util->varorder.size(), -1);
         std::vector<int> vars_to_fill_base;
@@ -305,7 +305,7 @@ const SSFBDD *SSFBDD::get_constant(ConstantType ctype) const {
     }
 }
 
-const std::vector<int> &SSFBDD::get_varorder() const {
+const std::vector<unsigned> &SSFBDD::get_varorder() const {
     return util->other_varorder;
 }
 
@@ -313,7 +313,7 @@ bool SSFBDD::contains(const Cube &statecube) const {
     return util->build_bdd_from_cube(statecube).Leq(bdd);
 }
 
-bool SSFBDD::is_contained(const std::vector<bool> &model) const {
+bool SSFBDD::is_contained(const Model &model) const {
     assert(model.size() == util->varorder.size());
     Cube cube(util->varorder.size()*2);
     for (size_t i = 0; i < model.size(); ++i) {
@@ -328,7 +328,7 @@ bool SSFBDD::is_contained(const std::vector<bool> &model) const {
 
 }
 
-bool SSFBDD::is_implicant(const std::vector<int> &varorder, const std::vector<bool> &implicant) const {
+bool SSFBDD::is_implicant(const VariableOrder &varorder, const std::vector<bool> &implicant) const {
     assert(varorder.size() == implicant.size());
     Cube cube(util->varorder.size(), 2);
     for (size_t i = 0; i < varorder.size(); ++i) {
@@ -346,7 +346,7 @@ bool SSFBDD::is_implicant(const std::vector<int> &varorder, const std::vector<bo
     return util->build_bdd_from_cube(cube).Leq(bdd);
 }
 
-bool SSFBDD::is_entailed(const std::vector<int> &varorder, const std::vector<bool> &clause) const {
+bool SSFBDD::is_entailed(const VariableOrder &varorder, const std::vector<bool> &clause) const {
     assert(varorder.size() == clause.size());
     BDD clause_bdd = manager.bddZero();
     for (size_t i = 0; i < clause.size(); ++i) {
@@ -363,7 +363,7 @@ bool SSFBDD::is_entailed(const std::vector<int> &varorder, const std::vector<boo
     return bdd.Leq(clause_bdd);
 }
 
-bool SSFBDD::get_clause(int i, std::vector<int> &varorder, std::vector<bool> &clause) const {
+bool SSFBDD::get_clause(int i, VariableOrder &varorder, std::vector<bool> &clause) const {
     return false;
 }
 

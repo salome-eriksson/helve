@@ -5,7 +5,7 @@
 #include <deque>
 #include <unordered_set>
 
-namespace horn {
+namespace cnf {
 CNFFormula::CNFFormula(std::stringstream &input)
     : has_empty_clause(false) {
     std::string word;
@@ -152,6 +152,41 @@ CNFFormula::CNFFormula(const PartialAssignment &partial_assignment)
     }
 }
 
+CNFFormula::CNFFormula(std::vector<Clause> &&clauses_)
+    : clauses(clauses_) {
+
+    // first check if there is an empty clause
+    for (int clause_index = clauses.size()-1; clause_index >= 0; --clause_index) {
+        const Clause &clause = clauses[clause_index];
+        if (clause.empty()) {
+            has_empty_clause = true;
+            clauses.clear();
+            variable_occurrence.clear();
+            break;
+        }
+    }
+
+    // move all unit clauses to the end and then move them to unit_clauses
+    auto partition = std::partition(clauses.begin(), clauses.end(),
+                                    [] (Clause c) { return c.size() > 1;});
+    for (auto it = partition; it < clauses.end(); ++it) {
+        const Clause &clause = *it;
+        unit_clauses.push_back(*clause.begin());
+    }
+    clauses.erase(partition, clauses.end());
+
+    for(size_t clause_index = 0; clause_index < clauses.size(); ++clause_index) {
+        const Clause &clause = clauses[clause_index];
+        for (const Literal &literal : clause) {
+            variable_occurrence[literal.first].push_back(clause_index);
+        }
+    }
+    for (std::pair<unsigned, std::vector<size_t>> pair : variable_occurrence) {
+        varamount = std::max(varamount, pair.first);
+    }
+    simplify_with_unit_propagation();
+}
+
 /*
  * Helper function for simplify_with_unit_propatation().
  * Assumes that indices is sorted.
@@ -236,6 +271,12 @@ void CNFFormula::simplify_with_unit_propagation() {
         //Check that all remaining clauses have at least size 2.
         assert(clause.size() >= 2);
     }
+}
+
+const CNFFormula &CNFFormula::get_unsatisfiable_formula() {
+    static std::stringstream ss("p cnf 1 2 1 0 -1 0 ;");
+    static CNFFormula unsatisfiable_formula(ss);
+    return unsatisfiable_formula;
 }
 
 // Helper function for unit_propagation().

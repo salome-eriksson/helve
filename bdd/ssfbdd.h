@@ -56,13 +56,13 @@ public:
     virtual bool is_nonsuccint() const { return false; }
 
     // expects the model in the varorder of the formula;
-    virtual bool is_contained(const std::vector<bool> &model) const;
-    virtual bool is_implicant(const std::vector<int> &varorder, const std::vector<bool> &implicant) const;
-    virtual bool is_entailed(const std::vector<int> &varorder, const std::vector<bool> &clause) const;
-    virtual bool get_clause(int i, std::vector<int> &varorder, std::vector<bool> &clause) const;
+    virtual bool is_contained(const Model &model) const;
+    virtual bool is_implicant(const VariableOrder &varorder, const std::vector<bool> &implicant) const;
+    virtual bool is_entailed(const VariableOrder &varorder, const std::vector<bool> &clause) const;
+    virtual bool get_clause(int i, VariableOrder &varorder, std::vector<bool> &clause) const;
     virtual int get_model_count() const;
 
-    virtual const std::vector<int> &get_varorder() const;
+    virtual const std::vector<unsigned> &get_varorder() const;
 
     virtual const SSFBDD *get_compatible(const StateSetVariable *stateset) const override;
     virtual const SSFBDD *get_constant(ConstantType ctype) const override;

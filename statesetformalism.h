@@ -3,6 +3,7 @@
 
 #include "stateset.h"
 #include "ssvconstant.h"
+#include "global_funcs.h"
 
 #include <unordered_set>
 #include <vector>
@@ -26,14 +27,14 @@ public:
 
     // TODO: remodel this
     // expects the model in the varorder of the formula;
-    virtual bool is_contained(const std::vector<bool> &model) const = 0; // TODO: this could be covered by is_entailed
-    virtual bool is_implicant(const std::vector<int> &varorder, const std::vector<bool> &implicant) const = 0; // TODO: use global varorder
-    virtual bool is_entailed(const std::vector<int> &varorder, const std::vector<bool> &clause) const = 0; // TODO: use global varorder
+    virtual bool is_contained(const Model &model) const = 0; // TODO: this could be covered by is_entailed
+    virtual bool is_implicant(const VariableOrder &varorder, const std::vector<bool> &implicant) const = 0; // TODO: use global varorder
+    virtual bool is_entailed(const VariableOrder &varorder, const std::vector<bool> &clause) const = 0; // TODO: use global varorder
     // returns false if no clause with index i exists
-    virtual bool get_clause(int i, std::vector<int> &varorder, std::vector<bool> &clause) const = 0; // TODO: remove
+    virtual bool get_clause(int i, VariableOrder &varorder, std::vector<bool> &clause) const = 0; // TODO: remove
     virtual int get_model_count() const = 0;
 
-    virtual const std::vector<int> &get_varorder() const = 0; // TODO: remove
+    virtual const std::vector<unsigned> &get_varorder() const = 0; // TODO: remove
 
 
     virtual bool supports_mo() const = 0;

@@ -1,5 +1,5 @@
-#ifndef TASKFORMULAS_H
-#define TASKFORMULAS_H
+#ifndef HORN_TASKINFORMATION
+#define HORN_TASKINFORMATION
 
 #include <memory>
 #include <unordered_map>
@@ -31,4 +31,4 @@ public:
 };
 }
 
-#endif // TASKFORMULAS_H
+#endif // HORN_TASKINFORMATION

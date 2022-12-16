@@ -19,13 +19,17 @@ HEADERS = \
 	  bdd/bddfile.h \
 	  bdd/bddutil.h \
 	  bdd/ssfbdd.h \
-	  horn/cnfformula.h \
+	  cnf/cnfformula.h \
+	  cnf/disjunction.h \
 	  horn/hornstateset.h \
-	  horn/horntypedisjunction.h \
 	  horn/horntypeformula.h \
 	  horn/taskinformation.h \
-	  mods/modsutil.h \
-	  mods/ssfmods.h \
+	  mods/actionapplier.h \
+	  mods/decisiontree.h \
+	  mods/modsformula.h \
+	  mods/modsconjunction.h \
+	  mods/modsstateset.h \
+	  mods/taskinformation.h \
 	  rules/rules.h \
 	  rules/basic_statements/basic_statement_functions.h \
 

@@ -1,27 +1,37 @@
-#ifndef HORNSTATESET_H
-#define HORNSTATESET_H
+#ifndef MODSSTATESET_H
+#define MODSSTATESET_H
 
-#include "horntypeformula.h"
+#include "modsformula.h"
 
+#include "../global_funcs.h"
 #include "../statesetformalism.h"
+#include "../cnf/disjunction.h"
 
-namespace horn {
+#include <unordered_set>
+#include <vector>
+
+namespace mods {
 class TaskInformation;
 
-class HornStateSet : public StateSetFormalism
+class ModsStateSet : public StateSetFormalism
 {
 private:
-    HornTypeFormula formula;
+    ModsFormula formula;
     const TaskInformation &task_information;
 
-    // TODO: this should be part of the Action class (once other setformalisms are reworked)
-    std::vector<Literal> get_precondition_literals(const Action &action) const;
-    std::vector<Literal> get_effect_literals(const Action &action) const;
-
+    cnf::Disjunction get_cnf_disjunction(
+            const std::vector<const ModsFormula *> &formulas,
+            std::vector<cnf::CNFFormula> &cnf_formula_storage) const;
+    bool cnf_disjunction_contains_model(
+            const Model &model, const VariableOrder &variable_order,
+            const cnf::Disjunction &disjunction) const;
 public:
-    HornStateSet(std::stringstream &input, const Task &task);
+    ModsStateSet(std::stringstream &input, const Task &task);
+    ModsStateSet(const VariableOrder &variable_order,
+                 std::unordered_set<Model> &&models,
+                 const TaskInformation &task_information);
 
-    const HornTypeFormula *get_formula() const;
+    const ModsFormula *get_formula() const;
 
     virtual bool check_statement_b1(
             std::vector<const StateSetVariable *> &left,
@@ -46,26 +56,22 @@ public:
     virtual bool is_implicant(const VariableOrder &varorder, const std::vector<bool> &implicant) const override; // TODO: use global varorder
     virtual bool is_entailed(const VariableOrder &varorder, const std::vector<bool> &clause) const override; // TODO: use global varorder
     // returns false if no clause with index i exists
-    virtual bool get_clause(int, VariableOrder &varorder, std::vector<bool> &) const override; // TODO: remove
+    virtual bool get_clause(int, VariableOrder &, std::vector<bool> &) const override; // TODO: remove
     virtual int get_model_count() const override;
     virtual const std::vector<unsigned> &get_varorder() const override; // TODO: remove
-
 
     virtual bool supports_mo() const override { return true; }
     virtual bool supports_ce() const override { return true; }
     virtual bool supports_im() const override { return true; }
     virtual bool supports_me() const override { return true; }
-    virtual bool supports_todnf() const override { return false; }
-    virtual bool supports_tocnf() const override { return true; }
-    virtual bool supports_ct() const override { return false; }
-    virtual bool is_nonsuccint() const override { return false; }
+    virtual bool supports_todnf() const override { return true; }
+    virtual bool supports_tocnf() const override { return false; } // TODO: MODS can support this, implement it
+    virtual bool supports_ct() const override { return true; }
+    virtual bool is_nonsuccint() const override { return true; }
 
-    virtual const HornStateSet *get_compatible(const StateSetVariable *stateset) const override;
-    virtual const HornStateSet *get_constant(ConstantType ctype) const override;
-
-    std::string print();
-
+    virtual const ModsStateSet *get_compatible(const StateSetVariable *stateset) const override;
+    virtual const ModsStateSet *get_constant(ConstantType ctype) const override;
 };
 }
 
-#endif // HORNSTATESET_H
+#endif // MODSSTATESET_H

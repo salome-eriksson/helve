@@ -14,6 +14,8 @@ using SetID = size_t;
 using Literal = std::pair<unsigned, bool>;
 using Clause = std::unordered_map<unsigned, bool>;
 using PartialAssignment = std::unordered_map<unsigned, bool>;
+using Model = std::vector<bool>;
+using VariableOrder = std::vector<unsigned>;
 
 extern Timer timer;
 extern int g_timeout;
