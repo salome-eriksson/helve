@@ -1,0 +1,591 @@
+begin_atoms:30
+Atom clear(a)
+NegatedAtom clear(a)
+Atom clear(b)
+NegatedAtom clear(b)
+Atom clear(c)
+NegatedAtom clear(c)
+Atom clear(d)
+NegatedAtom clear(d)
+Atom handempty()
+NegatedAtom handempty()
+Atom holding(a)
+Atom on(a, b)
+Atom on(a, c)
+Atom on(a, d)
+Atom ontable(a)
+Atom holding(b)
+Atom on(b, a)
+Atom on(b, c)
+Atom on(b, d)
+Atom ontable(b)
+Atom holding(c)
+Atom on(c, a)
+Atom on(c, b)
+Atom on(c, d)
+Atom ontable(c)
+Atom holding(d)
+Atom on(d, a)
+Atom on(d, b)
+Atom on(d, c)
+Atom ontable(d)
+end_atoms
+begin_init
+0
+2
+4
+6
+8
+14
+19
+24
+29
+end_init
+begin_goal
+13
+16
+22
+28
+end_goal
+begin_actions:32
+begin_action
+pick-up a
+cost: 1
+PRE:0
+PRE:8
+PRE:14
+ADD:1
+DEL:0
+ADD:9
+DEL:8
+ADD:10
+DEL:11
+DEL:12
+DEL:13
+DEL:14
+end_action
+begin_action
+pick-up b
+cost: 1
+PRE:2
+PRE:8
+PRE:19
+ADD:3
+DEL:2
+ADD:9
+DEL:8
+ADD:15
+DEL:16
+DEL:17
+DEL:18
+DEL:19
+end_action
+begin_action
+pick-up c
+cost: 1
+PRE:4
+PRE:8
+PRE:24
+ADD:5
+DEL:4
+ADD:9
+DEL:8
+ADD:20
+DEL:21
+DEL:22
+DEL:23
+DEL:24
+end_action
+begin_action
+pick-up d
+cost: 1
+PRE:6
+PRE:8
+PRE:29
+ADD:7
+DEL:6
+ADD:9
+DEL:8
+ADD:25
+DEL:26
+DEL:27
+DEL:28
+DEL:29
+end_action
+begin_action
+put-down a
+cost: 1
+PRE:10
+ADD:0
+DEL:1
+ADD:8
+DEL:9
+ADD:14
+DEL:10
+DEL:11
+DEL:12
+DEL:13
+end_action
+begin_action
+put-down b
+cost: 1
+PRE:15
+ADD:2
+DEL:3
+ADD:8
+DEL:9
+ADD:19
+DEL:15
+DEL:16
+DEL:17
+DEL:18
+end_action
+begin_action
+put-down c
+cost: 1
+PRE:20
+ADD:4
+DEL:5
+ADD:8
+DEL:9
+ADD:24
+DEL:20
+DEL:21
+DEL:22
+DEL:23
+end_action
+begin_action
+put-down d
+cost: 1
+PRE:25
+ADD:6
+DEL:7
+ADD:8
+DEL:9
+ADD:29
+DEL:25
+DEL:26
+DEL:27
+DEL:28
+end_action
+begin_action
+stack a b
+cost: 1
+PRE:2
+PRE:10
+ADD:0
+DEL:1
+ADD:3
+DEL:2
+ADD:8
+DEL:9
+ADD:11
+DEL:10
+DEL:12
+DEL:13
+DEL:14
+end_action
+begin_action
+stack a c
+cost: 1
+PRE:4
+PRE:10
+ADD:0
+DEL:1
+ADD:5
+DEL:4
+ADD:8
+DEL:9
+ADD:12
+DEL:10
+DEL:11
+DEL:13
+DEL:14
+end_action
+begin_action
+stack a d
+cost: 1
+PRE:6
+PRE:10
+ADD:0
+DEL:1
+ADD:7
+DEL:6
+ADD:8
+DEL:9
+ADD:13
+DEL:10
+DEL:11
+DEL:12
+DEL:14
+end_action
+begin_action
+stack b a
+cost: 1
+PRE:0
+PRE:15
+ADD:1
+DEL:0
+ADD:2
+DEL:3
+ADD:8
+DEL:9
+ADD:16
+DEL:15
+DEL:17
+DEL:18
+DEL:19
+end_action
+begin_action
+stack b c
+cost: 1
+PRE:4
+PRE:15
+ADD:2
+DEL:3
+ADD:5
+DEL:4
+ADD:8
+DEL:9
+ADD:17
+DEL:15
+DEL:16
+DEL:18
+DEL:19
+end_action
+begin_action
+stack b d
+cost: 1
+PRE:6
+PRE:15
+ADD:2
+DEL:3
+ADD:7
+DEL:6
+ADD:8
+DEL:9
+ADD:18
+DEL:15
+DEL:16
+DEL:17
+DEL:19
+end_action
+begin_action
+stack c a
+cost: 1
+PRE:0
+PRE:20
+ADD:1
+DEL:0
+ADD:4
+DEL:5
+ADD:8
+DEL:9
+ADD:21
+DEL:20
+DEL:22
+DEL:23
+DEL:24
+end_action
+begin_action
+stack c b
+cost: 1
+PRE:2
+PRE:20
+ADD:3
+DEL:2
+ADD:4
+DEL:5
+ADD:8
+DEL:9
+ADD:22
+DEL:20
+DEL:21
+DEL:23
+DEL:24
+end_action
+begin_action
+stack c d
+cost: 1
+PRE:6
+PRE:20
+ADD:4
+DEL:5
+ADD:7
+DEL:6
+ADD:8
+DEL:9
+ADD:23
+DEL:20
+DEL:21
+DEL:22
+DEL:24
+end_action
+begin_action
+stack d a
+cost: 1
+PRE:0
+PRE:25
+ADD:1
+DEL:0
+ADD:6
+DEL:7
+ADD:8
+DEL:9
+ADD:26
+DEL:25
+DEL:27
+DEL:28
+DEL:29
+end_action
+begin_action
+stack d b
+cost: 1
+PRE:2
+PRE:25
+ADD:3
+DEL:2
+ADD:6
+DEL:7
+ADD:8
+DEL:9
+ADD:27
+DEL:25
+DEL:26
+DEL:28
+DEL:29
+end_action
+begin_action
+stack d c
+cost: 1
+PRE:4
+PRE:25
+ADD:5
+DEL:4
+ADD:6
+DEL:7
+ADD:8
+DEL:9
+ADD:28
+DEL:25
+DEL:26
+DEL:27
+DEL:29
+end_action
+begin_action
+unstack a b
+cost: 1
+PRE:0
+PRE:8
+PRE:11
+ADD:1
+DEL:0
+ADD:2
+DEL:3
+ADD:9
+DEL:8
+ADD:10
+DEL:11
+DEL:12
+DEL:13
+DEL:14
+end_action
+begin_action
+unstack a c
+cost: 1
+PRE:0
+PRE:8
+PRE:12
+ADD:1
+DEL:0
+ADD:4
+DEL:5
+ADD:9
+DEL:8
+ADD:10
+DEL:11
+DEL:12
+DEL:13
+DEL:14
+end_action
+begin_action
+unstack a d
+cost: 1
+PRE:0
+PRE:8
+PRE:13
+ADD:1
+DEL:0
+ADD:6
+DEL:7
+ADD:9
+DEL:8
+ADD:10
+DEL:11
+DEL:12
+DEL:13
+DEL:14
+end_action
+begin_action
+unstack b a
+cost: 1
+PRE:2
+PRE:8
+PRE:16
+ADD:0
+DEL:1
+ADD:3
+DEL:2
+ADD:9
+DEL:8
+ADD:15
+DEL:16
+DEL:17
+DEL:18
+DEL:19
+end_action
+begin_action
+unstack b c
+cost: 1
+PRE:2
+PRE:8
+PRE:17
+ADD:3
+DEL:2
+ADD:4
+DEL:5
+ADD:9
+DEL:8
+ADD:15
+DEL:16
+DEL:17
+DEL:18
+DEL:19
+end_action
+begin_action
+unstack b d
+cost: 1
+PRE:2
+PRE:8
+PRE:18
+ADD:3
+DEL:2
+ADD:6
+DEL:7
+ADD:9
+DEL:8
+ADD:15
+DEL:16
+DEL:17
+DEL:18
+DEL:19
+end_action
+begin_action
+unstack c a
+cost: 1
+PRE:4
+PRE:8
+PRE:21
+ADD:0
+DEL:1
+ADD:5
+DEL:4
+ADD:9
+DEL:8
+ADD:20
+DEL:21
+DEL:22
+DEL:23
+DEL:24
+end_action
+begin_action
+unstack c b
+cost: 1
+PRE:4
+PRE:8
+PRE:22
+ADD:2
+DEL:3
+ADD:5
+DEL:4
+ADD:9
+DEL:8
+ADD:20
+DEL:21
+DEL:22
+DEL:23
+DEL:24
+end_action
+begin_action
+unstack c d
+cost: 1
+PRE:4
+PRE:8
+PRE:23
+ADD:5
+DEL:4
+ADD:6
+DEL:7
+ADD:9
+DEL:8
+ADD:20
+DEL:21
+DEL:22
+DEL:23
+DEL:24
+end_action
+begin_action
+unstack d a
+cost: 1
+PRE:6
+PRE:8
+PRE:26
+ADD:0
+DEL:1
+ADD:7
+DEL:6
+ADD:9
+DEL:8
+ADD:25
+DEL:26
+DEL:27
+DEL:28
+DEL:29
+end_action
+begin_action
+unstack d b
+cost: 1
+PRE:6
+PRE:8
+PRE:27
+ADD:2
+DEL:3
+ADD:7
+DEL:6
+ADD:9
+DEL:8
+ADD:25
+DEL:26
+DEL:27
+DEL:28
+DEL:29
+end_action
+begin_action
+unstack d c
+cost: 1
+PRE:6
+PRE:8
+PRE:28
+ADD:4
+DEL:5
+ADD:7
+DEL:6
+ADD:9
+DEL:8
+ADD:25
+DEL:26
+DEL:27
+DEL:28
+DEL:29
+end_action
+end_actions
