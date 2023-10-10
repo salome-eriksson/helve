@@ -14,9 +14,7 @@ library with dddmp and c++-wrapper:
         && make
         && make install
 
-4. Move the following two header files to \<path-to-cudd\>/include:
-   - config.h
-   - util/util.h
+4. Move the following two header files config.h and util/util.h to \<path-to-cudd\>/include:
 
         cp config.h \<path-to-cudd\>/include
         && cp util/util.h \<path-to-cudd\>/include
