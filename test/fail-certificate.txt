@@ -1,0 +1,888 @@
+e 0 c e
+e 1 c g
+e 2 c i
+a 0 a
+
+# empty dead
+k 100 d 0 ed
+# wrong number of premises
+k 110 d 0 ed 1
+# set is not constant emptyset
+k 120 d 2 ed
+# set does not exist
+k 130 d 5 ed
+
+#union dead
+e 201 c e
+k 201 d 0 ed
+k 202 d 201 ed
+e 200 u 0 201
+k 200 d 200 ud 201 202
+# wrong number of premises
+k 210 d 200 ud 201
+k 220 d 200 ud 201 202 201
+# set is not a union
+k 230 d 0 ud 201 202
+# one part of the union has not been shown dead
+e 240 u 0 2
+k 240 d 240 ud 201 202
+e 250 u 2 0
+k 250 d 250 ud 201 202
+# knowledge does not exist
+k 260 d 200 ud 260 202
+
+#subset dead
+e 300 h p cnf 6 2 1 0 -1 0 ;
+k 301 d 0 ed
+k 302 s 300 0 b1
+k 300 d 300 sd 301 302
+# wrong number of premises
+k 310 d 300 sd 301
+k 320 d 300 sd 301 302 301
+# first premise is not dead knowledge
+k 330 d 300 sd 302 302
+# second premise is not subset knowledge
+k 340 d 300 sd 301 301
+# second premise is about wrong sets
+k 351 s 300 2 b1 
+k 350 d 300 sd 301 351
+e 360 h p cnf 6 2 1 0 -1 0 ;
+k 361 s 360 0 b1
+k 360 d 300 sd 301 361
+
+# progression goal
+e 400 h p cnf 6 2 -2 -4 0 -6 0 ;
+e 401 p 400 0
+e 402 u 400 0
+k 401 s 401 402 b2
+k 402 d 0 ed
+e 403 i 400 1
+k 404 s 403 0 b1
+k 403 d 403 sd 402 404
+k 400 d 400 pg 401 402 403
+# wrong number of premises
+k 410 d 400 pg 401 402 
+k 420 d 400 pg 401 402 403 401
+# first premise is not subset knowledge
+k 430 d 400 pg 402 402 403
+# first premise does not have a progression on the left side
+k 440 d 400 pg 404 402 403
+# first premise left side does not progress over S
+e 450 h p cnf 6 2 -2 -4 0 -6 0 ;
+e 451 p 450 0
+k 451 s 451 402 b2
+k 450 d 400 pg 451 402 403
+# first premise left side does not progress over all actions
+a 460 b 1 0 
+e 460 p 400 460
+k 461 s 460 402 b2
+k 460 d 400 pg 461 402 403
+# first premise right side is not a union
+k 471 s 401 400 b2
+k 470 d 400 pg 471 402 403
+# first premise right side is not a union with S on the left side
+e 480 u 0 400
+k 481 s 401 480 b2
+k 480 d 400 pg 481 402 403
+# second premise is not a dead rule
+k 490 d 400 pg 401 401 403
+# second premise does not talk about the correct set
+k 510 d 400 pg 401 403 403
+# third premise is not dead knowledge
+k 520 d 400 pg 401 402 401
+# third premise does not talk about an intersection
+k 530 d 400 pg 401 402 402
+# third premise does not have S on the left side
+e 540 i 1 400
+k 541 s 540 0 b1
+k 543 d 540 sd 402 541
+k 540 d 400 pg 401 402 543
+# third premise does not have constant goal on the right side
+e 550 i 400 0
+k 551 s 550 0 b1
+k 553 d 550 sd 402 551
+k 550 d 400 pg 401 402 553
+
+#progression initial
+e 601 h p cnf 6 2 -2 -4 0 -6 0 ;
+e 600 n 601
+e 602 p 601 0
+e 603 u 601 0
+k 601 s 602 603 b2
+k 602 d 0 ed
+k 603 s 2 601 b1
+k 600 d 600 pi 601 602 603
+# wrong number of premises
+k 610 d 600 pi 601 602
+k 620 d 600 pi 601 602 603 601
+# first premise is not subset knowledge
+k 630 d 600 pi 602 602 603
+# first premise does not have a progression on the left side
+k 640 d 600 pi 603 602 603
+# first premise left side does not progress over S
+e 651 h p cnf 6 2 -2 -4 0 -6 0 ;
+e 652 p 651 0
+k 651 s 652 603 b2
+k 650 d 600 pi 651 602 603
+# first premise left side does not progress over all actions
+a 660 b 1 0
+e 662 p 601 660
+k 661 s 662 603 b2
+k 660 d 600 pi 661 602 603
+# first premise right side is not a union
+k 671 s 602 601 b2
+k 670 d 600 pi 671 602 603
+# first premise right side is not a union with S on the left side
+e 683 u 0 601
+k 681 s 602 683 b2
+k 680 d 600 pi 681 602 603
+# second premise is not dead knowledge
+k 690 d 600 pi 601 601 603
+# second premise does not talk about the correct set
+e 690 c e
+k 692 d 690 ed
+k 710 d 600 pi 601 692 603
+# third premise is not subset knowledge
+k 720 d 600 pi 601 602 602
+# third premise left side is not a constant
+k 733 s 601 601 b1
+k 730 d 600 pi 601 602 733
+# third premise left side is not constant initial set
+k 743 s 0 601 b1
+k 740 d 600 pi 601 602 743
+# third premise right side is not S
+e 750 h p cnf 6 2 -2 -4 0 -6 0 ;
+k 753 s 2 750 b1
+k 750 d 600 pi 601 602 753
+# S is not a negation
+k 760 d 601 pi 601 602 603
+
+#regression goal
+e 801 e 3 1 3 5 : 2 6 a c e ;
+e 800 n 801
+e 802 r 801 0
+e 803 u 801 0
+k 801 s 802 803 b3
+k 802 d 0 ed
+e 804 i 800 1
+k 804 s 804 0 b1
+k 803 d 804 sd 802 804
+k 800 d 800 rg 801 802 803
+# wrong number of premises
+k 810 d 800 rg 801 802
+k 820 d 800 rg 801 802 803 801
+# first premise is not subset knowledge
+k 830 d 800 rg 802 802 803
+# first premise left side is no regression
+k 841 s 801 803 b1
+k 840 d 800 rg 841 802 803
+# first premise left side is not a regression over S
+e 850 e 3 1 3 5 : 2 6 a c e ;
+e 851 r 850 0
+k 851 s 851 803 b3
+k 850 d 800 rg 851 802 803
+# first premise left side is not a regression over all actions
+a 860 b 1 0
+e 860 r 801 860
+k 861 s 860 803 b3
+k 860 d 800 rg 861 802 803
+# first premise right side is not a union
+k 871 s 802 801 b3
+k 870 d 800 rg 871 802 803
+# first premise right side does not have S on the left side
+e 880 u 0 801
+k 881 s 802 880 b3
+k 880 d 800 rg 881 802 803
+# second premise is not dead knowledge
+k 890 d 800 rg 801 801 803
+# second premise does not talk about the correct set
+k 910 d 800 rg 801 803 803
+# third premise is not dead knowledge
+k 920 d 800 rg 801 802 801
+# third premise is not an intersection
+k 920 d 800 rg 801 802 802
+# third premise does not have not S on the left side
+e 930 i 1 800
+k 931 s 930 0 b1
+k 933 d 930 sd 802 931
+k 930 d 800 rg 801 802 933
+e 940 i 800 0
+k 941 s 940 0 b1
+k 943 d 940 sd 802 941
+k 960 d 800 rg 801 802 943
+# S is not a negation
+k 970 d 801 rg 801 802 803
+
+#regression initial
+e 1000 e 3 1 3 5 : 2 6 a c e ;
+e 1001 r 1000 0
+e 1002 u 1000 0
+k 1001 s 1001 1002 b3
+k 1002 d 0 ed
+e 1003 n 1000
+k 1003 s 2 1003 b1
+k 1000 d 1000 ri 1001 1002 1003
+# wrong number of premises
+k 1010 d 1000 ri 1001 1002
+k 1020 d 1000 ri 1001 1002 1001
+# first premise is not subset knowledge
+k 1030 d 1000 ri 1002 1002 1002
+# first premise left side is not a regression
+k 1040 d 1000 ri 1003 1002 1003
+# first premise left side is not a regression over S
+e 1050 e 3 1 3 5 : 2 6 a c e ;
+e 1051 r 1050 0
+k 1051 s 1051 1002 b3
+k 1050 d 1000 ri 1051 1002 1003
+# first premise left side is not a regression over all actions
+a 1060 b 1 0
+e 1061 r 1000 1060
+k 1061 s 1061 1002 b3
+k 1060 d 1000 ri 1061 1002 1003
+# first premise right side is not a union
+k 1071 s 1001 1000 b3
+k 1070 d 1000 ri 1071 1002 1003
+# first premise right side is not a union with S on the left
+e 1080 u 0 1000
+k 1081 s 1001 1080 b3
+k 1080 d 1000 ri 1081 1002 1003
+# second premise is not dead knowledge
+k 1090 d 1000 ri 1001 1001 1003
+# second premise does not talk about the correct set
+e 1110 c e
+k 1112 d 1110 ed
+k 1110 d 1000 ri 1001 1112 1003
+# third premise is not subset knowledge
+k 1120 d 1000 ri 1001 1002 1002
+# third premise does not have the constant initial set on the left side
+k 1130 d 1000 ri 1001 1002 1001
+k 1143 s 1 1000 b1
+k 1140 d 1000 ri 1001 1002 1143
+# third premise does not have not S on the right side
+e 1150 e 3 1 3 5 : 0 4 8 ;
+k 1153 s 2 1150 b1
+k 1150 d 1000 ri 1001 1002 1153
+e 1160 e 3 1 3 5 : 2 6 a c e ;
+e 1161 n 1160
+k 1163 s 2 1161 b1
+k 1160 d 1000 ri 1001 1002 1163
+
+#conclusion initial
+e 1200 h p cnf 6 2 -2 -4 0 -6 0 ;
+e 1201 p 1200 0
+e 1202 u 1200 0
+k 1201 s 1201 1202 b2
+k 1202 d 0 ed
+e 1203 i 1200 1
+k 1203 s 1203 0 b1
+k 1204 d 1203 sd 1202 1203
+k 1205 d 1200 pg 1201 1202 1204
+k 1206 s 2 1200 b1
+k 1207 d 2 sd 1205 1206
+k 1200 u ci 1207
+# wrong number of premises
+k 1210 u ci
+k 1220 u ci 1207 1207
+# premise is not dead knowledge
+k 1230 u ci 1201
+# premise does not state that a constant set is dead
+k 1240 u ci 1204
+# premise does not state that the constant initial set is dead
+k 1250 u ci 1202
+
+#conclusion goal
+e 1300 h p cnf 6 2 -2 -4 0 -6 0 ;
+e 1301 p 1300 0
+e 1302 u 1300 0
+k 1301 s 1301 1302 b2
+k 1302 d 0 ed
+k 1303 s 2 1300 b1
+e 1303 n 1300
+k 1304 d 1303 pi 1301 1302 1303
+k 1305 s 1 1303 b1
+k 1306 d 1 sd 1304 1305
+k 1300 u cg 1306
+# wrong number of premises
+k 1310 u cg
+k 1320 u cg 1306 1306
+# premise is not dead knowledge
+k 1330 u cg 1301
+# premise does not state that a constant set is dead
+k 1340 u cg 1304
+# premise does not state that the constant goal set is dead
+k 1350 u cg 1302
+
+#union right state set
+e 1400 u 0 1
+k 1400 s 0 1400 urs
+# right side not a union
+k 1410 s 0 1 urs
+# right side not a union with S on the left
+e 1420 u 1 0
+k 1420 s 0 1420 urs
+# use ura instead of urs
+k 1430 s 0 1400 ura
+# has premises
+k 1440 s 0 1400 urs 1400
+
+#union right action set
+a 1501 b 1 0
+a 1500 u 0 1501
+k 1500 s 0 1500 ura
+# right side not a union
+k 1510 s 0 0 ura
+# right side not a union with S on the left
+a 1520 u 1500 1500
+k 1520 s 0 1520 ura
+# use ura instead of urs
+k 1530 s 0 1500 urs
+# has premises
+k 1540 s 0 1500 ura 1500
+
+#union left state set
+e 1600 u 0 1
+k 1600 s 1 1600 uls
+# right side not a union
+k 1610 s 1 1 uls
+# right side not a union with S on the right
+e 1620 u 1 0
+k 1620 s 1 1620 uls
+# use ula instead of uls
+k 1630 s 1 1600 ula
+# has premises
+k 1640 s 1 1600 uls 1600
+
+#union left action set
+a 1701 b 1 0
+a 1700 u 1701 0
+k 1700 s 0 1700 ula
+# right side not a union
+k 1710 s 0 0 ula
+# right side not a union with S on the right
+a 1720 u 0 1701
+k 1720 s 0 1720 ula
+# use uls instead of ula
+k 1730 s 0 1700 uls
+# has premises
+k 1740 s 0 1700 ula 1700
+
+#intersection right state set
+e 1800 i 0 1
+k 1800 s 1800 0 irs
+# left side not an intersection
+k 1810 s 0 0 irs
+# left side not an intersection with S on the left
+e 1820 i 1 0
+k 1820 s 1820 0 irs
+# use ira instead of irs
+k 1830 s 1800 0 ira
+# has premises
+k 1840 s 1800 0 irs 1800
+
+##intersection right action set - currently action set does not support intersection
+#a 1901 b 1 0
+#a 1900 i 0 1901
+#k 1900 s 1900 0 ira
+## left side not an intersection
+#k 1910 s 0 0 ira
+## left side not an intersection with S on the left
+#a 1920 i 1901 0
+#k 1920 s 1920 0 ira
+## use irs instead of ira
+#k 1930 s 1900 0 irs
+##has premises
+#k 1940 s 1900 0 ira 1900
+
+#intersection left state set
+e 2000 i 0 1
+k 2000 s 2000 1 ils
+# left side not an intersection
+k 2010 s 1 1 ils
+# left side not an intersection with S on the right
+e 2020 i 1 0
+k 2020 s 2020 1 ils
+# use ila instead of ils
+k 2030 s 2000 1 ila
+# has premises
+k 2040 s 2000 1 ils 2000
+
+##intersection left action set - currently action set does not support intersection
+#a 2101 b 1 0
+#a 2100 i 0 2101
+#k 2100 s 2100 2101 ila
+##left side not an intersection
+#k 2110 s 2101 2101 ila
+##left side not an intersection with S on the right
+#a 2120 i 2101 0
+#k 2120 s 2120 2101 ila
+##use ils unstead of ila
+#k 2130 s 2100 2101 ils
+## has premises
+#k 2140 s 2100 2101 ila 2100
+
+#distributivity state set
+e 2202 u 0 1
+e 2200 i 2202 2
+e 2203 i 0 2
+e 2204 i 1 2
+e 2201 u 2203 2204
+k 2200 s 2200 2201 dis
+# left side not an intersection
+k 2210 s 0 2201 dis
+# left side not an intersection with a union to the right
+k 2220 s 2203 2201 dis
+# right side not a union
+k 2230 s 2200 2203 dis
+# right side not a union with an intersection on the left
+k 2240 s 2200 2202 dis
+# right side intersection left sets don't match
+e 2250 u 2204 2204
+k 2250 s 2200 2250 dis
+e 2261 i 0 1
+e 2260 u 2261 2204
+k 2260 s 2200 2260 dis
+# right side not a union with an intersection on the right
+e 2270 u 2203 0
+k 2270 s 2200 2270 dis
+# right side intersection right sets don't match
+e 2280 u 2203 2203
+k 2280 s 2200 2280 dis
+e 2291 i 1 1
+e 2290 u 2203 2291
+k 2290 s 2200 2290 dis
+
+##distributivity action set - currently action set does not support intersection
+#a 2306 b 1 0
+#a 2307 b 1 1
+#a 2302 u 0 2306
+#a 2300 i 2302 2307
+#a 2303 i 0 2307
+#a 2304 i 2306 2307
+#a 2301 u 2303 2304
+#k 2300 s 2300 2301 dis
+## left side not an intersection
+#k 2310 s 0 2301 dis
+## left side not an intersection with a union to the right
+#k 2320 s 2303 2301 dis
+## right side not a union
+#k 2330 s 2300 2303 dis
+## right side not a union with an intersection on the left
+#k 2340 s 2300 2302 dis
+## right side intersection left sets don't match
+#a 2350 u 2304 2304
+#k 2350 s 2300 2350 dis
+#a 2361 i 0 2306
+#a 2360 u 2361 2304
+#k 2360 s 2300 2360 dis
+## right side not a union with an intersection on the right
+#a 2370 u 2303 0
+#k 2370 s 2300 2370 dis
+## right side intersection right sets don't match
+#a 2380 u 2303 2303
+#k 2380 s 2300 2380 dis
+#a 2391 i 2306 2306
+#a 2390 u 2303 2391
+#k 2390 s 2300 2390 dis
+
+#subset union state set
+e 2401 h p cnf 6 1 -1 0 ;
+e 2402 h p cnf 6 1 -2 0 ;
+e 2403 h p cnf 6 1 -1 -2 0 ;
+k 2401 s 2401 2403 b1
+k 2402 s 2402 2403 b1
+e 2400 u 2401 2402
+k 2400 s 2400 2403 sus 2401 2402
+# left side of conclusion is not a union
+k 2410 s 2401 2403 sus 2401 2402
+# first premise is not subset knowledge
+k 2421 d 0 ed
+k 2420 s 2400 2403 sus 2421 2402
+# first premise talks about the wrong sets
+k 2430 s 2400 2403 sus 2402 2402
+k 2441 s 2401 2401 b1
+k 2440 s 2400 2403 sus 2441 2402
+# second premise is not subset knowledge
+k 2452 d 0 ed
+k 2450 s 2400 2403 sus 2401 2452
+# second premise talks about the wrong sets
+k 2460 s 2400 2403 sus 2401 2401
+k 2472 s 2402 2402 b1
+k 2470 s 2400 2403 sus 2401 2472
+# using sua instead of sus
+k 2480 s 2400 2403 sua 2401 2402
+# wrong number of premises
+k 2490 s 2400 2403 sus 2401
+
+#subset union action set
+a 2501 b 1 0
+a 2502 b 1 1
+a 2503 b 2 1 2
+k 2501 s 2501 2503 b5
+k 2502 s 2502 2503 b5
+a 2500 u 2501 2502
+k 2500 s 2500 2503 sua 2501 2502
+# left side of conclusion is not a union
+k 2510 s 2501 2503 sua 2501 2502
+# first premise is not subset knowledge
+k 2521 d 0 ed
+k 2520 s 2500 2503 sua 2521 2502
+# first premise talks about the wrong sets
+k 2530 s 2500 2503 sua 2502 2502
+k 2541 s 2501 2501 b5
+k 2540 s 2500 2503 sua 2541 2502
+#second premise is not subset knowledge
+k 2552 d 0 ed
+k 2550 s 2500 2503 sua 2501 2552
+# second premise talks about the wrong sets
+k 2560 s 2500 2503 sua 2501 2501
+k 2572 s 2502 2502 b5
+k 2570 s 2500 2503 sua 2501 2572
+# using sus instead of sua
+k 2580 s 2500 2503 sus 2501 2502
+# wrong number of premises
+k 2590 s 2501 2503 sua 2501 2502 2501
+
+#subset intersection state set
+e 2601 h p cnf 6 2 -1 0 -2 0 ;
+e 2602 h p cnf 6 1 -1 0 ;
+e 2603 h p cnf 6 1 -2 0 ;
+e 2600 i 2602 2603
+k 2601 s 2601 2602 b1
+k 2602 s 2601 2603 b1
+k 2600 s 2601 2600 sis 2601 2602
+# right side of conclusion is not an intersection
+k 2610 s 2601 2601 sis 2601 2602
+# first premise is not subset knowledge
+k 2621 d 0 ed
+k 2620 s 2601 2600 sis 2621 2602
+# first premise talks about the wrong sets
+e 2631 h p cnf 6 3 -1 0 -2 0 -3 0 ;
+k 2631 s 2631 2602 b1
+k 2630 s 2601 2600 sis 2631 2602
+k 2640 s 2601 2600 sis 2602 2602
+# second premise is not subset knowledge
+k 2651 d 0 ed
+k 2650 s 2601 2600 sis 2651 2602
+# second premise talks about the wrong sets
+e 2661 h p cnf 6 3 -1 0 -2 0 -3 0 ;
+k 2662 s 2661 2603 b1
+k 2660 s 2601 2600 sis 2601 2662
+k 2670 s 2601 2600 sis 2601 2601
+# wrong number of premises
+k 2780 s 2601 2600 sis 2601 2602 2601
+
+##subset intersection action set
+#a 2701 b 1 0 
+#a 2702 b 2 0 1
+#a 2703 b 2 0 2
+#a 2700 i 2702 2703
+#k 2701 s 2701 2702 b1
+#k 2702 s 2701 2703 b1
+#k 2700 s 2701 2700 sis 2701 2702
+## right side of conclusion is not an intersection
+#k 2710 s 2701 2701 sis 2701 2702
+## first premise is not subset knowledge
+#k 2721 d 0 ed
+#k 2720 s 2701 2700 sis 2721 2702
+## first premise talks about the wrong sets
+#a 2731 b 1 1
+#k 2731 s 2731 2702 b1
+#k 2730 s 2701 2700 sis 2731 2702
+#k 2740 s 2701 2700 sis 2702 2702
+## second premise is not subset knowledge
+#k 2751 d 0 ed
+#k 2750 s 2701 2700 sis 2751 2702
+## second premise talks about the wrong sets
+#a 2761 b 1 2
+#k 2762 s 2761 2603 b1
+#k 2760 s 2701 2700 sis 2701 2762
+#k 2770 s 2701 2700 sis 2701 2701
+## wrong number of premises
+#k 2780 s 2701 2700 sis 2701
+
+#subset transitivity state set
+e 2800 h p cnf 6 1 -1 0 ;
+e 2801 h p cnf 6 1 -1 -2 0 ;
+e 2802 h p cnf 6 1 -1 -2 -3 0 ;
+k 2801 s 2800 2801 b1
+k 2802 s 2801 2802 b1
+k 2800 s 2800 2802 sts 2801 2802
+# first premise is not subset knowledge
+k 2811 d 0 ed
+k 2810 s 2800 2802 sts 2811 2802
+# first premise talks about the wrong sets
+k 2820 s 2800 2802 sts 2802 2802
+e 2831 h p cnf 6 1 -1 -3 0 ;
+k 2831 s 2800 2831 b1
+k 2830 s 2800 2802 sts 2831 2802
+# second premise is not subset knowledge
+k 2842 d 0 ed
+k 2840 s 2800 2802 sts 2801 2842
+# second premise talks about the wrong sets
+k 2850 s 2800 2802 sts 2801 2801
+e 2861 h p cnf 6 1 -1 -2 -4 0 ;
+k 2862 s 2801 2861 b1
+k 2860 s 2800 2802 sts 2801 2862
+# wrong number of premises
+k 2870 s 2800 2802 sts 2801
+k 2880 s 2800 2802 sts 2801 2802 2801
+
+#subset transitivity action set
+a 2900 b 1 0
+a 2901 b 2 0 1
+a 2902 b 3 0 1 2
+k 2901 s 2900 2901 b5
+k 2902 s 2901 2902 b5
+k 2900 s 2900 2902 sta 2901 2902
+# first premise is not subset knowledge
+k 2911 d 0 ed
+k 2910 s 2900 2902 sta 2911 2902
+# first premise talks about the wrong sets
+k 2920 s 2900 2902 sta 2902 2902
+a 2931 b 2 0 2
+k 2931 s 2900 2931 b5
+k 2930 s 2900 2902 sta 2931 2902
+# second premise is not subset knowledge
+k 2942 d 0 ed
+k 2940 s 2900 2902 sta 2901 2942
+# second premise talks about the wrong sets
+k 2950 s 2900 2902 sta 2901 2901
+a 2961 b 3 0 1 3
+k 2962 s 2901 2961 b5
+k 2960 s 2900 2902 sta 2901 2962
+# wrong number of premises
+k 2970 s 2900 2902 sta 2901
+k 2980 s 2900 2902 sta 2901 2902 2901
+
+#action transitivity
+a 3000 b 1 0
+e 3000 h p cnf 6 1 -2 -4 0 ;
+e 3001 p 3000 0
+e 3002 p 3000 3000
+k 3001 s 3001 3000 b2
+k 3002 s 3000 0 b5
+k 3000 s 3002 3000 at 3001 3002
+# left side of conclusion is not a progression
+k 3010 s 3000 3000 at 3001 3002
+# first premise is not subset knowledge
+k 3021 d 0 ed
+k 3020 s 3002 3000 at 3021 3002
+# first premise does not have a progression on the left side
+k 3031 s 3000 3000 b1
+k 3030 s 3002 3000 at 3031 3002
+# first premise does not progress over S
+e 3040 p 0 0
+k 3041 s 3040 3000 b2
+k 3040 s 3002 3000 at 3041 3002
+# first premise right side is not S'
+e 3050 h p cnf 6 1 -2 -4 -5 0 ;
+k 3051 s 3001 3050 b2
+k 3050 s 3002 3000 at 3051 3002
+# second premise is not subset knowledge
+k 3062 d 0 ed
+k 3060 s 3002 3000 at 3001 3062
+# second premise left side is not A'
+k 3072 s 0 0 b5
+k 3070 s 3002 3000 at 3001 3072
+# second premise right side is not A
+k 3082 s 3000 3000 b5
+k 3080 s 3002 3000 at 3001 3082
+# wrong number of premises
+k 3090 s 3002 3000 at 3001 3002 3001
+
+#action union
+a 3101 b 1 0
+a 3102 b 1 1
+a 3103 u 3101 3102 
+e 3100 h p cnf 6 1 -2 -4 0 ;
+e 3101 p 3100 3101
+e 3102 p 3100 3102
+e 3103 p 3100 3103
+k 3101 s 3101 3100 b2
+k 3102 s 3102 3100 b2
+k 3100 s 3103 3100 au 3101 3102
+# first premise is not subset knowledge
+k 3111 d 0 ed
+k 3110 s 3103 3100 au 3111 3102
+# first premise does not have a progression on the left side
+k 3121 s 3100 3100 b1
+k 3120 s 3103 3100 au 3121 3102
+# first premise left side does not progress over S
+e 3131 p 0 3101
+k 3131 s 3131 3100 b2
+k 3130 s 3103 3100 au 3131 3102
+# first premise left side does not progress over A
+k 3140 s 3103 3100 au 3102 3012
+# first premise does not have S' on the right side
+e 3150 h p cnf 6 1 -2 -4 -5 0 ;
+k 3151 s 3101 3150 b2
+k 3150 s 3103 3100 au 3151 3102
+# second premise is not subset knowledge
+k 3162 d 0 ed
+k 3160 s 3103 3100 au 3101 3162
+# second premise does not have a progression on the left side
+k 3172 s 3100 3100 b1
+k 3170 s 3103 3100 au 3101 3172
+# second premise left side does not progress over S
+e 3182 p 0 3102
+k 3182 s 3182 3100 b2
+k 3180 s 3103 3100 au 3101 3182
+# second premise left side does not progress over A
+k 3190 s 3103 3100 au 3101 3101
+# second premise does not have S' on the right side
+e 3210 h p cnf 6 1 -2 -4 -5 0 ;
+k 3212 s 3102 3210 b2
+k 3210 s 3103 3100 au 3101 3212
+# wrong number of premises
+k 3220 s 3103 3100 au 3101
+k 3230 s 3101 3100 au 3101 3102 3101
+
+#progression transitivity
+e 3300 h p cnf 6 1 -2 -4 0 ;
+e 3301 p 3300 0
+e 3302 p 0 0
+e 3303 h p cnf 6 1 -2 -4 -5 0 ;
+k 3301 s 3301 3303 b2
+k 3302 s 0 3300 b1
+k 3300 s 3302 3303 pt 3301 3302
+# left side of conclusion is not a progression
+k 3310 s 3300 3303 pt 3301 3302
+# first premise is not subset knowledge
+k 3321 d 0 ed
+k 3320 s 3302 3303 pt 3321 3302
+# first premise does not have a progression on the left side
+k 3330 s 3302 3303 pt 3302 3302
+# first premise does not progress over A
+a 3340 b 1 0
+e 3341 p 3300 3340
+k 3341 s 3341 3303 b2
+k 3340 s 3302 3303 pt 3341 3302
+# first premise does not have S'' on the right side
+k 3351 s 3301 3300 b2
+k 3350 s 3302 3303 pt 3351 3302 
+# second premise is not subset knowledge
+k 3362 d 0 ed
+k 3360 s 3302 3303 pt 3301 3362
+# second premise does not have S' on the left side
+k 3370 s 3302 3303 pt 3301 3301
+# second premise does not have S on the right side
+k 3382 s 0 3303 b1
+k 3380 s 3302 3303 pt 3301 3382
+# wrong number of premises
+k 3380 s 3302 3303 pt 3301 3302 3301
+
+#progression union
+e 3400 h p cnf 6 1 -2 0 ;
+e 3401 h p cnf 6 1 -4 0 ;
+e 3402 h p cnf 6 1 -2 -4 0 ;
+e 3403 u 3400 3401
+e 3404 p 3400 0
+e 3405 p 3401 0
+e 3406 p 3403 0
+k 3401 s 3404 3402 b2
+k 3402 s 3405 3402 b2
+k 3400 s 3406 3402 pu 3401 3402
+# left side of conclusion is not a progression
+k 3410 s 3300 3402 pu 3401 3402
+# left side of conclusion is not a progression of a union
+k 3420 s 3404 3402 pu 3401 3402
+# first premise is not subset knowledge
+k 3431 d 0 ed
+k 3430 s 3406 3402 pu 3431 3402
+# first premise does not have a progression on the left side
+k 3441 s 3400 3400 b1
+k 3440 s 3406 3402 pu 3441 3402
+# first premise talks about wrong sets
+k 3451 s 3406 3402 pu 3402 3402
+a 3460 b 1 0
+e 3460 p 3400 3460
+k 3461 s 3460 3402 b2
+k 3560 s 3406 3402 pu 3461 3402
+k 3471 s 3404 3403 b2
+k 3570 s 3406 3402 pu 3471 3402
+# second premise is not subset knowledge
+k 3482 d 0 ed
+k 3480 s 3406 3402 pu 3401 3482
+# second premise talks about wrong sets
+k 3490 s 3406 3402 pu 3401 3401
+a 3510 b 1 0
+e 3510 p 3401 3510
+k 3512 s 3510 3402 b2
+k 3510 s 3406 3402 pu 3401 3512
+k 3522 s 3405 3403 b2
+k 3520 s 3406 3402 pu 3401 3522
+
+#progression to regression
+e 3600 h p cnf 6 1 -2 0 ;
+e 3601 p 3600 0
+e 3602 h p cnf 6 1 -2 -4 0 ;
+k 3601 s 3601 3602 b2
+e 3603 n 3600
+e 3604 n 3602
+e 3605 r 3604 0
+k 3600 s 3605 3603 pr 3601
+# left side of the conclusion is not a regression
+k 3610 s 3600 3603 pr 3601
+# left side of the conclusion is not a regression of a negation
+e 3620 r 3600 0
+k 3620 s 3620 3603 pr 3601
+# right side of the conclusion is not a negation
+k 3630 s 3605 3600 pr 3601
+# premise is not subset knowledge
+k 3641 d 0 ed
+k 3640 s 3605 3603 pr 3641
+# premise does not have a progression on the left
+k 3651 s 3600 3600 b1
+k 3650 s 3605 3603 pr 3651
+# premise talks about wrong sets
+e 3660 h p cnf 6 1 -4 0 ;
+e 3661 p 3660 0
+k 3661 s 3661 3602 b2
+k 3660 s 3605 3603 pr 3661
+a 3670 b 1 0
+e 3671 p 3600 3670
+k 3671 s 3671 3602 b2
+k 3670 s 3605 3603 pr 3671
+e 3680 h p cnf 6 1 -2 -4 -5 0 ;
+k 3681 s 3601 3680 b2
+k 3680 s 3605 3603 pr 3681
+# wrong number of premises
+k 3690 s 3605 3603 pr
+
+# premise: [A]S \subseteq S'
+#regression to progression
+e 3700 h p cnf 6 3 2 0 4 0 5 0 ;
+e 3701 r 3700 0
+e 3702 h p cnf 6 2 2 0 4 0 ;
+k 3701 s 3701 3702 b3
+e 3703 n 3700
+e 3704 n 3702
+e 3705 p 3704 0
+k 3700 s 3705 3703 rp 3701
+# left side of the conclusion is not a progression
+k 3710 s 3700 3703 rp 3701
+# left side of the conclusion is not a progression of a negation
+e 3720 p 3700 0
+k 3720 s 3720 3703 rp 3701
+# right side of the conclusion is not a negation
+k 3730 s 3705 3702 rp 3701
+# premise is not subset knowledge
+k 3741 d 0 ed
+k 3740 s 3705 3703 rp 3741
+# premise does not have a regression on the left
+k 3751 s 3700 3700 b1
+k 3750 s 3705 3703 rp 3751
+# premise talks about wrong sets
+e 3760 h p cnf 6 3 2 0 3 0 4 0 ;
+e 3761 r 3760 0
+k 3761 s 3761 3702 b3
+k 3760 s 3705 3703 rp 3761
+a 3770 b 1 0
+e 3771 r 3700 3770
+k 3771 s 3771 3702 b3
+k 3770 s 3705 3703 rp 3771
+e 3780 h p cnf 6 1 2 0 ;
+k 3781 s 3701 3780 b3
+k 3780 s 3705 3703 rp 3781
+# wrong number of premises
+k 3790 s 3705 3703 rp 3701 3701
