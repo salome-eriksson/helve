@@ -3,22 +3,28 @@ Installing and running helve with CUDD
 ======================================
 (In what follows <path-to-cudd> is the path where you want CUDD to be
 installed to)
-1. Download CUDD 3.0.0 from here: https://github.com/ivmai/cudd (unofficial
-mirror)
+1. Download CUDD 3.0.0  as a zip from here: https://github.com/ivmai/cudd/archive/refs/heads/release.zip
+ (unofficial
+mirror https://github.com/ivmai/cudd)
 2. Unpack the archive.
 3. In the folder cudd-release call the following steps to get the 64-bit
 library with dddmp and c++-wrapper:
 
         ./configure --prefix=\<path-to-cudd\> --enable-shared --enable-dddmp --enable-obj --enable-static "CFLAGS=-D_FILE_OFFSET_BITS=64" "CXXFLAGS=-D_FILE_OFFSET_BITS=64"
-        make
-        make install
+        && make
+        && make install
 
-4. Move the following two header files to \<path-to-cudd\>/include:
-   - config.h
-   - util/util.h
+4. Move the following two header files config.h and util/util.h to \<path-to-cudd\>/include:
+
+        cp config.h \<path-to-cudd\>/include
+        && cp util/util.h \<path-to-cudd\>/include
+          
   (I don't know why this is necessary, but else the dddmp library complains...)
+  
 5. Set the environment variable CUDD_DIR to \<path-to-cudd\> (or change the
 Makefile, adding the path in place of the variable).
+
+6. Navigate to \<path-to-helve>\.
 7. Compile the verifier with make.
 8. For verifying a certificate, you need
    - a task file (see below)
@@ -29,6 +35,23 @@ Makefile, adding the path in place of the variable).
 
         verify <task file> <certificate file>"
    A successful verification ends with "Exiting: certificate is valid".
+9. Test your setup by navigating into helve/test and run:
+
+        ./../helve fail-task.txt fail-certificate.txt
+   the expected output is:
+         
+        Critical error when checking line 9 (k 110 d 0 ed 1): Premise list is not empty.
+        Exiting: unexplained critical error
+
+   next run
+   
+        ./../helve success-task.txt success-certificate.txt
+   the expected output is:
+   
+        Verify total time: 0.01
+        Verify memory: 32624KB
+        unsolvability proven
+        Exiting: certificate is valid
 
 File Formats
 ============

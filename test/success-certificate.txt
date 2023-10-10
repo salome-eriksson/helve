@@ -1,0 +1,16 @@
+a 0 a
+e 0 c e
+k 0 d 0 ed
+e 1 b success-bdd.bdd 0 ;
+e 2 p 1 0
+e 3 u 1 0
+e 4 c g
+e 5 i 1 4 
+k 1 s 2 3 b2
+k 2 s 5 0 b1
+k 3 d 5 sd 0 2
+k 4 d 1 pg 1 0 3
+e 6 c i
+k 5 s 6 1 b1
+k 6 d 6 sd 4 5
+k 7 u ci 6
