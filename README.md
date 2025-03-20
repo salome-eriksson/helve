@@ -18,9 +18,9 @@ library with dddmp and c++-wrapper:
 
         cp config.h \<path-to-cudd\>/include
         && cp util/util.h \<path-to-cudd\>/include
-          
+
   (I don't know why this is necessary, but else the dddmp library complains...)
-  
+
 5. Set the environment variable CUDD_DIR to \<path-to-cudd\> (or change the
 Makefile, adding the path in place of the variable).
 
@@ -39,15 +39,15 @@ Makefile, adding the path in place of the variable).
 
         ./../helve fail-task.txt fail-certificate.txt
    the expected output is:
-         
+
         Critical error when checking line 9 (k 110 d 0 ed 1): Premise list is not empty.
         Exiting: unexplained critical error
 
    next run
-   
+
         ./../helve success-task.txt success-certificate.txt
    the expected output is:
-   
+
         Verify total time: 0.01
         Verify memory: 32624KB
         unsolvability proven
@@ -96,25 +96,28 @@ proof
 -----
 
 In the proof, each line describes either a set expression, an action expression
-or a new piece of knowledge.
+or a new piece of knowledge. In what follows, # denotes an ID of a set
+expression, action expression, or knowledge.
+
+
+set expressions:
 
 Set expressions can either be constant sets, "basic" sets (which are defined
 in a concrete language), or "compound" sets (negation, intersection, union,
 progression, regression). Each set expression has a unique identifier.
 The following tree represents the delcaration syntax for set expressions:
 
-                  /- e                                         (constant empty set)
-             /- c -- i                                         (constant initstate set)
-            /     \- g                                         (constant goal set)
-           /--- b <bdd_filename> <bdd_index> ;                 (BDD set)
-          /---- h <description in DIMACS> ;                    (Horn formula set)
-         /----- t <description in DIMACS> ;                    (2CNF set)
-        /------ e <list of STRIPS states encoded in hex> ;     (explicit set)
-    e # ------- n #                                            (negation)
-        \------ i # #                                          (intersection)
-         \----- u # #                                          (union)
-          \---- p # #                                          (progression)
-           \--- r # #                                          (regression)
+                 /- e                                         (constant empty set)
+            /- c -- i                                         (constant initstate set)
+           /     \- g                                         (constant goal set)
+          /--- b <bdd_filename> <bdd_index> ;                 (BDD set)
+         /---- t <description in DIMACS> ;                    (2CNF set)
+        /----- e <list of STRIPS states encoded in hex> ;     (explicit set)
+    e # ------ n #                                            (negation)
+        \----- i # #                                          (intersection)
+         \---- u # #                                          (union)
+          \--- p # #                                          (progression)
+           \-- r # #                                          (regression)
 
 (the different parts of the description are separated by space characters)
 
@@ -145,6 +148,18 @@ combined to one hex digit. When the number of variables is not divisible by
 Example: for a task with 9 variables, "5e8" represents state 010111101 (5 =
 0101, e = 1110, 8 = 1000
 
+
+action expression:
+
+Action sets are either a list of action ids, the union of two action sets or
+the constant set containing all actions.
+
+        /- b <amount> <list of action ids>    (basic enumeration of <amount> action ids)
+    a # -- u # #                              (union of two action sets)
+        \- a                                  (the constant all actions sets)
+
+knowledge:
+
 Knowledge comes in 3 forms:
  - a set expression is dead
  - a set expression is a subset of another set expression
@@ -153,36 +168,45 @@ Knowledge comes in 3 forms:
 The following tree represents the declaration syntax for knowledge:
 
 
-                     /- ed
-                    /-- ud # #
-                   /--- sd # #
-               d # ---- pg # # #
-              /    \--- pi # # #
-             /      \-- rg # # #
-            /        \- ri # # #
+                              /- ed
+                             /-- ud # #
+                            /--- sd # #
+                        d # ---- pg # # #
+                       /    \--- pi # # #
+                      /      \-- rg # # #
+                     /        \- ri # # #
+                    /
+                   /      /- ci #
+                  / --- u -- cg #
+                 /
+                /           /- tc
+               /           /-- ec
+              / ------- b # <bound> --- sc # #
+             /             \-- uc # #
+            /               \- pc # # (# #)+
            /
-          /      /- ci #
-         / --- u -- cg #
+          / ----------- o <bound> bi #
+         /
         /
-       /                      /- ur
-      /                      /-- ul
-     /                      /--- ir
-    k                      /---- il
-     \                    /----- di
-      \                  /------ su # #
-       \                /------- si # #
-        \              /-------- st # #
-         \            /--------- at # #
-          ----- s # # ---------- au # #
-                      \--------- pt # #
-                       \-------- pu # #
-                        \------- pr #
-                         \------ rp #
-                          \----- b1
-                           \---- b2
-                            \--- b3
-                             \-- b4
-                              \- b5
+       /                              /- ur
+      /                              /-- ul
+     /                              /--- ir
+    k                              /---- il
+     \                            /----- di
+      \                          /------ su # #
+       \                        /------- si # #
+        \                      /-------- st # #
+         \                    /--------- at # #
+          ------------- s # # ---------- au # #
+                              \--------- pt # #
+                               \-------- pu # #
+                                \------- pr #
+                                 \------ rp #
+                                  \----- b1
+                                   \---- b2
+                                    \--- b3
+                                     \-- b4
+                                      \- b5
 
 (the different parts of the description are separated by space characters)
 
@@ -192,5 +216,13 @@ are set expression identifiers.
 (Example: "s 3 5") means set expression #3 is a subset of set expression #5,
 and "d 6" means set expression #6 is dead)
 
-For more information about the different derivation rules and basic statements
-B1-B5 consult the documentation in Proof_System_Overview.pdf
+Note for bound rule pc, the number of relevant kowledge id's is variable, but
+always an even number and at least 4.
+
+For more information about the different derivation rules related to
+unsolvability, as well as basic statements B1-B5 consult the documentation in
+Proof_System_Overview.pdf. For derivation rules related to optimality ("b" and
+"o" rules), consult the following paper:
+Esther Mugdan, Remo Christen and Salomé Eriksson.
+Optimality Certificates for Classical Planning.
+In Proceedings of the 33rd International Conference on Automated Planning and Scheduling (ICAPS 2023), pp. 286-294. 2023.
