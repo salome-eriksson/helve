@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+#include <iostream>
+
 namespace horn {
 void HornTypeFormula::verify_horn_type() {
     for (const Clause &clause : clauses) {
@@ -62,6 +64,24 @@ bool HornTypeFormula::entails(const Clause &clause) const {
         negated_clause.insert({literal.first, !literal.second});
     }
     return !unit_propagation({this}, negated_clause);
+}
+
+void HornTypeFormula::dump() const {
+    if (has_no_clauses()) {
+        std::cout << "TRUE" << std::endl;
+    } else if (has_empty_clause) {
+        std::cout << "FALSE" << std::endl;
+    } else {
+        for (Literal lit : unit_clauses) {
+            std::cout << lit.first << "->" << lit.second << std::endl;
+        }
+        for (const Clause &clause : clauses) {
+            for (Literal lit : clause) {
+                std::cout << lit.first << "->" << lit.second << " ";
+            }
+            std::cout << std::endl;
+        }
+    }
 }
 
 }

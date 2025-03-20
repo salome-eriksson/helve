@@ -20,6 +20,8 @@ public:
     HornTypeFormula(const PartialAssignment &partial_assignment, bool dual);
 
     bool entails(const Clause &clause) const;
+
+    void dump() const;
 };
 }
 

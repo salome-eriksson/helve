@@ -18,7 +18,7 @@ inline void check_end_of_line(std::stringstream &line) {
 
 
 ProofChecker::ProofChecker(std::string &task_file)
-    : task(task_file), unsolvability_proven(false) {
+    : task(task_file), unsolvability_proven(false), proven_lower_bound(0) {
     manager = Cudd(task.get_number_of_facts()*2);
     manager.setTimeoutHandler(exit_timeout);
     manager.InstallOutOfMemoryHandler(exit_oom);
@@ -106,6 +106,7 @@ void ProofChecker::verify_knowledge(std::stringstream &line) {
     std::unique_ptr<Knowledge> conclusion;
     std::string knowledge_type, rule;
     bool unsolvable_rule = false;
+    unsigned lower_bound = 0;
 
     conclusion_id = read_uint(line);
     knowledge_type = read_word(line);
@@ -137,28 +138,59 @@ void ProofChecker::verify_knowledge(std::stringstream &line) {
             premises.push_back(read_uint(line));
         }
         conclusion = rules::DeadnessRule::get_deadness_rule(rule)(dead_set_id, premises, *this);
+    } else if(knowledge_type == "b") {
+        // Bound knowledge is defined by "<set_id> <bound> <rule> {premise_ids}".
+        SetID set_id;
+        unsigned bound;
+        std::vector<KnowledgeID> premises;
+
+        set_id = read_uint(line);
+        bound = read_uint(line);
+        rule = read_word(line);
+        while (!line.eof()) {
+            premises.push_back(read_uint(line));
+        }
+        conclusion = rules::BoundRule::get_bound_rule(rule)(set_id, bound, premises, *this);
     } else if(knowledge_type == "u") {
         // Unsolvability knowledge is defined by "<rule> <premise_id>".
         KnowledgeID premise;
 
+        unsolvable_rule = true;
         rule = read_word(line);
         premise = read_uint(line);
         conclusion = rules::UnsolvableRule::get_unsolvable_rule(rule)(premise, *this);
-        unsolvable_rule = true;
+    } else if(knowledge_type == "o") {
+        // Optimal Bound knowledge is defined by "<bound> <rule> <premise_id>".
+        KnowledgeID premise;
+
+        lower_bound = read_uint(line);
+        rule = read_word(line);
+        premise = read_uint(line);
+        conclusion = rules::OptimalityRule::get_optimality_rule(rule)(lower_bound, premise, *this);
     } else {
         throw std::runtime_error("Knowledge type " + knowledge_type
                                  + " does not exist.");
     }
     check_end_of_line(line);
 
-    // we cannot set it in the knowledge type "u" block directly in case
-    // check_end_of_line throws an error
+    // We do not set unsolvability proven and proven_lower_bound in the
+    // knowledge type block directly in case check_end_of_line throws an error.
     if (unsolvable_rule) {
         unsolvability_proven = true;
+    } else if (lower_bound > 0) {
+        proven_lower_bound = lower_bound;
     }
     add_knowledge(std::move(conclusion), conclusion_id);
 }
 
-bool ProofChecker::is_unsolvability_proven() {
+bool ProofChecker::is_unsolvability_proven() const {
     return unsolvability_proven;
+}
+
+unsigned ProofChecker::get_proven_lower_bound() const {
+    return proven_lower_bound;
+}
+
+const Task &ProofChecker::get_task() const {
+    return task;
 }

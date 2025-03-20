@@ -40,6 +40,11 @@ SOURCES = $(HEADERS:%.h=%.cc) \
 	  rules/basic_statements/basic_statement_3.cc \
 	  rules/basic_statements/basic_statement_4.cc \
 	  rules/basic_statements/basic_statement_5.cc \
+	  rules/bound_rules/emptyset_costbound.cc \
+	  rules/bound_rules/progression_costbound.cc \
+	  rules/bound_rules/subset_costbound.cc \
+	  rules/bound_rules/trivial_costbound.cc \
+	  rules/bound_rules/union_costbound.cc \
 	  rules/deadness_rules/emptyset_dead.cc \
 	  rules/deadness_rules/union_dead.cc \
 	  rules/deadness_rules/subset_dead.cc \
@@ -47,6 +52,7 @@ SOURCES = $(HEADERS:%.h=%.cc) \
 	  rules/deadness_rules/progression_initial.cc \
 	  rules/deadness_rules/regression_goal.cc \
 	  rules/deadness_rules/regression_initial.cc \
+	  rules/optimality_rules/bound_initial.cc \
 	  rules/prog_reg_rules/action_transitivity.cc \
 	  rules/prog_reg_rules/action_union.cc \
 	  rules/prog_reg_rules/progression_transitivity.cc \

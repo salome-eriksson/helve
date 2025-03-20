@@ -41,4 +41,28 @@ public:
     virtual ~UnsolvableKnowledge() {}
 };
 
+class BoundKnowledge : public Knowledge
+{
+private:
+    SetID set_id;
+    unsigned bound;
+public:
+    BoundKnowledge(SetID set_id, unsigned bound);
+    virtual ~BoundKnowledge() {}
+
+    SetID get_set_id() const;
+    unsigned get_bound() const;
+};
+
+class OptimalCostKnowledge : public Knowledge
+{
+private:
+    unsigned lower_bound;
+public:
+    OptimalCostKnowledge(unsigned lower_bound);
+    virtual ~OptimalCostKnowledge() {}
+
+    unsigned get_lower_bound() const;
+};
+
 #endif // KNOWLEDGE_H

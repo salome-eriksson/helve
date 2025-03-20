@@ -12,7 +12,7 @@ HornTypeDisjunction::HornTypeDisjunction(
         // An empty formula is valid -> the entire disjunction is valid.
         if (formula->has_no_clauses()) {
             disjuncts.clear();
-            disjuncts.push_back(formula);
+            varamount = 0;
             return;
         }
 

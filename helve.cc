@@ -123,6 +123,11 @@ int main(int argc, char** argv) {
 
     std::cout << "Verify total time: " << timer() << std::endl;
     std::cout << "Verify memory: " << get_peak_memory_in_kb() << "KB" << std::endl;
+    unsigned proven_lower_bound = proofchecker.get_proven_lower_bound();
+    if(proven_lower_bound > 0) {
+        std::cout << "proven lower bound: " << proven_lower_bound << std::endl;
+        exit_with(ExitCode::CERTIFICATE_VALID);
+    }
     if(proofchecker.is_unsolvability_proven()) {
         std::cout << "unsolvability proven" << std::endl;
         exit_with(ExitCode::CERTIFICATE_VALID);
