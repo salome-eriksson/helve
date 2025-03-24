@@ -1,7 +1,7 @@
 
 Installing and running helve with CUDD
 ======================================
-(In what follows <path-to-cudd> is the path where you want CUDD to be
+(In what follows \<path-to-cudd\> is the path where you want CUDD to be
 installed to)
 1. Download CUDD 3.0.0  as a zip from here: https://github.com/ivmai/cudd/archive/refs/heads/release.zip
  (unofficial
