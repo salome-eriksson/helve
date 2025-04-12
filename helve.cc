@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
             std::cerr << "Critical error when checking line " << linenr << " ("
                       << line << "): " << e.what() << "\n";
             if (exit_upon_error) {
-                exit_with(ExitCode::CRITICAL_ERROR);
+                exit_with(ExitCode::CERTIFICATE_NOT_VALID);
             }
         }
     }

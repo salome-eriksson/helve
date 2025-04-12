@@ -157,7 +157,9 @@ cnf::CNFFormula ModsFormula::transform_to_cnf() const {
 }
 
 bool ModsFormula::is_valid() const {
-    return models.size() == (1 << variable_order.size());
+    // if we have 64 or more variables, the shift doesn't work correctly
+    // (and we probably could not fit 2^64 models in memory anyways)
+    return (variable_order.size() < 64 && models.size() == (1 << variable_order.size()-1));
 }
 
 bool ModsFormula::is_unsatisfiable() const {
